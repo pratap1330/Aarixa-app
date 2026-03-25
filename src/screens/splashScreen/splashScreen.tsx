@@ -58,7 +58,7 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
       style={styles.container}
     >
       <Animated.Image
-        source={require('../../assets/splash/splash.png')}
+        source={require('../../images/splash/splash.png')}
         resizeMode="contain"
         style={[
           styles.logo,
