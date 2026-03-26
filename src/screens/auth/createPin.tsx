@@ -51,7 +51,7 @@ const CreatePinScreen: React.FC<Props> = ({ navigation }) => {
 
     const handleSetPin = () => {
         if (pin.join('').length === 4) {
-            // navigation.navigate("AllSet");
+            navigation.navigate("AllSet");
         }
     };
 
