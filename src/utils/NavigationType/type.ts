@@ -3,12 +3,5 @@ export type RootStackParamList = {
   Login: undefined;
   OTPVerification: undefined;
   Home: undefined;
-};
-
-
-export type OtpVerification = {
-  SplashScreen: undefined;
-  Login: undefined;
-  OTPVerification: undefined;
-  Home: undefined;
+  CreatePin: undefined; // 👈 PascalCase
 };

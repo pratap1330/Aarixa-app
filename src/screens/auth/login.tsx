@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     marginTop: 12,
-    paddingTop: 24,
+    paddingTop: 42,
     fontFamily: 'Urbanist-Medium',
     fontSize: scaleFont(16),
     lineHeight: scaleFont(24),
@@ -193,6 +193,7 @@ const styles = StyleSheet.create({
   inputWrapper: {
     marginTop: 80,
     width: '90%',
+    fontFamily: 'Urbanist-Regular',
     maxWidth: 356,
     flexDirection: 'row',
     alignItems: 'center',

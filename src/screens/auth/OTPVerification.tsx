@@ -1,208 +1,276 @@
 import React, { useState, useRef } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TextInput,
-  TouchableOpacity,
-  Dimensions,
-  KeyboardAvoidingView,
-  Platform,
+    View,
+    Text,
+    StyleSheet,
+    Image,
+    TextInput,
+    TouchableOpacity,
+    Dimensions,
+    KeyboardAvoidingView,
+    Platform,
 } from 'react-native';
+
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { OtpVerification } from '../../utils/NavigationType/type';
+import { RootStackParamList } from '../../utils/NavigationType/type';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const scaleFont = (size: number) => (SCREEN_WIDTH / 375) * size;
 
-type Props = NativeStackScreenProps<OtpVerification, 'OTPVerification'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'OTPVerification'>;
 
 const OtpVerificationScreen: React.FC<Props> = ({ navigation }) => {
-  const [otp, setOtp] = useState(Array(6).fill(''));
+    const [otp, setOtp] = useState(Array(6).fill(''));
+    const inputRefs = useRef<TextInput[]>([]);
 
-  const inputRefs = useRef<TextInput[]>([]);
+    const handleChange = (text: string, index: number) => {
+        const newOtp = [...otp];
 
-  const handleChange = (text: string, index: number) => {
-    const newOtp = [...otp];
-    newOtp[index] = text;
-    setOtp(newOtp);
+        // Only allow 0-9
+        if (text && !/^\d$/.test(text)) return;
 
-    // Next input
-    if (text && index < 5) {
-      inputRefs.current[index + 1]?.focus();
+        // Replace current digit
+        newOtp[index] = text;
+        setOtp(newOtp);
+
+        if (text) {
+            // Always move forward if a digit is entered
+            if (index < otp.length - 1) {
+                inputRefs.current[index + 1]?.focus();
+            }
+        } else {
+            // Move back if input is cleared
+            if (index > 0) {
+                inputRefs.current[index - 1]?.focus();
+            }
+        }
+    };
+
+    const verfiyotp = () => {
+        navigation.navigate('CreatePin');
+
     }
 
-    // Backspace → previous
-    if (!text && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
+    return (
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            style={styles.container}
+        >
+            {/* 🔙 Back Button */}
+            <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => navigation.goBack()}
+            >
+                <Image
+                    source={require('../../images/loginImage/back.png')}
+                    style={styles.backIcon}
+                    resizeMode="contain"
+                />
+            </TouchableOpacity>
 
-  return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={styles.container}
-    >
-      {/* Title */}
-      <Text style={styles.title}>OTP Verification</Text>
+            {/* Title */}
+            <Text style={styles.title}>OTP Verification</Text>
 
-      {/* Image */}
-      <Image
-        source={require('../../images/loginImage/otp.png')}
-        style={styles.image}
-        resizeMode="contain"
-      />
+            {/* Image */}
+            <Image
+                source={require('../../images/loginImage/otp.png')}
+                style={styles.image}
+                resizeMode="contain"
+            />
 
-      {/* Subtitle */}
-      <Text style={styles.subtitle}>
-        Enter the verification code you received on
-      </Text>
+            {/* Subtitle */}
+            <Text style={styles.subtitle}>
+                Enter the verification code you received on
+            </Text>
 
-      {/* Phone */}
-      <View style={styles.phoneContainer}>
-        <Image
-          source={require('../../images/loginImage/india.png')}
-          style={styles.flag}
-          resizeMode="contain"
-        />
-        <Text style={styles.phoneText}>+91 98765 43210</Text>
-      </View>
+            {/* Phone */}
+            <View style={styles.phoneContainer}>
+                <Image
+                    source={require('../../images/loginImage/india.png')}
+                    style={styles.flag}
+                    resizeMode="contain"
+                />
+                <Text style={styles.phoneText}>+91 98765 43210</Text>
+            </View>
 
-      {/* OTP Inputs */}
-      <View style={styles.otpContainer}>
-        {otp.map((value, index) => (
-          <TextInput
+            {/* OTP Inputs */}
+           <View style={styles.otpContainer}>
+    {otp.map((value, index) => (
+        <TextInput
             key={index}
-            // ref={(ref) => (inputRefs.current[index] = ref!)}
+            ref={(ref) => {
+                if (ref) inputRefs.current[index] = ref;
+            }}
             style={styles.otpInput}
             keyboardType="number-pad"
             maxLength={1}
             value={value}
             onChangeText={(text) => handleChange(text, index)}
-          />
-        ))}
-      </View>
+            onKeyPress={({ nativeEvent }) => {
+                if (nativeEvent.key === 'Backspace' && !otp[index] && index > 0) {
+                    inputRefs.current[index - 1]?.focus();
+                }
+            }}
+            autoFocus={index === 0}  // only first box auto-focused
+        />
+    ))}
+</View>
 
-      {/* Verify Button */}
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Verify</Text>
-      </TouchableOpacity>
+            {/* Verify Button */}
+            <TouchableOpacity style={styles.button}
+                onPress={verfiyotp}>
+                <Text
+                    style={styles.buttonText}>Verify</Text>
+            </TouchableOpacity>
 
-      {/* Resend */}
-      <TouchableOpacity style={styles.resendButton}>
-        <Text style={styles.resendText}>
-          Didn’t receive code? Resend
-        </Text>
-      </TouchableOpacity>
-    </KeyboardAvoidingView>
-  );
+            {/* Resend */}
+            <TouchableOpacity style={styles.resendButton}>
+                <Text style={styles.resendText}>
+                    Didn’t receive code?{' '}
+                    <Text style={styles.resendLink}>Resend</Text>
+                </Text>
+            </TouchableOpacity>
+        </KeyboardAvoidingView>
+    );
 };
 
 export default OtpVerificationScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    paddingTop: SCREEN_HEIGHT * 0.1,
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        paddingTop: SCREEN_HEIGHT * 0.1,
+    },
 
-  title: {
-    width: SCREEN_WIDTH * 0.7,
-    fontFamily: 'Urbanist-Medium',
-    fontWeight: '700',
-    fontSize: scaleFont(30),
-    lineHeight: scaleFont(38),
-    letterSpacing: -1,
-    color: '#1E232C',
-    textAlign: 'center',
-    marginBottom: SCREEN_HEIGHT * 0.02, // 🔥 reduced gap
-  },
+    /* 🔙 Back Button Style */
+    backButton: {
+        position: 'absolute',
+        top: 59,
+        left: 16,
+        width: 41,
+        height: 41,
 
-  image: {
-    width: SCREEN_WIDTH * 0.25,
-    height: SCREEN_WIDTH * 0.28,
-    marginBottom: SCREEN_HEIGHT * 0.015, // 🔥 reduced
-  },
+        justifyContent: 'center',
+        alignItems: 'center',
 
-  subtitle: {
-    width: SCREEN_WIDTH * (304 / 375),
-    fontFamily: 'Urbanist-Medium',
-    fontWeight: '500',
-    fontSize: scaleFont(16),
-    lineHeight: scaleFont(24),
-    color: '#838BA1',
-    textAlign: 'center',
-    marginBottom: SCREEN_HEIGHT * 0.01, // 🔥 add tight spacing
-  },
+        // borderWidth: 1,
+        borderColor: '#E8ECF4',
+        borderStyle: 'solid',
 
-  phoneContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: SCREEN_WIDTH * 0.02,
-    marginBottom: SCREEN_HEIGHT * 0.02, // 🔥 reduced
-  },
+        // borderRadius: 12, // 👈 optional (Figma me rounded hai to rakhna)
+        backgroundColor: '#fff', // 👈 clean look
+    },
 
-  flag: {
-    width: SCREEN_WIDTH * (25 / 375),
-    height: SCREEN_WIDTH * (25 / 375),
-  },
+    backIcon: {
+        width: 38,   // 42px ~ 11% of 375px width
+        height: 38, 
+        borderRadius: 12,
+         // keep it square
+        resizeMode: 'contain',
+    },
+    // backIcon: {
+    //     width: SCREEN_WIDTH * 0.11,   // 42px ~ 11% of 375px width
+    //     height: SCREEN_WIDTH * 0.11,  // keep it square
+    //     // resizeMode: 'contain',
+    // },
+    title: {
+        width: SCREEN_WIDTH * 0.7,
+        fontFamily: 'Urbanist-SemiBold',
+        // fontWeight: '700',
+        fontSize: scaleFont(30),
+        lineHeight: scaleFont(38),
+        letterSpacing: -1,
+        color: '#1E232C',
+        textAlign: 'center',
+        marginBottom: SCREEN_HEIGHT * 0.02,
+    },
 
-  phoneText: {
-    fontFamily: 'Urbanist-Medium',
-    fontSize: scaleFont(16),
-    color: '#838BA1',
-  },
+    image: {
+        width: SCREEN_WIDTH * 0.25,
+        height: SCREEN_WIDTH * 0.28,
+        marginBottom: SCREEN_HEIGHT * 0.04,
+    },
 
-  otpContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: SCREEN_WIDTH * 0.9,
-    marginBottom: SCREEN_HEIGHT * 0.05,
-  },
+    subtitle: {
+        // width: SCREEN_WIDTH * (304 / 375),
+        fontFamily: 'Urbanist-Medium',
+        // fontWeight: '500',
+        fontSize: scaleFont(16),
+        lineHeight: scaleFont(24),
+        color: '#838BA1',
+        textAlign: 'center',
+        // marginBottom: SCREEN_HEIGHT * 0.00005,
+    },
 
-  otpInput: {
-    width: SCREEN_WIDTH * 0.12,
-    height: SCREEN_WIDTH * 0.12,
-    borderWidth: 1,
-    borderColor: '#2288FD',
-    borderRadius: 8,
-    textAlign: 'center',
-    fontSize: scaleFont(18),
-    color: '#1E232C',
-  },
+    phoneContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: SCREEN_WIDTH * 0.02,
+        marginBottom: SCREEN_HEIGHT * 0.015,
+    },
 
-  button: {
-    width: SCREEN_WIDTH * 0.92,
-    height: SCREEN_HEIGHT * 0.065,
-    backgroundColor: '#2288FD',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: SCREEN_HEIGHT * 0.03,
-  },
+    flag: {
+        width: SCREEN_WIDTH * (25 / 375),
+        height: SCREEN_WIDTH * (25 / 375),
+    },
 
-  buttonText: {
-    fontFamily: 'Urbanist-Medium',
-    fontWeight: '700',
-    fontSize: scaleFont(16),
-    color: '#FFFFFF',
-  },
+    phoneText: {
+        fontFamily: 'Urbanist-Medium',
+        fontSize: scaleFont(16),
+        color: '#838BA1',
+    },
 
-  resendButton: {
-    marginTop: SCREEN_HEIGHT * 0.015,
-  },
+    otpContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        fontFamily: 'Urbanist-Medium',
+        width: SCREEN_WIDTH * 0.9,
+        marginBottom: SCREEN_HEIGHT * 0.05,
+    },
 
-  resendText: {
-    fontFamily: 'Urbanist-Medium',
-    fontWeight: '600',
-    fontSize: scaleFont(14),
-    lineHeight: scaleFont(20),
-    letterSpacing: 0.5,
-    color: '#2288FD',
-    textAlign: 'center',
-  },
+    otpInput: {
+        width: SCREEN_WIDTH * 0.12,
+        height: SCREEN_WIDTH * 0.12,
+        borderColor: '#2288FD',
+        fontFamily: 'Urbanist-SemiBold',
+        borderBottomWidth: 2,
+        textAlign: 'center',
+        fontSize: scaleFont(16),
+        color: '#1E232C',
+    },
+
+    button: {
+        width: SCREEN_WIDTH * 0.9,
+        height: SCREEN_HEIGHT * 0.065,
+        backgroundColor: '#2288FD',
+        borderRadius: SCREEN_WIDTH * 0.03,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    buttonText: {
+        fontFamily: 'Urbanist-Medium',
+        // fontWeight: '700',
+        fontSize: scaleFont(16),
+        color: '#FFFFFF',
+    },
+
+    resendButton: {
+        marginTop: SCREEN_HEIGHT * 0.015,
+    },
+
+    resendText: {
+        fontFamily: 'Urbanist-Medium',
+        // fontWeight: '600',
+        fontSize: scaleFont(15),
+        color: '#1E232C',
+        textAlign: 'center',
+    },
+
+    resendLink: {
+        color: '#2288FD',
+    },
 });
