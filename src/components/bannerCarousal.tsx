@@ -5,38 +5,34 @@ import {
   View,
   Image,
   StyleSheet,
-  Dimensions,
   FlatList,
   ImageSourcePropType,
 } from "react-native";
 
-
-const BASE_WIDTH = 390;
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const scale = (size: number) => (SCREEN_WIDTH / BASE_WIDTH) * size;
+import { wp, hp } from "../utils/responcive/responcive";
 
 export interface BannerItem {
   id: string;
-  // Use `uri` for API images, `source` for local images
   uri?: string;
   source?: ImageSourcePropType;
 }
 
 interface BannerCarouselProps {
   banners?: BannerItem[];
-  autoPlayInterval?: number; 
+  autoPlayInterval?: number;
 }
 
 const DEFAULT_BANNERS: BannerItem[] = [
   { id: "1", source: require("../images/headerImage/banner.png") },
 ];
 
-const CARD_WIDTH = scale(365);//358
-const CARD_HEIGHT = scale(150);
+// ✅ Replace scale with wp/hp
+const CARD_WIDTH = wp(352);
+const CARD_HEIGHT = hp(150);
 
 const BannerCarousel: React.FC<BannerCarouselProps> = ({
   banners = DEFAULT_BANNERS,
-  autoPlayInterval = 1000,
+  autoPlayInterval = 3000,
 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const flatListRef = useRef<FlatList<BannerItem>>(null);
@@ -66,7 +62,9 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({
     }
   ).current;
 
-  const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
+  const viewabilityConfig = useRef({
+    viewAreaCoveragePercentThreshold: 50,
+  }).current;
 
   const renderItem = ({ item }: { item: BannerItem }) => (
     <View style={styles.slide}>
@@ -101,6 +99,7 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({
         }}
         onScrollEndDrag={() => {
           if (banners.length <= 1) return;
+
           timerRef.current = setInterval(() => {
             setActiveIndex((prev) => {
               const next = (prev + 1) % banners.length;
@@ -110,6 +109,7 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({
           }, autoPlayInterval);
         }}
       />
+
       {banners.length > 1 && (
         <View style={styles.dots}>
           {banners.map((_, i) => (
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   slide: {
     width: CARD_WIDTH,
     height: CARD_HEIGHT,
-    borderRadius: scale(25),
+    borderRadius: wp(25), 
     overflow: "hidden",
   },
 
@@ -144,24 +144,23 @@ const styles = StyleSheet.create({
     height: "100%",
   },
 
-
   dots: {
     position: "absolute",
-    bottom: scale(10),
+    bottom: hp(10),
     alignSelf: "center",
     flexDirection: "row",
-    gap: scale(5),
+    gap: wp(5),
   },
 
   dot: {
-    width: scale(6),
-    height: scale(6),
+    width: wp(6),
+    height: wp(6),
     borderRadius: 100,
     backgroundColor: "rgba(255,255,255,0.5)",
   },
 
   dotActive: {
-    width: scale(18),
+    width: wp(18),
     backgroundColor: "#fff",
   },
 });

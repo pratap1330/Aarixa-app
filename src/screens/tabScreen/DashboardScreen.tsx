@@ -1,26 +1,36 @@
 // screens/Dashboard/Dashboard.tsx
 
 import React from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  ScrollView,
+} from "react-native";
 import MaskedView from "@react-native-masked-view/masked-view";
 import LinearGradient from "react-native-linear-gradient";
 import BannerCarousel, { BannerItem } from "../../components/bannerCarousal";
 import DashboardCard from "../../components/DashboardCard";
+import AssetsCard from "../../components/DashboardAssetCard";
 
 const BASE_WIDTH = 390;
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const scale = (size: number) => (SCREEN_WIDTH / BASE_WIDTH) * size;
 
 const LOCAL_BANNERS: BannerItem[] = [
-  { id: "1", source: require('../../images/headerImage/banner.png') },
+  { id: "1", source: require("../../images/headerImage/banner.png") },
 ];
-
 
 const Dashboard = () => {
   return (
-    <View style={styles.screen}>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Welcome Header */}
       <View style={styles.headerBlock}>
-
         <Text style={styles.welcomeText}>Welcome back</Text>
 
         <MaskedView
@@ -35,17 +45,22 @@ const Dashboard = () => {
           />
         </MaskedView>
       </View>
-       <View style={styles.cardContainer}>
-       <DashboardCard/>
-      </View>
-      <View style={styles.bannerContainer}>
-        <BannerCarousel
-          banners={LOCAL_BANNERS}
-          autoPlayInterval={1000}
-        />
+
+      {/* Dashboard Card */}
+      <View style={styles.cardContainer}>
+        <DashboardCard />
       </View>
 
-    </View>
+      {/* Banner Carousel */}
+      <View style={styles.bannerContainer}>
+        <BannerCarousel banners={LOCAL_BANNERS} autoPlayInterval={1000} />
+      </View>
+
+      {/* Assets Card */}
+      <View style={styles.assetContainer}>
+        <AssetsCard />
+      </View>
+    </ScrollView>
   );
 };
 
@@ -54,16 +69,18 @@ export default Dashboard;
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    // backgroundColor: "#FFFFFF",ß
   },
 
-  cardContainer: {
-    marginTop: 98,
-    alignItems: "center",
+  scrollContent: {
+    paddingBottom: scale(40),
+    minHeight: scale(750),
   },
+
+  // ── Header ──────────────────────────────────────────────────────────────
   headerBlock: {
-    position: "absolute",
-    top: scale(10),
-    left: scale(15),
+    marginTop: scale(10),
+    marginLeft: scale(15),
     width: scale(211),
     height: scale(73),
     gap: scale(5),
@@ -104,10 +121,21 @@ const styles = StyleSheet.create({
     height: scale(34),
   },
 
+  // ── Dashboard Card ───────────────────────────────────────────────────────
+  cardContainer: {
+    marginTop: scale(25),
+    alignItems: "center",
+  },
+
+  // ── Banner ───────────────────────────────────────────────────────────────
   bannerContainer: {
-    position: "absolute",
-    top: scale(293),
-    left: scale(12),
-    // left: scale(16),
+    marginTop: scale(20),
+    marginLeft: scale(12),
+  },
+
+  // ── Assets Card ──────────────────────────────────────────────────────────
+  assetContainer: {
+    marginTop: scale(20),
+    marginLeft: scale(13),
   },
 });
