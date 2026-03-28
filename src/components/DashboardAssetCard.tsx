@@ -6,17 +6,14 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
-import { wp, hp, scaleFont } from '../utils/responcive/responcive'; // adjust path as needed
+import { wp, hp, scaleFont } from '../utils/responcive/responcive'; 
 
 const AssetsCard = () => {
   return (
     <View style={styles.card}>
-      {/* Header Row */}
       <View style={styles.headerRow}>
-        {/* "Asset Class" Label */}
         <Text style={styles.headerText}>Asset Class</Text>
 
-        {/* Dot icon (top-right) */}
         <Image
           source={require('../images/card/dot.png')}
           style={styles.dotIcon}
@@ -24,16 +21,13 @@ const AssetsCard = () => {
         />
       </View>
 
-      {/* Inner Content Container */}
       <View style={styles.innerContainer}>
-        {/* Left: Asset Image */}
         <Image
           source={require("../images/card/asset.png")}
           style={styles.assetImage}
           resizeMode="contain"
         />
 
-        {/* Right: Frame Image */}
         <Image
           source={require("../images/card/frame.png")}
           style={styles.frameImage}
@@ -103,8 +97,8 @@ const styles = StyleSheet.create({
   },
 
   assetImage: {
-    width: wp(90),
-    height: hp(118),
+    width: wp(170),
+    height: hp(170),
     opacity: 1,
   },
 

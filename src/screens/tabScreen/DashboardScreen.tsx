@@ -13,6 +13,7 @@ import LinearGradient from "react-native-linear-gradient";
 import BannerCarousel, { BannerItem } from "../../components/bannerCarousal";
 import DashboardCard from "../../components/DashboardCard";
 import AssetsCard from "../../components/DashboardAssetCard";
+import { useAppTheme } from "../../hooks/useTheme";
 
 const BASE_WIDTH = 390;
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -23,22 +24,34 @@ const LOCAL_BANNERS: BannerItem[] = [
 ];
 
 const Dashboard = () => {
+  const { colors, mode } = useAppTheme();
+
   return (
     <ScrollView
-      style={styles.screen}
+      style={[styles.screen, { backgroundColor: colors.background }]}
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
     >
-      {/* Welcome Header */}
+      {/* Header */}
       <View style={styles.headerBlock}>
-        <Text style={styles.welcomeText}>Welcome back</Text>
+        <Text style={[styles.welcomeText, { color: colors.text }]}>
+          Welcome back
+        </Text>
 
         <MaskedView
           style={styles.nameMask}
-          maskElement={<Text style={styles.nameText}>Priyanka Sharma</Text>}
+          maskElement={
+            <Text style={[styles.nameText, { color: colors.text }]}>
+              Priyanka Sharma
+            </Text>
+          }
         >
           <LinearGradient
-            colors={["#527EFF", "#3366FF"]}
+            colors={
+              mode === "dark"
+                ? ["#6A8DFF", "#3B5BDB"]   
+                : ["#527EFF", "#3366FF"] 
+            }
             start={{ x: 0.5, y: 0 }}
             end={{ x: 0.5, y: 1 }}
             style={styles.nameGradient}
@@ -46,17 +59,17 @@ const Dashboard = () => {
         </MaskedView>
       </View>
 
-      {/* Dashboard Card */}
+      {/* Main Card */}
       <View style={styles.cardContainer}>
         <DashboardCard />
       </View>
 
-      {/* Banner Carousel */}
+      {/* Banner */}
       <View style={styles.bannerContainer}>
-        <BannerCarousel banners={LOCAL_BANNERS} autoPlayInterval={1000} />
+        <BannerCarousel banners={LOCAL_BANNERS} autoPlayInterval={3000} />
       </View>
 
-      {/* Assets Card */}
+      {/* Assets */}
       <View style={styles.assetContainer}>
         <AssetsCard />
       </View>
@@ -69,7 +82,6 @@ export default Dashboard;
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    // backgroundColor: "#FFFFFF",ß
   },
 
   scrollContent: {
@@ -77,7 +89,6 @@ const styles = StyleSheet.create({
     minHeight: scale(750),
   },
 
-  // ── Header ──────────────────────────────────────────────────────────────
   headerBlock: {
     marginTop: scale(10),
     marginLeft: scale(15),
@@ -87,14 +98,11 @@ const styles = StyleSheet.create({
   },
 
   welcomeText: {
-    width: scale(211),
-    height: scale(34),
     fontFamily: "Urbanist-Bold",
     fontWeight: "700",
     fontSize: scale(28),
-    lineHeight: scale(28) * 1.0,
+    lineHeight: scale(28),
     letterSpacing: scale(28) * -0.02,
-    color: "#000000",
     includeFontPadding: false,
   },
 
@@ -104,16 +112,13 @@ const styles = StyleSheet.create({
   },
 
   nameText: {
-    width: scale(211),
-    height: scale(34),
     fontFamily: "Urbanist-Bold",
     fontWeight: "700",
     fontSize: scale(28),
-    lineHeight: scale(28) * 1.0,
+    lineHeight: scale(28),
     letterSpacing: scale(28) * -0.02,
     textAlign: "center",
     includeFontPadding: false,
-    color: "#000",
   },
 
   nameGradient: {
@@ -121,19 +126,16 @@ const styles = StyleSheet.create({
     height: scale(34),
   },
 
-  // ── Dashboard Card ───────────────────────────────────────────────────────
   cardContainer: {
     marginTop: scale(25),
     alignItems: "center",
   },
 
-  // ── Banner ───────────────────────────────────────────────────────────────
   bannerContainer: {
     marginTop: scale(20),
     marginLeft: scale(12),
   },
 
-  // ── Assets Card ──────────────────────────────────────────────────────────
   assetContainer: {
     marginTop: scale(20),
     marginLeft: scale(13),
