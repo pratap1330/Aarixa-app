@@ -8,103 +8,111 @@ import { useAppTheme } from "../hooks/useTheme";
 import Feather from "react-native-vector-icons/Feather";
 
 const CustomHeader = () => {
-  const navigation = useNavigation<any>();
-  const dispatch = useDispatch();
-  const { colors, mode } = useAppTheme();
+    const navigation = useNavigation<any>();
+    const dispatch = useDispatch();
+    const { colors, mode } = useAppTheme();
 
-  return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      
-      {/* User Image */}
-      <Image
-        source={require("../images/headerImage/user.png")}
-        style={styles.userImage}
-      />
+    return (
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
 
-      <View style={styles.rightContainer}>
-        
-        {/* 🌙 Dark Mode Toggle */}
-       
-<TouchableOpacity
-  onPress={() => dispatch(toggleTheme())}
-  style={[
-    styles.notificationBox,
-    { backgroundColor: colors.card },
-  ]}
-  activeOpacity={0.7}
->
-  <Feather
-    name={mode === "light" ? "moon" : "sun"}
-    size={22}
-    color={colors.text}
-  />
-</TouchableOpacity>
+            {/* User Image */}
+            <Image
+                source={require("../images/headerImage/user.png")}
+                style={styles.userImage}
+            />
 
-        {/* Notification */}
-        <View style={[styles.notificationBox, { backgroundColor: colors.card }]}>
-          <Image
-            source={require("../images/headerImage/prime_bell.png")}
-            style={styles.bell}
-          />
+            <View style={styles.rightContainer}>
+
+                {/* 🌙 Dark Mode Toggle */}
+
+                <TouchableOpacity
+                    onPress={() => dispatch(toggleTheme())}
+                    style={[
+                        styles.notificationBox,
+                        { backgroundColor: colors.card },
+                    ]}
+                    activeOpacity={0.7}
+                >
+                    <Feather
+                        name={mode === "light" ? "moon" : "sun"}
+                        size={22}
+                        color={colors.text}
+                    />
+                </TouchableOpacity>
+
+                {/* Notification */}
+                <View style={[styles.notificationBox, { backgroundColor: colors.card }]}>
+                    <Image
+                        source={
+                            mode === "light"
+                                ? require("../images/headerImage/prime_bell.png")
+                                : require("../images/headerImage/prime_bell_white.png")
+                        }
+                        style={styles.bell}
+                    />
+                </View>
+
+                {/* Drawer */}
+                <TouchableOpacity onPress={() => navigation.navigate("Explore")}>
+                    <Image
+                        source={
+                            mode === "light"
+                                ? require("../images/headerImage/menu-bar 1.png")
+                                : require("../images/headerImage/menu-bar-dark.png")
+                        }
+                        style={styles.menu}
+                    />
+                </TouchableOpacity>
+
+            </View>
         </View>
-
-        {/* Drawer */}
-        <TouchableOpacity onPress={() => navigation.navigate("Explore")}>
-          <Image
-            source={require("../images/headerImage/menu-bar 1.png")}
-            style={styles.menu}
-          />
-        </TouchableOpacity>
-
-      </View>
-    </View>
-  );
+    );
 };
 
 export default CustomHeader;
 
 const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    height: hp(119),
-    // marginTop: hp(59),
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: wp(15),
-    // backgroundColor: "#fff",
-  },
+    container: {
+        width: "100%",
+        height: hp(119),
+        // marginTop: hp(59),
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingHorizontal: wp(15),
+        // backgroundColor: "#fff",
+    },
 
-  userImage: {
-    width: wp(45),
-    height: wp(45),
-    borderRadius: wp(100),
-  },
+    userImage: {
+        width: wp(45),
+        height: wp(45),
+        borderRadius: wp(100),
+    },
 
-  rightContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: wp(10),
-  },
+    rightContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: wp(10),
+    },
 
-  notificationBox: {
-    width: wp(45),
-    height: wp(45),
-    borderRadius: wp(50),
-    paddingHorizontal: wp(5),
-    alignItems: "center",
-    justifyContent: "center",
-  },
+    notificationBox: {
+        width: wp(45),
+        height: wp(45),
+        borderRadius: wp(50),
+        paddingHorizontal: wp(5),
+        alignItems: "center",
+        justifyContent: "center",
+    },
 
-  bell: {
-    width: wp(25),
-    height: wp(25),
-    resizeMode: "contain",
-  },
+    bell: {
+        width: wp(25),
+        height: wp(25),
+        resizeMode: "contain",
+    },
 
-  menu: {
-    width: wp(35),
-    height: wp(35),
-    resizeMode: "contain",
-  },
+    menu: {
+        width: wp(35),
+        height: wp(35),
+        resizeMode: "contain",
+    },
 });
