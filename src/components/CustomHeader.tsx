@@ -73,9 +73,9 @@ export default CustomHeader;
 
 const styles = StyleSheet.create({
     container: {
-        width: "100%",
-        height: hp(119),
-        // marginTop: hp(59),
+        width: wp(389),
+        height: hp(60),
+        marginTop: hp(59),
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",

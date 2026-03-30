@@ -27,7 +27,7 @@ const DEFAULT_BANNERS: BannerItem[] = [
 ];
 
 // ✅ Replace scale with wp/hp
-const CARD_WIDTH = wp(352);
+const CARD_WIDTH = wp(358);
 const CARD_HEIGHT = hp(150);
 
 const BannerCarousel: React.FC<BannerCarouselProps> = ({
