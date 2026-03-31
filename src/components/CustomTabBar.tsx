@@ -1,3 +1,5 @@
+// src/components/CustomTabBar.tsx
+
 import React from "react";
 import {
   View,
@@ -20,10 +22,12 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
   return (
     <View style={styles.container}>
 
+      {/* INNER CONTAINER */}
       <View style={styles.innerContainer}>
 
         {TAB_CONFIG.map((tab) => {
 
+          // ✅ CENTER BUTTON
           if (tab.center) {
             return (
               <View key={tab.key} style={styles.centerWrapper}>
@@ -36,7 +40,6 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
                 >
                   <LinearGradient
                     colors={["#527EFF", "#3366FF"]}
-                    locations={[0, 1]}
                     start={{ x: 0.5, y: 0 }}
                     end={{ x: 0.5, y: 1 }}
                     style={styles.centerButton}
@@ -53,6 +56,8 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
             );
           }
 
+
+          // ✅ NORMAL TAB
           return (
             <TouchableOpacity
               key={tab.key}
@@ -85,6 +90,10 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
 };
 
 export default CustomTabBar;
+
+
+
+// ================= STYLES =================
 
 const styles = StyleSheet.create({
 
@@ -147,36 +156,37 @@ const styles = StyleSheet.create({
   },
 
 
-  // center wrapper — Figma: 68.6 x 70, paddingBottom: 18
+  // center wrapper
   centerWrapper: {
     width: wp(68.6),
     height: hp(70),
+
     alignItems: "center",
     justifyContent: "flex-end",
-    paddingBottom: hp(18),
+    paddingBottom: hp(30),
   },
 
-  // circle button — Figma: 58 x 58, borderRadius: 100, border: 4px white
+
+  // circle button
   centerButton: {
-    width: wp(60),
-    height: wp(60),
-    borderRadius: wp(60) / 2,
-    borderWidth: 4,
-    borderColor: "#FFFFFF",
+    width: wp(58),
+    height: wp(58),
+
+    borderRadius: 100,
+    borderWidth: wp(4),
+    borderColor: "#fff",
+
+    padding: wp(14),
+
     justifyContent: "center",
     alignItems: "center",
-    overflow: "hidden",
-    marginBottom :10
   },
 
 
-  // center icon — Figma Vector: 27.5 x 25, top: 1.25, left: 2.5, color: #FFFFFF
+  // center icon
   centerIcon: {
-    width: wp(27.5),
-    height: wp(25),
-    marginTop: - 5,
-    marginLeft: - 5,
-    tintColor: "#FFFFFF",
+    width: wp(30),
+    height: hp(30),
   },
 
 });

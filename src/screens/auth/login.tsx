@@ -58,7 +58,7 @@
     setError('');
 
     // Navigate to OTPVerification screen
-    navigation.navigate('OTPVerification');
+    // navigation.navigate('OTPVerification');
   };
 
     const selectCountry = (country: Country) => {

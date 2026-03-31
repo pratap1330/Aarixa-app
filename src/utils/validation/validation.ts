@@ -1,9 +1,3 @@
-// ─── Password Rules (like Abc@123) ────────────────────────
-// ✅ Min 6 characters
-// ✅ At least 1 uppercase letter  (A-Z)
-// ✅ At least 1 lowercase letter  (a-z)
-// ✅ At least 1 number            (0-9)
-// ✅ At least 1 special character (@, #, $, !, etc.)
 
 export interface ValidationResult {
   isValid: boolean;
@@ -34,8 +28,6 @@ export const validatePassword = (password: string): ValidationResult => {
   return { isValid: true, message: '' };
 };
 
-// ─── Username Rules ────────────────────────────────────────
-// ✅ Not empty
 
 export const validateUsername = (username: string): ValidationResult => {
   if (username.trim().length === 0) {

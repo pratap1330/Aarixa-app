@@ -1,46 +1,89 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { wp, hp } from "../utils/responcive/responcive";
+import { useGet } from "../hooks/useGet";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-interface DashboardCardProps {
-  currentValue?: string;
-  investedValue?: string;
-  unrealisedGain?: string;
-  xirr?: string;
-}
+const formatNumber = (num: number = 0) => {
+  return new Intl.NumberFormat("en-IN", {
+    maximumFractionDigits: 0,
+  }).format(num);
+};
 
-const DashboardCard: React.FC<DashboardCardProps> = ({
-  currentValue = "₹14,12,780",
-  investedValue = "₹10,00,000",
-  unrealisedGain = "+ ₹4,12,780",
-  xirr = "14.05%",
-}) => {
+const DashboardCard: React.FC = () => {
+  const [cid, setCid] = useState<number | null>(null);
+
+  useEffect(() => {
+    const getData = async () => {
+      const storedId = await AsyncStorage.getItem("uniqueId");
+
+      if (!storedId) return; // ✅ Fix: narrows string | null to string
+
+      const numericCid = Number(storedId.replace("C", ""));
+      setCid(numericCid);
+    };
+
+    getData();
+  }, []);
+
+  const { data, loading, error } = useGet(
+    cid ? "/api/investor/getInvestorData" : null,
+    cid
+      ? {
+          cid: cid,
+          levelNo: 98,
+        }
+      : null
+  );
+
+  if (cid === null || loading) {
+    return <ActivityIndicator size="large" color="#000" />;
+  }
+
+  if (error) {
+    return <Text style={{ color: "red", textAlign: "center" }}>Error loading data</Text>;
+  }
+
+  const investor = data?.status === 0 ? data?.result?.[0] : null;
+
+  const currentValue = `₹${formatNumber(investor?.investorCurrentValue)}`;
+  const investedValue = `₹${formatNumber(investor?.investorInvestedValue)}`;
+  const gainValue = investor?.investorGain || 0;
+
+  const unrealisedGain = `${gainValue >= 0 ? "+" : "-"} ₹${formatNumber(
+    Math.abs(gainValue)
+  )}`;
+
+  const xirr = `${investor?.investorXirr?.toFixed(2) || "0.00"}%`;
+
   return (
     <View style={styles.outerCard}>
-      {/* Top Section — Current Value & Invested Value */}
+
       <View style={styles.topCard}>
-        {/* Current Value */}
         <View style={styles.valueBlock}>
           <Text style={styles.label}>Current Value</Text>
           <Text style={styles.amount}>{currentValue}</Text>
         </View>
 
-        {/* Invested Value */}
         <View style={styles.valueBlock}>
           <Text style={styles.label}>Invested Value</Text>
           <Text style={styles.amount}>{investedValue}</Text>
         </View>
 
-        {/* Horizontal Divider */}
         <View style={styles.horizontalDivider} />
-
       </View>
 
-      {/* Bottom Section — Unrealised Gain & XIRR */}
       <View style={styles.bottomSection}>
         <View style={styles.valueBlock}>
           <Text style={styles.labelBottom}>Unrealised Gain</Text>
-          <Text style={styles.gainAmount}>{unrealisedGain}</Text>
+          <Text
+            style={[
+              styles.gainAmount,
+              { color: gainValue >= 0 ? "#00E676" : "#FF4D4F" },
+            ]}
+          >
+            {unrealisedGain}
+          </Text>
         </View>
 
         <View style={styles.valueBlock}>
@@ -48,6 +91,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
           <Text style={styles.xirrAmount}>{xirr}</Text>
         </View>
       </View>
+
     </View>
   );
 };
@@ -58,7 +102,7 @@ const styles = StyleSheet.create({
   outerCard: {
     width: wp(358),
     height: hp(180),
-    marginTop:10,
+    marginTop: 10,
     borderRadius: wp(30),
     backgroundColor: "#152C5B",
     alignSelf: "center",
@@ -100,12 +144,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
 
-  verticalDivider: {
-    width: 1,
-    height: hp(50),
-    backgroundColor: "rgba(255,255,255,0.3)",
-  },
-
   horizontalDivider: {
     position: "absolute",
     bottom: hp(6),
@@ -137,7 +175,6 @@ const styles = StyleSheet.create({
     fontFamily: "Urbanist",
     fontWeight: "700",
     fontSize: wp(16),
-    color: "#FFFFFF",
   },
 
   xirrAmount: {

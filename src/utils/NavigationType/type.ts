@@ -1,11 +1,20 @@
 export type RootStackParamList = {
-  SplashScreen: undefined;
   Login: undefined;
-  OTPVerification: undefined;
-  CreatePin: undefined;
+
+  OTPVerification: {
+    username: string;
+    password: string;
+  };
+
+  CreatePin: {
+    username: string;
+    password: string;
+    otp: string;
+  };
+
   AllSet: undefined;
-  Tabs: undefined; // ✅ MUST
-};
+  Tabs: undefined; 
+}
 
 export type TabParamList = {
   dashboard: undefined;

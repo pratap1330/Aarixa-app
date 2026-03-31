@@ -10,20 +10,21 @@ import {
     KeyboardAvoidingView,
     Platform,
 } from 'react-native';
-
+import { Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../utils/NavigationType/type';
-
+import { usePost } from '../../hooks/usePost';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const wp = (size: number) => (SCREEN_WIDTH / 375) * size;
 const hp = (size: number) => (SCREEN_HEIGHT / 812) * size;
 const scaleFont = (size: number) => (SCREEN_WIDTH / 375) * size;
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CreatePin'>;
 
-const CreatePinScreen: React.FC<Props> = ({ navigation }) => {
-
+const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
+    const { postData, loading, error } = usePost();
+    const { username, password, otp } = route.params;
     const [pin, setPin] = useState(Array(4).fill(''));
     const inputRefs = useRef<TextInput[]>([]);
 
@@ -49,9 +50,36 @@ const CreatePinScreen: React.FC<Props> = ({ navigation }) => {
     };
 
 
-    const handleSetPin = () => {
-        if (pin.join('').length === 4) {
-            navigation.navigate("AllSet");
+    const handleSetPin = async () => {
+        const finalPin = pin.join('');
+         
+        if (finalPin.length !== 4) return;
+
+        try {
+            const payload = {
+                username: username,
+                Password: password,  
+                Passcode: finalPin,
+                otp: otp,
+            };
+
+            const res = await postData("api/auth/client-login", payload);
+           console.log(res);
+           debugger
+            if (res?.status === 1) {
+            const uniqueId = res?.result?.user?.uniqueid;
+            await AsyncStorage.setItem("uniqueId", uniqueId);
+           await AsyncStorage.setItem("user", JSON.stringify(res?.result?.user));
+                navigation.navigate("AllSet");
+            }
+           
+            else {
+                 console.log(res)
+                Alert.alert(res?.message);
+            }
+
+        } catch (err: any) {
+            Alert.alert(err?.message);
         }
     };
 
@@ -147,7 +175,7 @@ const CreatePinScreen: React.FC<Props> = ({ navigation }) => {
                     onPress={handleSetPin}
                 >
                     <Text style={styles.buttonText}>
-                        Set PIN
+                        {loading ? "Please wait..." : "Set PIN"}
                     </Text>
                 </TouchableOpacity>
 
@@ -200,7 +228,7 @@ const styles = StyleSheet.create({
     image: {
         width: wp(245),
         height: hp(204),
-        marginTop: -hp(22),
+        marginTop: -hp(19),
     },
 
 
@@ -222,7 +250,6 @@ const styles = StyleSheet.create({
         color: '#838BA1',
         marginTop: -hp(20),
     },
-
 
     pinRow: {
         width: wp(357),

@@ -19,10 +19,11 @@ const scaleFont = (size: number) => (SCREEN_WIDTH / 375) * size;
 
 type Props = NativeStackScreenProps<RootStackParamList, 'OTPVerification'>;
 
-const OtpVerificationScreen: React.FC<Props> = ({ navigation }) => {
-    const [otp, setOtp] = useState(Array(6).fill(''));
+const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
+    const { username, password } = route.params;
+    const [otp, setOtp] = useState(Array(4).fill(''));
     const inputRefs = useRef<TextInput[]>([]);
-
+    const isOtpComplete = otp.every(digit => digit !== '');
     const handleChange = (text: string, index: number) => {
         const newOtp = [...otp];
 
@@ -46,10 +47,20 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation }) => {
         }
     };
 
-    const verfiyotp = () => {
-        navigation.navigate('CreatePin');
+    // const verfiyotp = () => {
+    //     navigation.navigate('CreatePin');
 
-    }
+    // }
+
+    const verfiyotp = () => {
+        const finalOtp = otp.join('');
+
+        navigation.navigate('CreatePin', {
+            username,
+            password,
+            otp: finalOtp,
+        });
+    };
 
     return (
         <KeyboardAvoidingView
@@ -80,47 +91,58 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation }) => {
 
             {/* Subtitle */}
             <Text style={styles.subtitle}>
-                Enter the verification code you received on
+                Enter the verification code you received 
             </Text>
 
             {/* Phone */}
-            <View style={styles.phoneContainer}>
+            {/* <View style={styles.phoneContainer}>
                 <Image
                     source={require('../../images/loginImage/india.png')}
                     style={styles.flag}
                     resizeMode="contain"
                 />
                 <Text style={styles.phoneText}>+91 98765 43210</Text>
-            </View>
+            </View> */}
 
             {/* OTP Inputs */}
-           <View style={styles.otpContainer}>
-    {otp.map((value, index) => (
-        <TextInput
-            key={index}
-            ref={(ref) => {
-                if (ref) inputRefs.current[index] = ref;
-            }}
-            style={styles.otpInput}
-            keyboardType="number-pad"
-            maxLength={1}
-            value={value}
-            onChangeText={(text) => handleChange(text, index)}
-            onKeyPress={({ nativeEvent }) => {
-                if (nativeEvent.key === 'Backspace' && !otp[index] && index > 0) {
-                    inputRefs.current[index - 1]?.focus();
-                }
-            }}
-            autoFocus={index === 0}  // only first box auto-focused
-        />
-    ))}
-</View>
+            <View style={styles.otpContainer}>
+                {otp.map((value, index) => (
+                    <TextInput
+                        key={index}
+                        ref={(ref) => {
+                            if (ref) inputRefs.current[index] = ref;
+                        }}
+                        style={styles.otpInput}
+                        keyboardType="number-pad"
+                        maxLength={1}
+                        value={value}
+                        onChangeText={(text) => handleChange(text, index)}
+                        onKeyPress={({ nativeEvent }) => {
+                            if (nativeEvent.key === 'Backspace' && !otp[index] && index > 0) {
+                                inputRefs.current[index - 1]?.focus();
+                            }
+                        }}
+                        autoFocus={index === 0}  // only first box auto-focused
+                    />
+                ))}
+            </View>
 
             {/* Verify Button */}
-            <TouchableOpacity style={styles.button}
+            {/* <TouchableOpacity style={styles.button}
                 onPress={verfiyotp}>
                 <Text
                     style={styles.buttonText}>Verify</Text>
+            </TouchableOpacity> */}
+
+            <TouchableOpacity
+                style={[
+                    styles.button,
+                    { opacity: isOtpComplete ? 1 : 0.5 }
+                ]}
+                disabled={!isOtpComplete}
+                onPress={verfiyotp}
+            >
+                <Text style={styles.buttonText}>Verify</Text>
             </TouchableOpacity>
 
             {/* Resend */}
@@ -165,9 +187,9 @@ const styles = StyleSheet.create({
 
     backIcon: {
         width: 38,   // 42px ~ 11% of 375px width
-        height: 38, 
+        height: 38,
         borderRadius: 12,
-         // keep it square
+        // keep it square
         resizeMode: 'contain',
     },
     // backIcon: {
@@ -232,7 +254,7 @@ const styles = StyleSheet.create({
     },
 
     otpInput: {
-        width: SCREEN_WIDTH * 0.12,
+        width: SCREEN_WIDTH * 0.18,
         height: SCREEN_WIDTH * 0.12,
         borderColor: '#2288FD',
         fontFamily: 'Urbanist-SemiBold',

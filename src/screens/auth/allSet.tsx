@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import {
   View,
@@ -23,7 +24,7 @@ const AllSetScreen: React.FC<Props> = ({ navigation }) => {
   // ✅ Auto navigate after 1 sec
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace("Tabs"); // 👈 dashboard route name
+      navigation.replace("Tabs"); 
     }, 1000);
 
     return () => clearTimeout(timer);
