@@ -14,7 +14,7 @@ import BannerCarousel, { BannerItem } from "../../components/bannerCarousal";
 import DashboardCard from "../../components/DashboardCard";
 import AssetsCard from "../../components/DashboardAssetCard";
 import { useAppTheme } from "../../hooks/useTheme";
-
+import FilterCard from "../../components/filterCard";
 const BASE_WIDTH = 390;
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -88,6 +88,11 @@ const Dashboard = () => {
         <View style={styles.assetContainer}>
           <AssetsCard />
         </View>
+
+        <View style={{ marginTop: scale(20), alignItems: "center",
+         }}>
+  <FilterCard />
+</View>
       </ScrollView>
     </View>
   );
@@ -151,26 +156,25 @@ nameText: {
     color: "#000",
   },
 
-// Also increase the row and mask heights to give breathing room:
 
 nameRow: {
-    height: scale(38),                // ✅ was scale(34) — 4px extra for descenders
+    height: scale(38),                
     alignSelf: "flex-start",
   },
 
 nameMask: {
-    height: scale(38),                // ✅ match nameRow
+    height: scale(38),               
     maxWidth: SCREEN_WIDTH - scale(30),
     alignSelf: "flex-start",
   },
 
 nameGradient: {
-    height: scale(38),                // ✅ match nameRow
+    height: scale(38),                
     width: SCREEN_WIDTH - scale(30),
   },
 
   cardContainer: {
-    // marginTop: scale(93),             // 10 (top) + 73 (header) + ~10 gap
+    // marginTop: scale(93),         
     alignItems: "center",
   },
 

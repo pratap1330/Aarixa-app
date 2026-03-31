@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     justifyContent: "center",
     alignItems: "center",
-    paddingBottom: hp(30)
+    marginBottom: hp(30)
   },
 
 
