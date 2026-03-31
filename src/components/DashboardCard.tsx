@@ -30,11 +30,11 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
           <Text style={styles.label}>Invested Value</Text>
           <Text style={styles.amount}>{investedValue}</Text>
         </View>
-        
-      </View>
 
-      {/* Horizontal Divider */}
-      <View style={styles.horizontalDivider} />
+        {/* Horizontal Divider */}
+        <View style={styles.horizontalDivider} />
+
+      </View>
 
       {/* Bottom Section — Unrealised Gain & XIRR */}
       <View style={styles.bottomSection}>
@@ -107,12 +107,15 @@ const styles = StyleSheet.create({
   },
 
   horizontalDivider: {
+    position: "absolute",
+    bottom: hp(6),
     alignSelf: "center",
-    width: wp(40),
-    height: hp(3),
-    borderRadius: hp(2),
-    backgroundColor: "rgba(255,255,255,0.4)",
-    marginVertical: hp(4),
+    left: wp(155),
+    width: wp(50),
+    height: 0,
+    borderWidth: 1.9,
+    borderColor: "#FFF7F7",
+    borderRadius: 2,
   },
 
   bottomSection: {
@@ -134,7 +137,7 @@ const styles = StyleSheet.create({
     fontFamily: "Urbanist",
     fontWeight: "700",
     fontSize: wp(16),
-    color: "#4ADE80",
+    color: "#FFFFFF",
   },
 
   xirrAmount: {

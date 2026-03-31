@@ -4,8 +4,6 @@ import Svg, { Path, Circle, Text as SvgText } from "react-native-svg";
 import { wp, hp, scaleFont } from "../utils/responcive/responcive";
 import assetData from "../data/assetData.json";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 interface ChartSlice {
   id: string;
   label: string;
@@ -13,18 +11,16 @@ interface ChartSlice {
   color: string;
 }
 
-// ─── Donut Chart helpers ──────────────────────────────────────────────────────
-
 const SIZE        = wp(170);
 const CX          = SIZE / 2;
 const CY          = SIZE / 2;
-const OUTER_LARGE = wp(82);   // figma: 170×170 slice → radius 85, minus 3px gap
-const OUTER_SMALL = wp(72);   // figma: 150×152 slice → radius ~75, minus 3px gap
-const INNER       = wp(42);   // figma: 83×83 hole → radius ~41.5
+const OUTER_LARGE = wp(82);   
+const OUTER_SMALL = wp(72);   
+const INNER       = wp(42);  
 const GAP_DEG     = 0;
 
 function toRad(deg: number) {
-  return ((deg - 90) * Math.PI) / 180; // -90 so 0° = top
+  return ((deg - 90) * Math.PI) / 180; 
 }
 
 function pt(r: number, angleDeg: number) {
@@ -41,19 +37,14 @@ function arcPath(startDeg: number, endDeg: number, outerR: number): string {
   return `M${os.x},${os.y} A${outerR},${outerR} 0 ${large} 1 ${oe.x},${oe.y} L${ie.x},${ie.y} A${INNER},${INNER} 0 ${large} 0 ${is_.x},${is_.y} Z`;
 }
 
-// ─── Donut Chart component ────────────────────────────────────────────────────
-
 const DonutChart: React.FC<{ slices: ChartSlice[] }> = ({ slices }) => {
   let cursor = 0;
 
-  // sum of all percentages — used for center label + normalization
   const total = slices.reduce((sum, s) => sum + s.percentage, 0);
 
   const segments = slices.map((item, index) => {
-    // alternating large/small by index — automatic, no JSON field needed
     const outerR   = index % 2 === 0 ? OUTER_LARGE : OUTER_SMALL;
     const labelR   = INNER + (outerR - INNER) * 0.54;
-    // normalize so slices always fill 360° regardless of whether data sums to 100
     const degrees  = (item.percentage / total) * 360;
     const start    = cursor + GAP_DEG / 2;
     const end      = cursor + degrees - GAP_DEG / 2;
@@ -68,15 +59,12 @@ const DonutChart: React.FC<{ slices: ChartSlice[] }> = ({ slices }) => {
 
   return (
     <Svg width={SIZE} height={SIZE}>
-      {/* Slices */}
       {segments.map((s) => (
         <Path key={s.id} d={s.path} fill={s.color} />
       ))}
 
-      {/* Hole */}
       <Circle cx={CX} cy={CY} r={INNER - wp(1)} fill="rgba(14,149,153,0.05)" />
 
-      {/* Percentage labels on each slice */}
       {segments.map((s) => (
         <SvgText
           key={`lbl-${s.id}`}
@@ -93,7 +81,6 @@ const DonutChart: React.FC<{ slices: ChartSlice[] }> = ({ slices }) => {
         </SvgText>
       ))}
 
-      {/* Center total — dynamic from data */}
       <SvgText
         x={CX}
         y={CY}
