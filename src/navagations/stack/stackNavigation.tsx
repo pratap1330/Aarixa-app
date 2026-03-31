@@ -7,7 +7,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/NavigationType/type";
 
 import SplashScreen from "../../screens/splashScreen/splashScreen";
-import LoginScreen from "../../screens/auth/login";
+// import LoginScreen from "../../screens/auth/login";
+import LoginScreen from "../../screens/auth/loginFlow";
 import OtpVerificationScreen from "../../screens/auth/OTPVerification";
 import CreatePinScreen from "../../screens/auth/createPin";
 import AllSetScreen from "../../screens/auth/allSet";
