@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
         width: wp(389),
         height: hp(60),
         marginTop: hp(59),
+        // paddingTop: hp(70), 
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",

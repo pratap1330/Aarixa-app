@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
   outerCard: {
     width: wp(358),
     height: hp(180),
+    marginTop:10,
     borderRadius: wp(30),
     backgroundColor: "#152C5B",
     alignSelf: "center",

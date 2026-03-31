@@ -1,148 +1,3 @@
-// // screens/Dashboard/Dashboard.tsx
-
-// import React from "react";
-// import {
-//   View,
-//   Text,
-//   StyleSheet,
-//   Dimensions,
-//   ScrollView,
-// } from "react-native";
-// import MaskedView from "@react-native-masked-view/masked-view";
-// import LinearGradient from "react-native-linear-gradient";
-// import BannerCarousel, { BannerItem } from "../../components/bannerCarousal";
-// import DashboardCard from "../../components/DashboardCard";
-// import AssetsCard from "../../components/DashboardAssetCard";
-// import { useAppTheme } from "../../hooks/useTheme";
-
-// const BASE_WIDTH = 390;
-// const { width: SCREEN_WIDTH } = Dimensions.get("window");
-// const scale = (size: number) => (SCREEN_WIDTH / BASE_WIDTH) * size;
-
-// const LOCAL_BANNERS: BannerItem[] = [
-//   { id: "1", source: require("../../images/headerImage/banner.png") },
-// ];
-
-// const Dashboard = () => {
-//   const { colors, mode } = useAppTheme();
-
-//   return (
-//     <ScrollView
-//       style={[styles.screen, { backgroundColor: colors.background }]}
-//       contentContainerStyle={styles.scrollContent}
-//       showsVerticalScrollIndicator={false}
-//     >
-//       {/* Header */}
-//       <View style={styles.headerBlock}>
-//         <Text style={[styles.welcomeText, { color: colors.text }]}>
-//           Welcome back
-//         </Text>
-
-//         <MaskedView
-//           style={styles.nameMask}
-//           maskElement={
-//             <Text style={[styles.nameText, { color: colors.text }]}>
-//               Priyanka Sharma
-//             </Text>
-//           }
-//         >
-//           <LinearGradient
-//             colors={
-//               mode === "dark"
-//                 ? ["#6A8DFF", "#3B5BDB"]   
-//                 : ["#527EFF", "#3366FF"]   // light gradient
-//             }
-//             start={{ x: 0.5, y: 0 }}
-//             end={{ x: 0.5, y: 1 }}
-//             style={styles.nameGradient}
-//           />
-//         </MaskedView>
-//       </View>
-
-//       {/* Main Card */}
-//       <View style={styles.cardContainer}>
-//         <DashboardCard />
-//       </View>
-
-//       {/* Banner */}
-//       <View style={styles.bannerContainer}>
-//         <BannerCarousel banners={LOCAL_BANNERS} autoPlayInterval={3000} />
-//       </View>
-
-//       {/* Assets */}
-//       <View style={styles.assetContainer}>
-//         <AssetsCard />
-//       </View>
-//     </ScrollView>
-//   );
-// };
-
-// export default Dashboard;
-
-// const styles = StyleSheet.create({
-//   screen: {
-//     flex: 1,
-//   },
-
-//   scrollContent: {
-//     paddingBottom: scale(40),
-//     minHeight: scale(750),
-//   },
-
-//   headerBlock: {
-//     marginTop: scale(10),
-//     marginLeft: scale(15),
-//     width: scale(211),
-//     height: scale(73),
-//     gap: scale(5),
-//   },
-
-//   welcomeText: {
-//     fontFamily: "Urbanist-Bold",
-//     fontWeight: "700",
-//     fontSize: scale(28),
-//     lineHeight: scale(28),
-//     letterSpacing: scale(28) * -0.02,
-//     includeFontPadding: false,
-//   },
-
-//   nameMask: {
-//     width: scale(211),
-//     height: scale(34),
-//   },
-
-//   nameText: {
-//     fontFamily: "Urbanist-Bold",
-//     fontWeight: "700",
-//     fontSize: scale(28),
-//     lineHeight: scale(28),
-//     letterSpacing: scale(28) * -0.02,
-//     textAlign: "center",
-//     includeFontPadding: false,
-//   },
-
-//   nameGradient: {
-//     width: scale(211),
-//     height: scale(34),
-//   },
-
-//   cardContainer: {
-//     marginTop: scale(25),
-//     alignItems: "center",
-//   },
-
-//   bannerContainer: {
-//     marginTop: scale(20),
-//     marginLeft: scale(12),
-//   },
-
-//   assetContainer: {
-//     marginTop: scale(20),
-//     marginLeft: scale(13),
-//   },
-// });
-
-
 // screens/Dashboard/Dashboard.tsx
 
 import React from "react";
@@ -163,57 +18,60 @@ import { useAppTheme } from "../../hooks/useTheme";
 const BASE_WIDTH = 390;
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-// ✅ Responsive scale function
 const scale = (size: number) => (SCREEN_WIDTH / BASE_WIDTH) * size;
 
-// ✅ Local Banner
 const LOCAL_BANNERS: BannerItem[] = [
   { id: "1", source: require("../../images/headerImage/banner.png") },
-  { id: "1", source: require("../../images/headerImage/banner.png") },
-  { id: "1", source: require("../../images/headerImage/banner.png") },
+  { id: "2", source: require("../../images/headerImage/banner.png") },
+  { id: "3", source: require("../../images/headerImage/banner.png") },
 ];
+
+// ✅ Change name here — layout adapts automatically
+const USER_NAME = "Bhanu Pratap Singh";
 
 const Dashboard = () => {
   const { colors, mode } = useAppTheme();
 
   return (
-    // ✅ Parent Container (IMPORTANT)
-    <View
-      style={[
-        styles.parentContainer,
-        { backgroundColor: colors.background },
-      ]}
-    >
+    <View style={[styles.parentContainer, { backgroundColor: colors.background }]}>
       <ScrollView
         style={styles.screen}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+        {/* ── Header Block ── */}
         <View style={styles.headerBlock}>
-          <Text style={[styles.welcomeText, { color: colors.text }]}>
-            Welcome back
-          </Text>
 
-          <MaskedView
-            style={styles.nameMask}
-            maskElement={
-              <Text style={[styles.nameText, { color: colors.text }]}>
-                Priyanka Sharma
-              </Text>
-            }
-          >
-            <LinearGradient
-              colors={
-                mode === "dark"
-                  ? ["#6A8DFF", "#3B5BDB"]
-                  : ["#527EFF", "#3366FF"]
+          {/* Row 1 — Welcome Back */}
+          <View style={styles.welcomeRow}>
+            <Text style={[styles.welcomeText, { color: colors.text }]}>
+              Welcome Back,
+            </Text>
+          </View>
+
+          {/* Row 2 — Name (auto-width, capped at screen safe area) */}
+          <View style={styles.nameRow}>
+            <MaskedView
+              style={styles.nameMask}
+              maskElement={
+                <Text style={styles.nameText} numberOfLines={1}>
+                  {USER_NAME}
+                </Text>
               }
-              start={{ x: 0.5, y: 0 }}
-              end={{ x: 0.5, y: 1 }}
-              style={styles.nameGradient}
-            />
-          </MaskedView>
+            >
+              <LinearGradient
+                colors={
+                  mode === "dark"
+                    ? ["#6A8DFF", "#3B5BDB"]
+                    : ["#527EFF", "#3366FF"]
+                }
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.5, y: 1 }}
+                style={styles.nameGradient}
+              />
+            </MaskedView>
+          </View>
+
         </View>
 
         {/* Main Card */}
@@ -237,14 +95,11 @@ const Dashboard = () => {
 
 export default Dashboard;
 
-// ✅ Styles
 const styles = StyleSheet.create({
-  // 🔥 Parent wrapper (390 design system)
   parentContainer: {
     width: "100%",
-    // maxWidth: 390,          // match your Figma width
     height: "100%",
-    alignSelf: "center",    // center on large screens
+    alignSelf: "center",
   },
 
   screen: {
@@ -256,51 +111,72 @@ const styles = StyleSheet.create({
     minHeight: scale(750),
   },
 
+  // ── Outer header container ──
+  // Fixed Figma specs: top=10, left=15, height=73, gap=5
+  // Width is NOT fixed — stretches to fit name up to safe right margin
   headerBlock: {
     marginTop: scale(10),
     marginLeft: scale(15),
-    width: scale(211),
+    // width is intentionally left out — children define it
+    maxWidth: SCREEN_WIDTH - scale(30), // 15px padding on each side
     height: scale(73),
     gap: scale(5),
   },
 
-  welcomeText: {
+  // ── Welcome Back row (always 211 wide per Figma) ──
+  welcomeRow: {
+    width: scale(211),
+    height: scale(34),
+    justifyContent: "center",
+  },
+
+ // Change these three style objects:
+
+welcomeText: {
     fontFamily: "Urbanist-Bold",
     fontWeight: "700",
     fontSize: scale(28),
-    lineHeight: scale(28),
+    lineHeight: scale(34),            // ✅ was scale(28) — increased to match row height
     letterSpacing: scale(28) * -0.02,
     includeFontPadding: false,
   },
 
-  nameMask: {
-    width: scale(211),
-    height: scale(34),
-  },
-
-  nameText: {
+nameText: {
     fontFamily: "Urbanist-Bold",
     fontWeight: "700",
     fontSize: scale(28),
-    lineHeight: scale(28),
+    lineHeight: scale(34),            // ✅ was scale(28) — increased to match row height
     letterSpacing: scale(28) * -0.02,
-    textAlign: "center",
     includeFontPadding: false,
+    color: "#000",
   },
 
-  nameGradient: {
-    width: scale(211),
-    height: scale(34),
+// Also increase the row and mask heights to give breathing room:
+
+nameRow: {
+    height: scale(38),                // ✅ was scale(34) — 4px extra for descenders
+    alignSelf: "flex-start",
+  },
+
+nameMask: {
+    height: scale(38),                // ✅ match nameRow
+    maxWidth: SCREEN_WIDTH - scale(30),
+    alignSelf: "flex-start",
+  },
+
+nameGradient: {
+    height: scale(38),                // ✅ match nameRow
+    width: SCREEN_WIDTH - scale(30),
   },
 
   cardContainer: {
-    marginTop: scale(25),
+    // marginTop: scale(93),             // 10 (top) + 73 (header) + ~10 gap
     alignItems: "center",
   },
 
   bannerContainer: {
     marginTop: scale(20),
-    marginLeft: scale(12),
+    marginLeft: scale(9),
   },
 
   assetContainer: {
