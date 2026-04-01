@@ -33,7 +33,7 @@ const CustomHeader = () => {
             <View style={styles.rightContainer}>
 
                 {/* Light / Dark Mode Toggle */}
-                <TouchableOpacity
+                 <TouchableOpacity
                     onPress={() => dispatch(toggleTheme())}
                     style={[styles.notificationBox, { backgroundColor: colors.card }]}
                     activeOpacity={0.7}

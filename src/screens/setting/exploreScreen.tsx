@@ -188,6 +188,7 @@ const SettingsScreen = () => {
     {
       label: "Reports",
       icon: require("../../images/setting/reports.png"),
+       onPress: () => navigation.navigate("reports"),
     },
     {
       label: "News",

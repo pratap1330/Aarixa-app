@@ -15,6 +15,7 @@ import CreatePinScreen from "../../screens/auth/createPin";
 import AllSetScreen from "../../screens/auth/allSet";
 import ExploreScreen from "../../screens/setting/exploreScreen";
 import TabNavigator from "../tab/TabNavigator";
+import ReportsScreen from "../../screens/report/reportScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -54,6 +55,8 @@ const StackNavigator = () => {
           name="Tabs"
           component={TabNavigator}
         />
+
+        <Stack.Screen name="reports" component={ReportsScreen} />
 
       </Stack.Navigator>
     </NavigationContainer>
