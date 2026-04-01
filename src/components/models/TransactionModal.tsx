@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,8 @@ import {
   ScrollView,
   Image,
   StatusBar,
+  Animated,
+  Easing,
 } from "react-native";
 import { useAppTheme } from "../../hooks/useTheme";
 
@@ -160,25 +162,69 @@ const TransactionModal: React.FC<Props> = ({
   const sheetBg = mode === "dark" ? "#1E1E1E" : "#FAFAFA";
   const titleColor = mode === "dark" ? "#FFFFFF" : "#000000";
 
+  const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+  const overlayOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (visible) {
+      // Reset to bottom before every open — ensures clean start on repeat opens
+      translateY.setValue(SCREEN_HEIGHT);
+      overlayOpacity.setValue(0);
+
+      Animated.parallel([
+        Animated.timing(translateY, {
+          toValue: 0,
+          duration: 440,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(overlayOpacity, {
+          toValue: 1,
+          duration: 360,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      Animated.parallel([
+        Animated.timing(translateY, {
+          toValue: SCREEN_HEIGHT,
+          duration: 320,
+          easing: Easing.in(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(overlayOpacity, {
+          toValue: 0,
+          duration: 280,
+          easing: Easing.in(Easing.quad),
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [visible]);
+
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="slide"
+      animationType="none"
       onRequestClose={onClose}
       statusBarTranslucent
     >
       <StatusBar translucent backgroundColor="transparent" />
 
-      <View style={styles.overlay}>
-        <View style={[styles.sheet, { backgroundColor: sheetBg }]}>
-
+      <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]}>
+        <Animated.View
+          style={[
+            styles.sheet,
+            { backgroundColor: sheetBg, transform: [{ translateY }] },
+          ]}
+        >
           {/* ── Drag handle ── */}
           <View style={styles.handle} />
 
           {/* ── Title row ── */}
           <View style={styles.titleRow}>
-            {/* Spacer left (mirrors close button) */}
             <View style={styles.titleSpacer} />
 
             <Text style={[styles.title, { color: titleColor }]}>
@@ -214,8 +260,8 @@ const TransactionModal: React.FC<Props> = ({
               ))
             )}
           </ScrollView>
-        </View>
-      </View>
+        </Animated.View>
+      </Animated.View>
     </Modal>
   );
 };
@@ -226,15 +272,15 @@ export default TransactionModal;
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
+    backgroundColor: "rgba(0,0,0,0.45)",
     justifyContent: "flex-end",
   },
   sheet: {
     width: SCREEN_WIDTH,
-    maxHeight: SCREEN_HEIGHT * 0.92,
+    height: SCREEN_HEIGHT,
     borderTopLeftRadius: scaleW(25),
     borderTopRightRadius: scaleW(25),
-    paddingTop: scaleH(16),
+    paddingTop: scaleH(50),
     paddingHorizontal: scaleW(19),
     paddingBottom: scaleH(30),
   },

@@ -1,22 +1,18 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     Text,
     StyleSheet,
     Image,
     TouchableOpacity,
-    Dimensions,
     ScrollView,
-    ActivityIndicator
+    ActivityIndicator,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppTheme } from "../hooks/useTheme";
 import TransactionModal from "../components/models/TransactionModal";
 import { useGet } from "../hooks/useGet";
-
-const BASE_WIDTH = 390;
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const scale = (size: number) => (SCREEN_WIDTH / BASE_WIDTH) * size;
+import { wp, hp, scaleFont } from "../utils/responcive/responcive";
 
 const FILTERS = ["Equity Funds", "Debt Funds", "Hybrid Funds"];
 
@@ -26,7 +22,6 @@ const FilterCard = () => {
     const { colors, mode } = useAppTheme();
     const [active, setActive] = useState("Equity Funds");
 
-    // Load cid from AsyncStorage
     useEffect(() => {
         const getCid = async () => {
             try {
@@ -39,33 +34,31 @@ const FilterCard = () => {
         getCid();
     }, []);
 
-    // Fetch investor funds when cid is available
     const { data, loading, error } = useGet(
         cid ? `api/investor/getInvestedFunds?cid=${cid}&levelNo=1&currentPage=1&pageSize=10` : "",
         {},
-        !!cid 
+        !!cid
     );
-    const fund = data?.result?.[0]; 
-    // const transactions = data?.result
+    const fund = data?.result?.[0];
 
-    const transactions = data?.result.map((item :any, index :any) => ({
-  id: index.toString(),
-  fundName: item.schemeName,
-  transactionDate: new Date(item.firstInvestmentDate).toLocaleDateString("en-IN"),
-  amount: item.investedValue,
-  units: item.balUnits,
-  nav: item.nav,
-  currentValue: item.currentValue,
-  gain: item.gain.toString(),
-  xirr: item.xirr.toString(),
-  status: item.currentValue === "0.00" ? "failed" : "success", // simple example
-}));
-
+    const transactions = data?.result.map((item: any, index: any) => ({
+        id: index.toString(),
+        fundName: item.schemeName,
+        transactionDate: new Date(item.firstInvestmentDate).toLocaleDateString("en-IN"),
+        amount: item.investedValue,
+        units: item.balUnits,
+        nav: item.nav,
+        currentValue: item.currentValue,
+        gain: item.gain.toString(),
+        xirr: item.xirr.toString(),
+        status: item.currentValue === "0.00" ? "failed" : "success",
+    }));
 
     return (
         <View style={styles.outerContainer}>
-            {/* ── FILTER ROW ── */}
+            {/* ── FILTER ROW — Figma: Frame 1707478214, width:356, height:45, space-between ── */}
             <View style={styles.filterRow}>
+                {/* Filter button — Figma: Frame 1597885257, width:83, height:30, radius:50, shadow:0 0 20 #EEE */}
                 <TouchableOpacity
                     style={[
                         styles.filterBtn,
@@ -85,10 +78,11 @@ const FilterCard = () => {
                     </Text>
                 </TouchableOpacity>
 
+                {/* Chips — Figma: Frame 1597885253, width:273, height:45 */}
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    style={styles.scrollView}
+                    style={styles.chipsScroll}
                     contentContainerStyle={styles.chipsWrapper}
                 >
                     {FILTERS.map((item) => {
@@ -102,16 +96,14 @@ const FilterCard = () => {
                                     isActive ? styles.activeChip : styles.inactiveChip,
                                 ]}
                             >
-                                <Text style={[styles.chipText, { color: "#434343" }]}>
-                                    {item}
-                                </Text>
+                                <Text style={styles.chipText}>{item}</Text>
                             </TouchableOpacity>
                         );
                     })}
                 </ScrollView>
             </View>
 
-            {/* ── FUND CARD ── */}
+            {/* ── FUND CARD — Figma: Group 1707478200, width:357, height:326 ── */}
             <View
                 style={[
                     styles.fundCard,
@@ -175,7 +167,7 @@ const FilterCard = () => {
                                     ₹{parseFloat(fund.currentValue).toLocaleString("en-IN")}
                                 </Text>
                             </View>
-                            <View style={[styles.valueCol, { marginRight: scale(18) }]}>
+                            <View style={[styles.valueCol, { marginRight: wp(18) }]}>
                                 <Text style={styles.valueLabel}>Invested Value</Text>
                                 <Text style={[styles.valueAmount, { color: colors.text }]}>
                                     ₹{parseFloat(fund.investedValue).toLocaleString("en-IN")}
@@ -183,18 +175,18 @@ const FilterCard = () => {
                             </View>
                         </View>
 
-                        {/* Gain & Today's Gain/Loss */}
+                        {/* Unrealised Gain & Today's Gain/Loss */}
                         <View style={styles.valuesRow}>
                             <View style={styles.valueCol}>
                                 <Text style={styles.valueLabel}>Unrealised Gain</Text>
                                 <Text style={styles.gainText}>
-                                     ₹{parseFloat(fund.gain).toLocaleString("en-IN")}
+                                    ₹{parseFloat(fund.gain).toLocaleString("en-IN")}
                                 </Text>
                             </View>
                             <View style={styles.valueCol}>
                                 <Text style={styles.valueLabel}>Today's Gain/Loss</Text>
                                 <Text style={styles.lossText}>
-                                     ₹{(
+                                    ₹{(
                                         parseFloat(fund.currentValue) - parseFloat(fund.investedValue)
                                     ).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                                 </Text>
@@ -222,220 +214,215 @@ const FilterCard = () => {
                 )}
             </View>
 
-            <TransactionModal visible={showModal} onClose={() => setShowModal(false)}
-             transactions={transactions || []}
-              />
+            <TransactionModal
+                visible={showModal}
+                onClose={() => setShowModal(false)}
+                transactions={transactions || []}
+            />
         </View>
     );
 };
+
 export default FilterCard;
+
 const styles = StyleSheet.create({
-    /* ── OUTER CONTAINER — Figma: width:356, left:16 ── */
+    /* ── OUTER CONTAINER — Figma: width:357, left:16 ── */
     outerContainer: {
-        width: scale(356),
-        marginLeft: scale(1),
-        marginBottom: scale(16),
+        width: wp(357),
+        marginLeft: wp(1),
+        marginBottom: hp(16),
     },
 
-    /* ── FILTER ROW — Figma: width:356, height:45, justify-content:space-between ── */
+    /* ── FILTER ROW — Figma: Frame 1707478214, width:356, height:45, space-between ── */
     filterRow: {
-        width: scale(356),
-        height: scale(45),
+        width: wp(356),
+        height: hp(45),
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        marginBottom: scale(8),
+        marginBottom: hp(8),
     },
 
-    /* Filter Button — Figma: width:83, height:30, border-radius:50, shadow: 0 0 20px #EEEEEE */
+    /* ── Filter Button — Figma: width:83, height:30, radius:50, shadow:0 0 20 #EEE ── */
     filterBtn: {
-        width: scale(83),
-        height: scale(30),
+        width: wp(83),
+        height: hp(30),
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        gap: scale(10),
-        borderRadius: scale(50),
+        gap: wp(10),
+        borderRadius: wp(50),
         shadowColor: "#EEEEEE",
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 1,
-        shadowRadius: scale(20),
+        shadowRadius: wp(20),
         elevation: 5,
     },
 
+    /* ── Filter icon — Figma: lets-icons:filter-big, width:16, height:16 ── */
     filterIcon: {
-        width: scale(16),
-        height: scale(16),
+        width: wp(16),
+        height: wp(16),
         resizeMode: "contain",
     },
 
+    /* ── "Filters" text — Figma: Urbanist SemiBold 12px, #000000 ── */
     filterText: {
         fontFamily: "Urbanist-SemiBold",
         fontWeight: "600",
-        fontSize: scale(12),
-        letterSpacing: -0.3,
-        color: "#434343",
+        fontSize: scaleFont(12),
+        lineHeight: scaleFont(12),
+        letterSpacing: -0.24,
+        textAlign: "center",
     },
 
-    scrollView: {
-        flex: 1,
-        marginLeft: scale(10),
+    /* ── Chips ScrollView — Figma: Frame 1597885253, width:273, height:45 ── */
+    chipsScroll: {
+        width: wp(273),
+        height: hp(45),
     },
 
     chipsWrapper: {
         flexDirection: "row",
         alignItems: "center",
-        gap: scale(10),
+        gap: wp(8),
+        paddingLeft: wp(3),
     },
 
+    /* ── Chip base — height:30, radius:50 ── */
     chip: {
-        height: scale(30),
-        // paddingHorizontal: scale(14),
-        borderRadius: scale(50),
+        height: hp(30),
+        borderRadius: wp(50),
         justifyContent: "center",
         alignItems: "center",
+        paddingHorizontal: wp(10),
     },
 
+    /* ── Active chip — Figma: Rectangle 177, width:83, #FFDD6D ── */
     activeChip: {
-        minWidth: scale(83),
+        minWidth: wp(83),
         backgroundColor: "#FFDD6D",
     },
 
+    /* ── Inactive chip — Figma: Rectangle 178, width:76, #EDEDED ── */
     inactiveChip: {
-        minWidth: scale(76),
+        minWidth: wp(76),
         backgroundColor: "#EDEDED",
     },
 
+    /* ── Chip text — Urbanist SemiBold 12px, #434343 ── */
     chipText: {
         fontFamily: "Urbanist-SemiBold",
         fontWeight: "600",
-        fontSize: scale(12),
-        lineHeight: scale(12),
+        fontSize: scaleFont(12),
+        lineHeight: scaleFont(12),
         letterSpacing: -0.24,
         textAlign: "center",
         color: "#434343",
     },
 
-    /* ── FUND CARD ── */
+    /* ── FUND CARD — Figma: Group 1707478200, width:357, height:326 ── */
     fundCard: {
-        flex: 1,
-        borderRadius: scale(16),
-        paddingHorizontal: scale(16),
-        paddingVertical: scale(14),
-        shadowColor: "#000",
+        width: wp(357),
+        borderRadius: wp(16),
+        paddingHorizontal: wp(16),
+        paddingVertical: hp(14),
+        shadowColor: "#EEEEEE",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.08,
-        shadowRadius: 12,
+        shadowRadius: wp(12),
         elevation: 4,
     },
 
     cardHeader: {
         flexDirection: "row",
         alignItems: "center",
-        gap: scale(10),
-        marginBottom: scale(10),
+        gap: wp(10),
+        marginBottom: hp(10),
     },
 
     logoCircle: {
-        width: scale(44),
-        height: scale(44),
-        borderRadius: scale(22),
+        width: wp(44),
+        height: wp(44),
+        borderRadius: wp(22),
         backgroundColor: "#2D2580",
         justifyContent: "center",
         alignItems: "center",
     },
 
-    logoText: {
-        fontFamily: "Urbanist-Bold",
-        fontWeight: "700",
-        fontSize: scale(11),
-        color: "#FFFFFF",
-        letterSpacing: 0.5,
+    logoImage: {
+        width: wp(36),
+        height: wp(36),
+        borderRadius: wp(18),
     },
 
     fundName: {
         flex: 1,
         fontFamily: "Urbanist-Bold",
         fontWeight: "700",
-        fontSize: scale(14),
-        lineHeight: scale(19),
+        fontSize: scaleFont(14),
+        lineHeight: scaleFont(19),
         letterSpacing: -0.2,
     },
+
     dotsBtn: {
-        //   width: scale(25),
-        //   height: scale(25),
         justifyContent: "center",
         alignItems: "center",
     },
 
     dotIcon: {
-        width: scale(25),
-        height: scale(25),
+        width: wp(25),
+        height: wp(25),
         resizeMode: "contain",
     },
 
     tagsRow: {
         flexDirection: "row",
         alignItems: "center",
-        gap: scale(6),
-        width: scale(320),
-        height: scale(20),
+        gap: wp(6),
+        marginBottom: hp(10),
         flexWrap: "nowrap",
-        marginBottom: scale(10),
     },
 
     accountNum: {
         fontFamily: "Urbanist-SemiBold",
         fontWeight: "600",
-        width: scale(84),
-        height: scale(16),
-        fontSize: scale(11),
+        fontSize: scaleFont(11),
         letterSpacing: 0.5,
+        width: wp(84),
     },
 
     tag: {
         flexDirection: "row",
         alignItems: "center",
-        // gap: scale(4),
-        width: scale(143),
-        height: scale(20),
-        paddingHorizontal: scale(8),
-        paddingVertical: scale(4),
+        width: wp(143),
+        height: hp(20),
+        paddingHorizontal: wp(8),
+        paddingVertical: hp(4),
         backgroundColor: "#E9E9E9",
-        borderRadius: scale(20),
-        // borderWidth: 1,
-        // borderColor: "#E0E0E0",
+        borderRadius: wp(20),
     },
 
     tag1: {
         flexDirection: "row",
         alignItems: "center",
-        // gap: scale(4),
-        width: scale(75),
-        height: scale(20),
-        paddingHorizontal: scale(8),
-        // paddingBottom scale(4),
-        borderRadius: scale(20),
-        // borderWidth: 1,
+        width: wp(75),
+        height: hp(20),
+        paddingHorizontal: wp(8),
+        borderRadius: wp(20),
         backgroundColor: "#E9E9E9",
-        // borderColor: "#E0E0E0",
     },
 
     greenDotImage: {
-        width: scale(15),
-        height: scale(15),
-        alignItems: "center",
-        // borderRadius: scale(5),
-        // backgroundColor: "#4CAF50",
+        width: wp(15),
+        height: wp(15),
     },
 
     tagText: {
         fontFamily: "Urbanist-SemiBold",
         fontWeight: "600",
-        width: scale(101),
-        height: scale(10),
-        paddingLeft: 10,
-        fontSize: scale(10),
+        paddingLeft: wp(6),
+        fontSize: scaleFont(10),
         color: "#333333",
         letterSpacing: -0.2,
     },
@@ -443,26 +430,25 @@ const styles = StyleSheet.create({
     divider: {
         height: 1,
         backgroundColor: "#F0F0F0",
-        marginBottom: scale(10),
+        marginBottom: hp(10),
     },
 
     valuesRow: {
         flexDirection: "row",
         justifyContent: "space-between",
-        // alignItems: "flex-end"
-        paddingLeft: scale(10), // <-- add left padding
-        paddingRight: scale(14),
-        marginBottom: scale(8),
+        paddingLeft: wp(10),
+        paddingRight: wp(14),
+        marginBottom: hp(8),
     },
 
     valueCol: {
-        gap: scale(2),
+        gap: hp(2),
     },
 
     valueLabel: {
         fontFamily: "Urbanist-SemiBold",
         fontWeight: "600",
-        fontSize: scale(12),
+        fontSize: scaleFont(12),
         color: "#9E9E9E",
         letterSpacing: -0.2,
     },
@@ -470,41 +456,34 @@ const styles = StyleSheet.create({
     valueAmount: {
         fontFamily: "Urbanist-Bold",
         fontWeight: "700",
-        fontSize: scale(14),
+        fontSize: scaleFont(14),
         letterSpacing: -0.3,
     },
 
     gainText: {
         fontFamily: "Urbanist-Bold",
         fontWeight: "700",
-        fontSize: scale(14),
-        color: "#0000",
+        fontSize: scaleFont(14),
+        color: "#1AAD00",
         letterSpacing: -0.3,
     },
 
     lossText: {
         fontFamily: "Urbanist-Bold",
         fontWeight: "700",
-        fontSize: scale(14),
-        color: "#0000",
+        fontSize: scaleFont(14),
+        color: "#CC0000",
         letterSpacing: -0.3,
     },
 
     viewTxnBtn: {
-
         alignSelf: "flex-end",
-    },
-
-    logoImage: {
-        width: scale(36),
-        height: scale(36),
-        borderRadius: scale(18),
     },
 
     viewTxnText: {
         fontFamily: "Urbanist-SemiBold",
         fontWeight: "600",
-        fontSize: scale(13),
+        fontSize: scaleFont(13),
         color: "#3A6FF8",
         textDecorationLine: "underline",
         letterSpacing: -0.2,

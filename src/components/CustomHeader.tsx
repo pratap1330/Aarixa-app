@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { wp, hp } from "../utils/responcive/responcive";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
@@ -11,10 +12,19 @@ const CustomHeader = () => {
     const navigation = useNavigation<any>();
     const dispatch = useDispatch();
     const { colors, mode } = useAppTheme();
+    const insets = useSafeAreaInsets();
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
-
+        <View
+            style={[
+                styles.container,
+                {
+                    backgroundColor: colors.background,
+                    paddingTop: insets.top,
+                    height: insets.top + hp(60),
+                },
+            ]}
+        >
             {/* User Image */}
             <Image
                 source={require("../images/headerImage/user.png")}
@@ -23,24 +33,26 @@ const CustomHeader = () => {
 
             <View style={styles.rightContainer}>
 
-
-                {/* <TouchableOpacity
+                {/* Light / Dark Mode Toggle */}
+                <TouchableOpacity
                     onPress={() => dispatch(toggleTheme())}
-                    style={[
-                        styles.notificationBox,
-                        { backgroundColor: colors.card },
-                    ]}
+                    style={[styles.notificationBox, { backgroundColor: colors.card }]}
                     activeOpacity={0.7}
                 >
                     <Feather
                         name={mode === "light" ? "moon" : "sun"}
-                        size={22}
+                        size={wp(22)}
                         color={colors.text}
                     />
-                </TouchableOpacity> */}
+                </TouchableOpacity>
 
                 {/* Notification */}
-                <View style={[styles.notificationBox, { backgroundColor: colors.card }]}>
+                <View
+                    style={[
+                        styles.notificationBox,
+                        { backgroundColor: colors.card },
+                    ]}
+                >
                     <Image
                         source={
                             mode === "light"
@@ -52,7 +64,10 @@ const CustomHeader = () => {
                 </View>
 
                 {/* Drawer */}
-                <TouchableOpacity onPress={() => navigation.navigate("Explore")}>
+                <TouchableOpacity
+                    onPress={() => navigation.navigate("Explore")}
+                    activeOpacity={0.7}
+                >
                     <Image
                         source={
                             mode === "light"
@@ -72,15 +87,13 @@ export default CustomHeader;
 
 const styles = StyleSheet.create({
     container: {
-        width: wp(389),
-        height: hp(60),
-        marginTop: hp(59),
-        // paddingTop: hp(70), 
+        width: "100%",
+        // height is set dynamically: insets.top + hp(60)
         flexDirection: "row",
-        alignItems: "center",
+        alignItems: "flex-end",
         justifyContent: "space-between",
         paddingHorizontal: wp(15),
-        // backgroundColor: "#fff",
+        paddingBottom: hp(7),
     },
 
     userImage: {
@@ -102,6 +115,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: wp(5),
         alignItems: "center",
         justifyContent: "center",
+        // Figma: box-shadow 0px 0px 20px 0px #EEEEEE40
+        shadowColor: "#EEEEEE",
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.25,
+        shadowRadius: 10,
+        elevation: 4,
     },
 
     bell: {
