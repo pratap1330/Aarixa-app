@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet } from "react-native";
 import Svg, { Path, Circle, Text as SvgText } from "react-native-svg";
 import { wp, hp, scaleFont } from "../utils/responcive/responcive";
 import assetData from "../data/assetData.json";
+import { useAppTheme } from "../hooks/useTheme";
 
 interface ChartSlice {
   id: string;
@@ -37,7 +38,11 @@ function arcPath(startDeg: number, endDeg: number, outerR: number): string {
   return `M${os.x},${os.y} A${outerR},${outerR} 0 ${large} 1 ${oe.x},${oe.y} L${ie.x},${ie.y} A${INNER},${INNER} 0 ${large} 0 ${is_.x},${is_.y} Z`;
 }
 
-const DonutChart: React.FC<{ slices: ChartSlice[] }> = ({ slices }) => {
+const DonutChart: React.FC<{
+  slices: ChartSlice[];
+  centerColor: string;
+  centerTextColor: string;
+}> = ({ slices, centerColor, centerTextColor }) => {
   let cursor = 0;
 
   const total = slices.reduce((sum, s) => sum + s.percentage, 0);
@@ -63,7 +68,7 @@ const DonutChart: React.FC<{ slices: ChartSlice[] }> = ({ slices }) => {
         <Path key={s.id} d={s.path} fill={s.color} />
       ))}
 
-      <Circle cx={CX} cy={CY} r={INNER - wp(1)} fill="rgba(14,149,153,0.05)" />
+      <Circle cx={CX} cy={CY} r={INNER - wp(1)} fill={centerColor} />
 
       {segments.map((s) => (
         <SvgText
@@ -88,7 +93,7 @@ const DonutChart: React.FC<{ slices: ChartSlice[] }> = ({ slices }) => {
         alignmentBaseline="middle"
         fontSize={wp(16)}
         fontWeight="900"
-        fill="#070707"
+        fill={centerTextColor}
       >
         {`${total}%`}
       </SvgText>
@@ -96,31 +101,72 @@ const DonutChart: React.FC<{ slices: ChartSlice[] }> = ({ slices }) => {
   );
 };
 
+const Legend: React.FC<{ slices: ChartSlice[]; textColor: string }> = ({ slices, textColor }) => (
+  <View style={legendStyles.container}>
+    {slices.map((s) => (
+      <View key={s.id} style={legendStyles.row}>
+        <View style={[legendStyles.dot, { backgroundColor: s.color }]} />
+        <Text style={[legendStyles.label, { color: textColor }]}>{s.label}</Text>
+      </View>
+    ))}
+  </View>
+);
+
 const AssetsCard = () => {
+  const { colors, mode } = useAppTheme();
+
+  const cardBg      = mode === "dark" ? "#121212" : "#FFFFFF";
+  const cardBorder  = mode === "dark" ? "#222222" : "#F3F3F3";
+  const centerColor = mode === "dark" ? "#121212" : "rgba(14,149,153,0.05)";
+
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
       <View style={styles.headerRow}>
-        <Text style={styles.headerText}>Asset Class</Text>
+        <Text style={[styles.headerText, { color: colors.text }]}>Asset Class</Text>
 
         <Image
           source={require('../images/card/dot.png')}
-          style={styles.dotIcon}
+          style={[styles.dotIcon, mode === "dark" && { tintColor: "#FFFFFF" }]}
           resizeMode="contain"
         />
       </View>
 
       <View style={styles.innerContainer}>
-        <DonutChart slices={assetData.chart as ChartSlice[]} />
-
-        <Image
-          source={require("../images/card/frame.png")}
-          style={styles.frameImage}
-          resizeMode="contain"
+        <DonutChart
+          slices={assetData.chart as ChartSlice[]}
+          centerColor={centerColor}
+          centerTextColor={colors.text}
         />
+
+        <Legend slices={assetData.chart as ChartSlice[]} textColor={colors.text} />
       </View>
     </View>
   );
 };
+
+const legendStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    gap: hp(7),
+    paddingLeft: wp(10),
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: wp(6),
+  },
+  dot: {
+    width: wp(10),
+    height: wp(10),
+    borderRadius: wp(5),
+  },
+  label: {
+    fontFamily: "Urbanist-SemiBold",
+    fontSize: scaleFont(11),
+    fontWeight: "600",
+  },
+});
 
 const styles = StyleSheet.create({
   card: {
@@ -128,15 +174,10 @@ const styles = StyleSheet.create({
     height: hp(237),
     borderRadius: wp(25),
     borderWidth: 1,
-    borderColor: "#F3F3F3",
-    backgroundColor: "#FFFFFF",
-    opacity: 1,
-    // Shadow (iOS)
     shadowColor: "#EEEEEE",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
     shadowRadius: wp(20),
-    // Elevation (Android)
     elevation: 8,
     overflow: "visible",
   },
@@ -155,11 +196,9 @@ const styles = StyleSheet.create({
     width: wp(100),
     height: hp(19),
     fontFamily: "Urbanist-Bold",
-    // fontWeight: "700",
     fontSize: scaleFont(16),
     lineHeight: scaleFont(16),
     letterSpacing: 0,
-    color: "#000000",
   },
 
   dotIcon: {
@@ -173,17 +212,10 @@ const styles = StyleSheet.create({
     top: hp(44),
     left: wp(29),
     width: wp(298),
+    gap :wp(38),
     height: hp(170),
     flexDirection: "row",
     alignItems: "center",
-    gap: 0,
-    opacity: 1,
-  },
-
-  frameImage: {
-    flex: 1,
-    height: hp(118),
-    opacity: 1,
   },
 });
 

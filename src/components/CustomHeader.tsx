@@ -1,12 +1,11 @@
 import React from "react";
-import { View, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { wp, hp } from "../utils/responcive/responcive";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import { toggleTheme } from "../redux/slices/themeSlice";
 import { useAppTheme } from "../hooks/useTheme";
-import Feather from "react-native-vector-icons/Feather";
 
 const CustomHeader = () => {
     const navigation = useNavigation<any>();
@@ -39,11 +38,9 @@ const CustomHeader = () => {
                     style={[styles.notificationBox, { backgroundColor: colors.card }]}
                     activeOpacity={0.7}
                 >
-                    <Feather
-                        name={mode === "light" ? "moon" : "sun"}
-                        size={wp(22)}
-                        color={colors.text}
-                    />
+                    <Text style={[styles.themeIcon, { color: mode === "dark" ? "#FFFFFF" : "#1A1A1A" }]}>
+                        {mode === "light" ? "☽\uFE0E" : "☀\uFE0E"}
+                    </Text>
                 </TouchableOpacity>
 
                 {/* Notification */}
@@ -133,5 +130,9 @@ const styles = StyleSheet.create({
         width: wp(35),
         height: wp(35),
         resizeMode: "contain",
+    },
+
+    themeIcon: {
+        fontSize: wp(20),
     },
 });

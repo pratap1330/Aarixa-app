@@ -14,35 +14,38 @@ import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
 import { TAB_CONFIG } from "../utils/tab/tabConfig";
 import { wp, hp } from "../utils/responcive/responcive";
+import { useAppTheme } from "../hooks/useTheme";
 
 
-const CustomTabBar: React.FC<BottomTabBarProps> = ({
-  navigation,
-}) => {
+const CustomTabBar: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
+  const { mode } = useAppTheme();
+
+  const pillBg      = mode === "dark" ? "#1E1E1E" : "#FFFFFF";
+  const iconTint    = mode === "dark" ? "#CCCCCC" : undefined;
+  const labelColor  = mode === "dark" ? "#CCCCCC" : "#A2A2A2";
+  const borderColor = mode === "dark" ? "#000000" : "#FFFFFF";
+
   return (
     <View style={styles.container}>
 
       {/* INNER CONTAINER */}
-      <View style={styles.innerContainer}>
+      <View style={[styles.innerContainer, { backgroundColor: pillBg }]}>
 
-        {TAB_CONFIG.map((tab) => {
+        {TAB_CONFIG.map((tab, index) => {
 
           // ✅ CENTER BUTTON
           if (tab.center) {
             return (
               <View key={tab.key} style={styles.centerWrapper}>
-
                 <TouchableOpacity
                   activeOpacity={0.85}
-                  onPress={() =>
-                    navigation.navigate("center")
-                  }
+                  onPress={() => navigation.navigate("center")}
                 >
                   <LinearGradient
                     colors={["#527EFF", "#3366FF"]}
                     start={{ x: 0.5, y: 0 }}
                     end={{ x: 0.5, y: 1 }}
-                    style={styles.centerButton}
+                    style={[styles.centerButton, { borderColor }]}
                   >
                     <Image
                       source={tab.icon}
@@ -51,11 +54,11 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
                     />
                   </LinearGradient>
                 </TouchableOpacity>
-
               </View>
             );
           }
 
+          const isFocused = state.index === index;
 
           // ✅ NORMAL TAB
           return (
@@ -63,22 +66,16 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
               key={tab.key}
               style={styles.tab}
               activeOpacity={0.7}
-              onPress={() =>
-                navigation.navigate(
-                  tab.key as never
-                )
-              }
+              onPress={() => navigation.navigate(tab.key as never)}
             >
               <Image
                 source={tab.icon}
-                style={styles.icon}
+                style={[styles.icon, iconTint ? { tintColor: isFocused ? "#527EFF" : iconTint } : undefined]}
                 resizeMode="contain"
               />
-
-              <Text style={styles.label}>
+              <Text style={[styles.label, { color: isFocused ? "#527EFF" : labelColor }]}>
                 {tab.label}
               </Text>
-
             </TouchableOpacity>
           );
         })}
@@ -104,7 +101,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: hp(30)
+    marginBottom: hp(24)
   },
 
 

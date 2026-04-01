@@ -33,9 +33,9 @@ const Dashboard = () => {
   const { colors, mode } = useAppTheme();
 
   return (
-    <View style={[styles.parentContainer, { backgroundColor: colors.background }]}>
+    <View style={[styles.parentContainer, { backgroundColor: mode === "dark" ? "#000000" : "#FFFFFF" }]}>
       <ScrollView
-        style={styles.screen}
+        style={[styles.screen, { backgroundColor: mode === "dark" ? "#000000" : "#FFFFFF" }]}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
@@ -89,8 +89,10 @@ const Dashboard = () => {
           <AssetsCard />
         </View>
 
-        <View style={{ marginTop: scale(20), alignItems: "center",
-         }}>
+        <View 
+        style={{ marginTop: scale(20), alignItems: "center",}}
+        >
+
   <FilterCard />
 </View>
       </ScrollView>
@@ -102,8 +104,8 @@ export default Dashboard;
 
 const styles = StyleSheet.create({
   parentContainer: {
+    flex: 1,
     width: "100%",
-    height: "100%",
     alignSelf: "center",
   },
 
@@ -112,8 +114,8 @@ const styles = StyleSheet.create({
   },
 
   scrollContent: {
-    paddingBottom: scale(40),
-    minHeight: scale(750),
+    flexGrow: 1,
+    paddingBottom: 20,
   },
 
   // ── Outer header container ──

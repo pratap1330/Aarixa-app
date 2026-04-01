@@ -115,41 +115,49 @@ const StatusBadge: React.FC<{ status: TransactionStatus }> = ({ status }) => {
   );
 };
 
-const TransactionCard: React.FC<{ item: Transaction }> = ({ item }) => (
-  <View style={card.container}>
-    {/* ── Header row: fund icon + fund name ── */}
-    <View style={card.headerRow}>
-      <Image
-        source={require("../../images/dashboard/sbi.png")}
-        style={card.fundIcon}
-        resizeMode="contain"
-      />
-      <Text style={card.fundName} numberOfLines={1} ellipsizeMode="tail">
-        {item.fundName}
-      </Text>
-    </View>
+const TransactionCard: React.FC<{ item: Transaction }> = ({ item }) => {
+  const { colors, mode } = useAppTheme();
+  const cardBg      = mode === "dark" ? "#1E1E1E" : "#FFFFFF";
+  const cardBorder  = mode === "dark" ? "#333333" : "#EEEEEE";
+  const dividerBg   = mode === "dark" ? "#2A2A2A" : "#F0F0F0";
+  const valueColor  = { color: colors.text };
 
-    {/* ── Divider ── */}
-    <View style={card.divider} />
+  return (
+    <View style={[card.container, { backgroundColor: cardBg, borderColor: cardBorder }]}>
+      {/* ── Header row: fund icon + fund name ── */}
+      <View style={card.headerRow}>
+        <Image
+          source={require("../../images/dashboard/sbi.png")}
+          style={card.fundIcon}
+          resizeMode="contain"
+        />
+        <Text style={[card.fundName, valueColor]} numberOfLines={1} ellipsizeMode="tail">
+          {item.fundName}
+        </Text>
+      </View>
 
-    {/* ── Row 1: Trans. Date | Tran. Type ── */}
-    <View style={card.dataRow}>
-      <LabelValue label="Trans. Date" value={item.transactionDate} />
-      <LabelValue label="Tran. Type" value={item.transactionType} />
-    </View>
+      {/* ── Divider ── */}
+      <View style={[card.divider, { backgroundColor: dividerBg }]} />
 
-    <View style={card.dataRow}>
-      <LabelValue label="Amount" value={item.amount} />
-      <LabelValue label="NAV" value={item.nav} />
-    </View>
+      {/* ── Row 1: Trans. Date | Tran. Type ── */}
+      <View style={card.dataRow}>
+        <LabelValue label="Trans. Date" value={item.transactionDate} valueStyle={valueColor} />
+        <LabelValue label="Tran. Type" value={item.transactionType} valueStyle={valueColor} />
+      </View>
 
-    {/* ── Row 3: Units | Status badge ── */}
-    <View style={card.dataRow}>
-      <LabelValue label="Units" value={item.units} />
-      <StatusBadge status={item.status} />
+      <View style={card.dataRow}>
+        <LabelValue label="Amount" value={item.amount} valueStyle={valueColor} />
+        <LabelValue label="NAV" value={item.nav} valueStyle={valueColor} />
+      </View>
+
+      {/* ── Row 3: Units | Status badge ── */}
+      <View style={card.dataRow}>
+        <LabelValue label="Units" value={item.units} valueStyle={valueColor} />
+        <StatusBadge status={item.status} />
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
 
 
@@ -234,12 +242,12 @@ const TransactionModal: React.FC<Props> = ({
             {/* Close button */}
             <TouchableOpacity
               onPress={onClose}
-              style={styles.closeBtn}
+              style={[styles.closeBtn, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#FFFFFF" }]}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
               <Image
                 source={require("../../images/dashboard/close.png")}
-                style={styles.closeIcon}
+                style={[styles.closeIcon, mode === "dark" && { tintColor: "#FFFFFF" }]}
                 resizeMode="contain"
               />
             </TouchableOpacity>

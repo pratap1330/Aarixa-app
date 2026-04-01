@@ -1,8 +1,9 @@
 // StackNavigator.tsx
 
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DarkTheme, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useAppTheme } from "../../hooks/useTheme";
 
 import { RootStackParamList } from "../../utils/NavigationType/type";
 
@@ -18,8 +19,10 @@ import TabNavigator from "../tab/TabNavigator";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const StackNavigator = () => {
+  const { mode } = useAppTheme();
+
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={mode === "dark" ? DarkTheme : DefaultTheme}>
       <Stack.Navigator
         initialRouteName="SplashScreen"
         screenOptions={{ headerShown: false }}

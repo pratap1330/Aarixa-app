@@ -93,7 +93,7 @@
 // });
 
 
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -101,11 +101,12 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  Switch,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
 import { wp, hp } from "../../utils/responcive/responcive";
 import { useAppTheme } from "../../hooks/useTheme";
+import { toggleTheme } from "../../redux/slices/themeSlice";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface RowItem {
@@ -117,43 +118,53 @@ interface RowItem {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 /** Chevron arrow on the right side of every row */
-const ArrowIcon = () => (
-  <Image
-    source={require("../../images/setting/arrow.png")}
-    style={styles.arrow}
-    resizeMode="contain"
-  />
-);
+const ArrowIcon = () => {
+  const { mode } = useAppTheme();
+  return (
+    <Image
+      source={require("../../images/setting/arrow.png")}
+      style={[styles.arrow, { tintColor: mode === "dark" ? "#FFFFFF80" : "#0000009f" }]}
+      resizeMode="contain"
+    />
+  );
+};
 
 /** Generic tappable row with left icon + label + right arrow */
-const SettingsRow = ({ label, icon, onPress }: RowItem) => (
-  <TouchableOpacity
-    activeOpacity={0.7}
-    style={styles.row}
-    onPress={onPress}
-  >
-    {/* Left icon */}
-    <View style={styles.iconCircle}>
-      <Image source={icon} style={styles.rowIcon} resizeMode="contain" />
-    </View>
+const SettingsRow = ({ label, icon, onPress }: RowItem) => {
+  const { colors } = useAppTheme();
+  return (
+    <TouchableOpacity
+      activeOpacity={0.7}
+      style={styles.row}
+      onPress={onPress}
+    >
+      {/* Left icon */}
+      <View style={styles.iconCircle}>
+        <Image source={icon} style={styles.rowIcon} resizeMode="contain" />
+      </View>
 
-    {/* Label */}
-    <Text style={styles.rowLabel} numberOfLines={1}>
-      {label}
-    </Text>
+      {/* Label */}
+      <Text style={[styles.rowLabel, { color: colors.text }]} numberOfLines={1}>
+        {label}
+      </Text>
 
-    {/* Right arrow */}
-    <View style={styles.arrowWrap}>
-      <ArrowIcon />
-    </View>
-  </TouchableOpacity>
-);
+      {/* Right arrow */}
+      <View style={styles.arrowWrap}>
+        <ArrowIcon />
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 const SettingsScreen = () => {
   const navigation = useNavigation<any>();
-  const { colors } = useAppTheme();
-  const [nightMode, setNightMode] = useState(false);
+  const { colors, mode } = useAppTheme();
+  const dispatch = useDispatch();
+  const nightMode = mode === "dark";
+
+  const cardBg    = mode === "dark" ? "#1E1E1E" : "#FFFFFF";
+  const sepColor  = mode === "dark" ? "#FFFFFF18" : "#3C3C4329";
 
   // Rows for the second card (all simple nav rows)
   const navRows: RowItem[] = [
@@ -203,7 +214,7 @@ const SettingsScreen = () => {
         >
           <Image
             source={require("../../images/loginImage/back_arrow.png")}
-            style={styles.backIcon}
+            style={[styles.backIcon, mode === "dark" && { tintColor: "#FFFFFF" }]}
             resizeMode="contain"
           />
         </TouchableOpacity>
@@ -220,7 +231,7 @@ const SettingsScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         {/* ── Card 1 – My Profile ── */}
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: cardBg }]}>
           {/* Single row: My Profile */}
           <TouchableOpacity activeOpacity={0.7} style={styles.profileRow}>
             {/* Left icon */}
@@ -233,7 +244,7 @@ const SettingsScreen = () => {
             </View>
 
             {/* Label */}
-            <Text style={[styles.profileLabel]} numberOfLines={1}>
+            <Text style={[styles.profileLabel, { color: colors.text }]} numberOfLines={1}>
               My Profile
             </Text>
 
@@ -245,7 +256,7 @@ const SettingsScreen = () => {
         </View>
 
         {/* ── Card 2 – Feature rows ── */}
-        <View style={[styles.card, styles.cardTall]}>
+        <View style={[styles.card, styles.cardTall, { backgroundColor: cardBg }]}>
           {/* Night Mode row (has toggle instead of arrow) */}
           <View style={styles.row}>
             {/* Left icon */}
@@ -258,7 +269,7 @@ const SettingsScreen = () => {
             </View>
 
             {/* Label */}
-            <Text style={styles.rowLabel} numberOfLines={1}>
+            <Text style={[styles.rowLabel, { color: colors.text }]} numberOfLines={1}>
               Night Mode
             </Text>
 
@@ -283,25 +294,25 @@ const SettingsScreen = () => {
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={StyleSheet.absoluteFillObject}
-                onPress={() => setNightMode((v) => !v)}
+                onPress={() => dispatch(toggleTheme())}
               />
             </View>
           </View>
 
           {/* Separator */}
-          <View style={styles.separator} />
+          <View style={[styles.separator, { backgroundColor: sepColor }]} />
 
           {/* All navigation rows */}
           {navRows.map((item, idx) => (
             <React.Fragment key={item.label}>
               <SettingsRow {...item} />
-              {idx < navRows.length - 1 && <View style={styles.separator} />}
+              {idx < navRows.length - 1 && <View style={[styles.separator, { backgroundColor: sepColor }]} />}
             </React.Fragment>
           ))}
         </View>
 
         {/* ── Logout Card ── */}
-        <View style={styles.logoutCard}>
+        <View style={[styles.logoutCard, { backgroundColor: cardBg }]}>
           <TouchableOpacity activeOpacity={0.7} style={styles.logoutRow}>
             {/* Icon */}
             <View style={styles.iconCircle}>
@@ -313,7 +324,7 @@ const SettingsScreen = () => {
             </View>
 
             {/* Label */}
-            <Text style={styles.logoutLabel} numberOfLines={1}>
+            <Text style={[styles.logoutLabel, { color: colors.text }]} numberOfLines={1}>
               Log Out
             </Text>
           </TouchableOpacity>

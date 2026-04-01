@@ -1,10 +1,10 @@
 {
   "chart": [
-    { "id": "1", "label": "Equity",      "percentage": 30, "color": "#1F77B4" },
-    { "id": "2", "label": "Debt",        "percentage": 10, "color": "#2CA02C" },
-    { "id": "3", "label": "Gold",        "percentage": 10, "color": "#FFB800" },
-    { "id": "4", "label": "Real Estate", "percentage": 18, "color": "#17BECF" },
-    { "id": "5", "label": "Bonds",       "percentage": 5,  "color": "#D62728" },
-    { "id": "6", "label": "Others",      "percentage": 10,  "color": "#7F7F7F" }
+    { "id": "1", "label": "Equity",    "percentage": 30, "color": "#1F77B4" },
+    { "id": "2", "label": "Debt",      "percentage": 10, "color": "#2CA02C" },
+    { "id": "3", "label": "Hybrid",    "percentage": 10, "color": "#FFB800" },
+    { "id": "4", "label": "Liquidity", "percentage": 18, "color": "#17BECF" },
+    { "id": "5", "label": "Commodity", "percentage": 5,  "color": "#D62728" },
+    { "id": "6", "label": "Others",    "percentage": 10, "color": "#7F7F7F" }
   ]
 }

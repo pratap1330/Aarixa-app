@@ -93,10 +93,12 @@ const FilterCard = () => {
                                 onPress={() => setActive(item)}
                                 style={[
                                     styles.chip,
-                                    isActive ? styles.activeChip : styles.inactiveChip,
+                                    isActive
+                                        ? styles.activeChip
+                                        : [styles.inactiveChip, mode === "dark" && { backgroundColor: "#2A2A2A" }],
                                 ]}
                             >
-                                <Text style={styles.chipText}>{item}</Text>
+                                <Text style={[styles.chipText, { color: isActive ? "#000000" : (mode === "dark" ? "#CCCCCC" : "#434343") }]}>{item}</Text>
                             </TouchableOpacity>
                         );
                     })}
@@ -107,7 +109,7 @@ const FilterCard = () => {
             <View
                 style={[
                     styles.fundCard,
-                    { backgroundColor: mode === "dark" ? "#1E1E1E" : "#FFFFFF" },
+                    { backgroundColor: mode === "dark" ? "#111111" : "#FFFFFF" },
                 ]}
             >
                 {loading ? (
@@ -131,7 +133,7 @@ const FilterCard = () => {
                             <TouchableOpacity style={styles.dotsBtn}>
                                 <Image
                                     source={require("../images/card/dot.png")}
-                                    style={styles.dotIcon}
+                                    style={[styles.dotIcon, mode === "dark" && { tintColor: "#FFFFFF" }]}
                                 />
                             </TouchableOpacity>
                         </View>
@@ -141,23 +143,23 @@ const FilterCard = () => {
                             <Text style={[styles.accountNum, { color: colors.text }]}>
                                 ({fund.folioNo})
                             </Text>
-                            <View style={styles.tag}>
+                            <View style={[styles.tag, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#E9E9E9" }]}>
                                 <Image
                                     source={require("../images/dashboard/greendot.png")}
                                     style={styles.greenDotImage}
                                 />
-                                <Text style={styles.tagText}>Direct Plan- Growth</Text>
+                                <Text style={[styles.tagText, { color: mode === "dark" ? "#CCCCCC" : "#333333" }]}>Direct Plan- Growth</Text>
                             </View>
-                            <View style={styles.tag1}>
+                            <View style={[styles.tag1, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#E9E9E9" }]}>
                                 <Image
                                     source={require("../images/dashboard/greendot.png")}
                                     style={styles.greenDotImage}
                                 />
-                                <Text style={styles.tagText}>Hybrid</Text>
+                                <Text style={[styles.tagText, { color: mode === "dark" ? "#CCCCCC" : "#333333" }]}>Hybrid</Text>
                             </View>
                         </View>
 
-                        <View style={styles.divider} />
+                        <View style={[styles.divider, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#F0F0F0" }]} />
 
                         {/* Current & Invested Value */}
                         <View style={styles.valuesRow}>
@@ -194,7 +196,7 @@ const FilterCard = () => {
                         </View>
 
                         {/* Units & View Transactions */}
-                        <View style={styles.valuesRow}>
+                        <View style={[styles.valuesRow, { marginBottom: 0 }]}>
                             <View style={styles.valueCol}>
                                 <Text style={styles.valueLabel}>Units</Text>
                                 <Text style={[styles.valueAmount, { color: colors.text }]}>
@@ -228,9 +230,9 @@ export default FilterCard;
 const styles = StyleSheet.create({
     /* ── OUTER CONTAINER — Figma: width:357, left:16 ── */
     outerContainer: {
-        width: wp(357),
-        marginLeft: wp(1),
-        marginBottom: hp(16),
+        // width: wp(357),
+        // marginLeft: wp(1),
+        // marginBottom: hp(16),
     },
 
     /* ── FILTER ROW — Figma: Frame 1707478214, width:356, height:45, space-between ── */

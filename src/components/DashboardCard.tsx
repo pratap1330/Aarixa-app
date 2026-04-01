@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { wp, hp } from "../utils/responcive/responcive";
 import { useGet } from "../hooks/useGet";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppTheme } from "../hooks/useTheme";
 
 const formatNumber = (num: number = 0) => {
   return new Intl.NumberFormat("en-IN", {
@@ -11,6 +12,7 @@ const formatNumber = (num: number = 0) => {
 };
 
 const DashboardCard: React.FC = () => {
+  const { mode } = useAppTheme();
   const [cid, setCid] = useState<number | null>(null);
 
   useEffect(() => {
