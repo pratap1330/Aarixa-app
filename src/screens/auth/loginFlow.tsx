@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Platform,
+  Image
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../utils/NavigationType/type';
@@ -98,14 +99,26 @@ const LoginFlow: React.FC<Props> = ({ navigation }) => {
               secureTextEntry={!showPassword}
               autoCapitalize="none"
             />
-
+{/* 
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Ionicons
                 name={showPassword ? 'eye-outline' : 'eye-off-outline'}
                 size={22}
                 color="#757575"
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+  <Image
+    source={require('../../images/loginImage/eye.png')}
+    style={{
+      width: 22,
+      height: 22,
+      tintColor: '#757575', // optional (remove if your image already has color)
+      resizeMode: 'contain',
+    }}
+  />
+</TouchableOpacity>
           </View>
 
           {passwordError ? (
