@@ -12,7 +12,7 @@ import LoginScreen from "../../screens/auth/loginFlow";
 import OtpVerificationScreen from "../../screens/auth/OTPVerification";
 import CreatePinScreen from "../../screens/auth/createPin";
 import AllSetScreen from "../../screens/auth/allSet";
-
+import ExploreScreen from "../../screens/setting/exploreScreen";
 import TabNavigator from "../tab/TabNavigator";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -41,6 +41,11 @@ const StackNavigator = () => {
         <Stack.Screen
           name="AllSet"
           component={AllSetScreen}
+        />
+        <Stack.Screen
+          name="Explore"
+          component={ExploreScreen}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="Tabs"

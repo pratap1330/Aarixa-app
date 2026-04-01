@@ -172,13 +172,13 @@ const styles = StyleSheet.create({
   },
 
   gainAmount: {
-    fontFamily: "Urbanist",
+    fontFamily: "Urbanist-SemiBold",
     fontWeight: "700",
     fontSize: wp(16),
   },
 
   xirrAmount: {
-    fontFamily: "Urbanist",
+    fontFamily: "Urbanist-Medium",
     fontWeight: "700",
     fontSize: wp(16),
     color: "#FFFFFF",

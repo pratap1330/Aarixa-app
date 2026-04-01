@@ -50,6 +50,13 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
     };
 
 
+    // const handleSetPin = () => {
+    //     if (pin.join('').length === 4) {
+    //         navigation.navigate("AllSet");
+    //     }
+    // };
+
+
     const handleSetPin = async () => {
         const finalPin = pin.join('');
          
@@ -64,15 +71,12 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
             };
 
             const res = await postData("api/auth/client-login", payload);
-           console.log(res);
-           debugger
             if (res?.status === 1) {
             const uniqueId = res?.result?.user?.uniqueid;
             await AsyncStorage.setItem("uniqueId", uniqueId);
            await AsyncStorage.setItem("user", JSON.stringify(res?.result?.user));
                 navigation.navigate("AllSet");
             }
-           
             else {
                  console.log(res)
                 Alert.alert(res?.message);

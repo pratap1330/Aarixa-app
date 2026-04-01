@@ -23,9 +23,8 @@ const CustomHeader = () => {
 
             <View style={styles.rightContainer}>
 
-                {/* 🌙 Dark Mode Toggle */}
 
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     onPress={() => dispatch(toggleTheme())}
                     style={[
                         styles.notificationBox,
@@ -38,7 +37,7 @@ const CustomHeader = () => {
                         size={22}
                         color={colors.text}
                     />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 {/* Notification */}
                 <View style={[styles.notificationBox, { backgroundColor: colors.card }]}>
