@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -12,102 +12,218 @@ import {
 import { useAppTheme } from "../../../hooks/useTheme";
 import { wp, hp, scaleFont } from "../../../utils/responcive/responcive";
 import { useNavigation } from "@react-navigation/native";
+const HDFC_IMG = require("../../../images/setting/HDFC.png");
 
-// Mock Data for SIP/STP
 const SIP_DATA = [
   {
     id: "1",
-    schemeName: "SBI Equity Hybrid Fund - Direct Growth",
-    amount: "₹5,000",
-    frequency: "Monthly",
-    nextDate: "15 Feb 2025",
-    type: "SIP",
-    status: "Active",
+    name: "HDFC Mutual Fund",
+    folioNo: "2345678",
+    date: "09/10/2026",
+    amount: "₹34,978",
   },
   {
     id: "2",
-    schemeName: "HDFC Mid-Cap Opportunities - Direct",
-    amount: "₹2,500",
-    frequency: "Monthly",
-    nextDate: "10 Feb 2025",
-    type: "STP",
-    status: "Active",
+    name: "ICICI Mutual Fund",
+    folioNo: "2345678",
+    date: "31/10/2026",
+    amount: "₹26,912",
+  },
+  {
+    id: "3",
+    name: "SBI Mutual Fund",
+    folioNo: "2345678",
+    date: "09/02/2026",
+    amount: "₹15,930",
   },
 ];
+
+const STP_DATA = [
+  {
+    id: "4",
+    name: "HDFC Mutual Fund",
+    folioNo: "2345678",
+    date: "09/10/2026",
+    amount: "₹34,978",
+  },
+  {
+    id: "5",
+    name: "ICICI Mutual Fund",
+    folioNo: "2345678",
+    date: "31/10/2026",
+    amount: "₹26,912",
+  },
+];
+
+type TabType = "SIP" | "STP";
 
 const SipDetailsScreen = () => {
   const { colors, mode } = useAppTheme();
   const navigation = useNavigation();
+  const [activeTab, setActiveTab] = useState<TabType>("SIP");
 
   const isDark = mode === "dark";
+  const data = activeTab === "SIP" ? SIP_DATA : STP_DATA;
 
-  const renderSipCard = ({ item }: { item: typeof SIP_DATA[0] }) => (
-    <View style={[styles.card, { backgroundColor: colors.card }]}>
-      <View style={styles.cardHeader}>
-        <Text style={[styles.schemeName, { color: colors.text }]} numberOfLines={1}>
-          {item.schemeName}
-        </Text>
-        <View style={[styles.typeBadge, { backgroundColor: colors.primary + "20" }]}>
-          <Text style={[styles.typeText, { color: colors.primary }]}>{item.type}</Text>
+  const renderItem = ({ item }: { item: (typeof SIP_DATA)[0] }) => (
+    <View
+      style={[
+        styles.card,
+        { backgroundColor: isDark ? "#1A1A1A" : "#FFFFFF" },
+      ]}
+    >
+      {/* Left: logo + text */}
+      <View style={styles.cardLeft}>
+        <View style={styles.logoWrap}>
+          <Image source={HDFC_IMG} style={styles.logoImg} resizeMode="contain" />
+        </View>
+        <View style={styles.textCol}>
+          <Text style={[styles.fundName, { color: isDark ? "#FFF" : "#000000" }]}>
+            {item.name}
+          </Text>
+          <View style={styles.folioRow}>
+            <Text style={[styles.folioText, { color: isDark ? "#AAA" : "#777777" }]}>
+              Folio No: {item.folioNo}
+            </Text>
+            <Text style={[styles.folioDivider, { color: isDark ? "#AAA" : "#777777" }]}>
+              {" "}|{" "}
+            </Text>
+            <Text style={[styles.folioText, { color: isDark ? "#AAA" : "#777777" }]}>
+              {item.date}
+            </Text>
+          </View>
         </View>
       </View>
 
-      <View style={styles.divider} />
-
-      <View style={styles.cardBody}>
-        <View style={styles.infoCol}>
-          <Text style={styles.label}>Amount</Text>
-          <Text style={[styles.value, { color: colors.text }]}>{item.amount}</Text>
-        </View>
-        <View style={styles.infoCol}>
-          <Text style={styles.label}>Frequency</Text>
-          <Text style={[styles.value, { color: colors.text }]}>{item.frequency}</Text>
-        </View>
-        <View style={styles.infoCol}>
-          <Text style={styles.label}>Next Date</Text>
-          <Text style={[styles.value, { color: colors.text }]}>{item.nextDate}</Text>
-        </View>
-      </View>
+      {/* Right: amount */}
+      <Text style={[styles.amount, { color: isDark ? "#FFF" : "#000000" }]}>
+        {item.amount}
+      </Text>
     </View>
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: isDark ? "#000" : "#FAFAFA" },
+      ]}
+    >
       <StatusBar
         barStyle={isDark ? "light-content" : "dark-content"}
         backgroundColor={isDark ? "#000000" : "#FAFAFA"}
       />
 
-      {/* --- HEADER --- */}
-      <View style={[styles.header, { backgroundColor: isDark ? "#000000" : "#FAFAFA" }]}>
+      {/* ── HEADER ── */}
+      <View
+        style={[
+          styles.header,
+          { backgroundColor: isDark ? "#000" : "#FAFAFA" },
+        ]}
+      >
         <View style={styles.headerContent}>
           <TouchableOpacity
             style={styles.backBtn}
-        onPress={() => navigation.goBack()}
+            onPress={() => navigation.goBack()}
           >
             <Image
               source={require("../../../images/loginImage/back_arrow.png")}
-              style={[styles.backIcon, { tintColor: colors.text }]}
+              style={[styles.backIcon, { tintColor: isDark ? "#FFF" : "#000" }]}
               resizeMode="contain"
             />
           </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>
+          <Text style={[styles.headerTitle, { color: isDark ? "#FFF" : "#000000" }]}>
             SIP/STP Details
           </Text>
         </View>
       </View>
 
-      {/* --- CONTENT --- */}
-      <View style={[styles.body, { backgroundColor: colors.background }]}>
+      {/* blue border under header */}
+      {/* <View style={styles.headerBorder} /> */}
+
+      {/* ── BODY ── */}
+      <View
+        style={[
+          styles.body,
+          { backgroundColor: isDark ? "#111" : "#FAFAFA" },
+        ]}
+      >
+        {/* Tab row */}
+        <View style={styles.tabRow}>
+          {/* SIP tab */}
+          <TouchableOpacity
+            activeOpacity={0.85}
+            style={[
+              styles.tabBtn,
+              activeTab === "SIP"
+                ? { backgroundColor: "#00B327", borderColor: "#00B327" }
+                : { backgroundColor: "transparent", borderColor: isDark ? "#00B327" : "#00B327" },
+            ]}
+            onPress={() => setActiveTab("SIP")}
+          >
+            <Image
+              source={require("../../../images/loginImage/back_arrow.png")}
+              style={[
+                styles.tabIcon,
+                { tintColor: activeTab === "SIP" ? "#FFFFFF" : "#00B327" },
+              ]}
+              resizeMode="contain"
+            />
+            <Text
+              style={[
+                styles.tabText,
+                { color: activeTab === "SIP" ? "#FFFFFF" : "#00B327" },
+              ]}
+            >
+              SIP
+            </Text>
+          </TouchableOpacity>
+
+          {/* STP tab */}
+          <TouchableOpacity
+            activeOpacity={0.85}
+            style={[
+              styles.tabBtn,
+              activeTab === "STP"
+                ? { backgroundColor: "#1F77B4", borderColor: "#1F77B4" }
+                : { backgroundColor: "transparent", borderColor: "#1F77B4" },
+            ]}
+            onPress={() => setActiveTab("STP")}
+          >
+            <Image
+              source={require("../../../images/loginImage/back_arrow.png")}
+              style={[
+                styles.tabIcon,
+                { tintColor: activeTab === "STP" ? "#FFFFFF" : "#1F77B4" },
+              ]}
+              resizeMode="contain"
+            />
+            <Text
+              style={[
+                styles.tabText,
+                { color: activeTab === "STP" ? "#FFFFFF" : "#1F77B4" },
+              ]}
+            >
+              STP
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* View all */}
+        <TouchableOpacity style={styles.viewAllRow}>
+          <Text style={styles.viewAllText}>View all</Text>
+        </TouchableOpacity>
+
+        {/* Fund list */}
         <FlatList
-          data={SIP_DATA}
+          data={data}
           keyExtractor={(item) => item.id}
-          renderItem={renderSipCard}
-          contentContainerStyle={styles.listContainer}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <Text style={[styles.emptyText, { color: colors.text }]}>
-              No SIP/STP records found.
+              No {activeTab} records found.
             </Text>
           }
         />
@@ -122,10 +238,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  /* ── Header ── */
   header: {
     width: wp(390),
     height: hp(119),
-    justifyContent: "flex-end", // Aligns content to the bottom of the 119px height
+    justifyContent: "flex-end",
   },
   headerContent: {
     width: wp(390),
@@ -152,71 +269,129 @@ const styles = StyleSheet.create({
     fontSize: scaleFont(24),
     letterSpacing: 0.37,
     lineHeight: hp(41),
+    marginLeft: wp(45)
   },
+  headerBorder: {
+    height: 2,
+    backgroundColor: "#527EFF",
+  },
+  /* ── Body ── */
   body: {
     flex: 1,
-    width: wp(390),
   },
-  listContainer: {
-    padding: wp(20),
-    paddingTop: hp(20),
-  },
-  card: {
-    borderRadius: 12,
-    padding: wp(16),
-    marginBottom: hp(16),
-    // Shadow for Light Mode
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  cardHeader: {
+  /* ── Tabs ── */
+  tabRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: hp(12),
+    paddingLeft: wp(17),
+    paddingTop: hp(9),
+    gap: wp(24),
   },
-  schemeName: {
-    flex: 1,
-    fontFamily: "Urbanist",
-    fontWeight: "700",
-    fontSize: scaleFont(16),
-    marginRight: wp(10),
-  },
-  typeBadge: {
-    paddingHorizontal: wp(8),
-    paddingVertical: hp(4),
-    borderRadius: 6,
-  },
-  typeText: {
-    fontFamily: "Urbanist",
-    fontWeight: "700",
-    fontSize: scaleFont(12),
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "rgba(150,150,150,0.1)",
-    marginBottom: hp(12),
-  },
-  cardBody: {
+  tabBtn: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center",
+    width: wp(75),
+    height: hp(25),
+    borderRadius: 50,
+    borderWidth: 1,
+    paddingHorizontal: wp(15),
+    gap: wp(5),
+    justifyContent: "center",
   },
-  infoCol: {
-    flex: 1,
+  tabIcon: {
+    width: wp(12),
+    height: hp(12),
   },
-  label: {
-    fontFamily: "Urbanist",
-    fontSize: scaleFont(12),
-    color: "#888888",
-    marginBottom: hp(4),
-  },
-  value: {
+  tabText: {
     fontFamily: "Urbanist",
     fontWeight: "600",
-    fontSize: scaleFont(14),
+    fontSize: scaleFont(12),
+    lineHeight: hp(13),
+  },
+  /* ── View All ── */
+  viewAllRow: {
+    alignItems: "flex-end",
+    paddingRight: wp(17),
+    paddingTop: hp(8),
+    paddingBottom: hp(15),
+  },
+  viewAllText: {
+    fontFamily: "Nunito",
+    fontWeight: "700",
+    fontSize: scaleFont(12),
+    color: "#1F77B4",
+    textDecorationLine: "underline",
+  },
+  /* ── List ── */
+  listContent: {
+    paddingHorizontal: wp(15),
+    gap: hp(10),
+    paddingBottom: hp(20),
+  },
+  /* ── Card ── */
+  card: {
+    width: wp(350),
+    height: hp(65),
+    borderRadius: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: wp(10),
+  },
+  cardLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: wp(10),
+    flex: 1,
+  },
+  logoWrap: {
+    width: wp(45),
+    height: wp(45),
+    borderRadius: wp(22.5),
+    overflow: "hidden",
+    shadowColor: "#EEEEEE",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 10,
+    elevation: 3,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  logoImg: {
+    width: wp(55),
+    height: wp(55),
+    borderRadius: wp(22.5),
+  },
+  textCol: {
+    flex: 1,
+    gap: hp(2),
+  },
+  fundName: {
+    fontFamily: "Urbanist",
+    fontWeight: "500",
+    fontSize: scaleFont(16),
+    lineHeight: hp(21),
+  },
+  folioRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  folioText: {
+    fontFamily: "Urbanist",
+    fontWeight: "400",
+    fontSize: scaleFont(11),
+  },
+  folioDivider: {
+    fontFamily: "Urbanist",
+    fontSize: scaleFont(11),
+  },
+  amount: {
+    fontFamily: "Urbanist",
+    fontWeight: "500",
+    fontSize: scaleFont(16),
+    lineHeight: hp(21),
+    marginBottom: 25
   },
   emptyText: {
     textAlign: "center",
