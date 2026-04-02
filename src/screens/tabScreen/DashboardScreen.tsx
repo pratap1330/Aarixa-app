@@ -1,6 +1,7 @@
 // screens/Dashboard/Dashboard.tsx
 
 import React from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -15,6 +16,7 @@ import DashboardCard from "../../components/DashboardCard";
 import AssetsCard from "../../components/DashboardAssetCard";
 import { useAppTheme } from "../../hooks/useTheme";
 import FilterCard from "../../components/filterCard";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const BASE_WIDTH = 390;
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -26,11 +28,33 @@ const LOCAL_BANNERS: BannerItem[] = [
   { id: "3", source: require("../../images/headerImage/banner.png") },
 ];
 
-// ✅ Change name here — layout adapts automatically
-const USER_NAME = "Bhanu Pratap Singh";
+// const USER_NAME = "Bhanu Pratap Singh";
 
 const Dashboard = () => {
   const { colors, mode } = useAppTheme();
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    debugger
+    const getUser = async () => {
+      try {
+        const userData = await AsyncStorage.getItem("user");
+
+        if (userData) {
+          const parsedUser = JSON.parse(userData);
+
+          // 👇 yaha check kar structure kya hai
+          console.log("USER DATA:", parsedUser);
+
+          setUserName(parsedUser?.username || "");
+        }
+      } catch (error) {
+        console.log("Error fetching user:", error);
+      }
+    };
+
+    getUser();
+  }, []);
 
   return (
     <View style={[styles.parentContainer, { backgroundColor: mode === "dark" ? "#000000" : "#FFFFFF" }]}>
@@ -55,7 +79,7 @@ const Dashboard = () => {
               style={styles.nameMask}
               maskElement={
                 <Text style={styles.nameText} numberOfLines={1}>
-                  {USER_NAME}
+                  {userName || "User"}
                 </Text>
               }
             >
@@ -89,12 +113,12 @@ const Dashboard = () => {
           <AssetsCard />
         </View>
 
-        <View 
-        style={{ marginTop: scale(20), alignItems: "center",}}
+        <View
+          style={{ marginTop: scale(20), alignItems: "center", }}
         >
 
-  <FilterCard />
-</View>
+          <FilterCard />
+        </View>
       </ScrollView>
     </View>
   );
@@ -137,9 +161,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
- // Change these three style objects:
+  // Change these three style objects:
 
-welcomeText: {
+  welcomeText: {
     fontFamily: "Urbanist-Bold",
     fontWeight: "700",
     fontSize: scale(28),
@@ -148,7 +172,7 @@ welcomeText: {
     includeFontPadding: false,
   },
 
-nameText: {
+  nameText: {
     fontFamily: "Urbanist-Bold",
     fontWeight: "700",
     fontSize: scale(28),
@@ -159,19 +183,19 @@ nameText: {
   },
 
 
-nameRow: {
-    height: scale(38),                
+  nameRow: {
+    height: scale(38),
     alignSelf: "flex-start",
   },
 
-nameMask: {
-    height: scale(38),               
+  nameMask: {
+    height: scale(38),
     maxWidth: SCREEN_WIDTH - scale(30),
     alignSelf: "flex-start",
   },
 
-nameGradient: {
-    height: scale(38),                
+  nameGradient: {
+    height: scale(38),
     width: SCREEN_WIDTH - scale(30),
   },
 
