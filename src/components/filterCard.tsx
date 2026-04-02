@@ -5,8 +5,8 @@ import {
     StyleSheet,
     Image,
     TouchableOpacity,
-    ScrollView,
     ActivityIndicator,
+    FlatList,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppTheme } from "../hooks/useTheme";
@@ -22,6 +22,11 @@ const FilterCard = () => {
     const { colors, mode } = useAppTheme();
     const [active, setActive] = useState("Equity Funds");
 
+    // Pagination States
+    const [allFunds, setAllFunds] = useState<any[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [isFetchingMore, setIsFetchingMore] = useState(false);
+
     useEffect(() => {
         const getCid = async () => {
             try {
@@ -34,192 +39,192 @@ const FilterCard = () => {
         getCid();
     }, []);
 
+    // API Call
     const { data, loading, error } = useGet(
-        cid ? `api/investor/getInvestedFunds?cid=${cid}&levelNo=1&currentPage=1&pageSize=10` : "",
+        cid ? `api/investor/getInvestedFunds?cid=${cid}&levelNo=1&currentPage=${currentPage}&pageSize=10` : "",
         {},
         !!cid
     );
-    const fund = data?.result?.[0];
 
-    const transactions = data?.result.map((item: any, index: any) => ({
-        id: index.toString(),
-        fundName: item.schemeName,
-        transactionDate: new Date(item.firstInvestmentDate).toLocaleDateString("en-IN"),
-        amount: item.investedValue,
-        units: item.balUnits,
-        nav: item.nav,
-        currentValue: item.currentValue,
-        gain: item.gain.toString(),
-        xirr: item.xirr.toString(),
-        status: item.currentValue === "0.00" ? "failed" : "success",
-    }));
+    // Append data when API returns results
+    useEffect(() => {
+        if (data?.result) {
+            if (currentPage === 1) {
+                setAllFunds(data.result);
+            } else {
+                setAllFunds((prev) => [...prev, ...data.result]);
+            }
+            setIsFetchingMore(false);
+        }
+    }, [data]);
+
+    const handleFilterChange = (filter: string) => {
+        setActive(filter);
+        setAllFunds([]); // Clear list for new filter
+        setCurrentPage(1); // Reset to page 1
+    };
+
+    const loadMore = () => {
+        // Only load more if we aren't already loading and there is data to load
+        if (!loading && !isFetchingMore && data?.result?.length === 10) {
+            setIsFetchingMore(true);
+            setCurrentPage((prev) => prev + 1);
+        }
+    };
+
+    const renderFundItem = ({ item: fund }: { item: any }) => (
+        <View
+            style={[
+                styles.fundCard,
+                { backgroundColor: mode === "dark" ? "#111111" : "#FFFFFF" },
+            ]}
+        >
+            {/* Header */}
+            <View style={styles.cardHeader}>
+                <View style={styles.logoCircle}>
+                    <Image
+                        source={require("../images/dashboard/sbi.png")}
+                        style={styles.logoImage}
+                        resizeMode="contain"
+                    />
+                </View>
+                <Text style={[styles.fundName, { color: colors.text }]} numberOfLines={2}>
+                    {fund.schemeName}
+                </Text>
+                <TouchableOpacity style={styles.dotsBtn}>
+                    <Image
+                        source={require("../images/card/dot.png")}
+                        style={[styles.dotIcon, mode === "dark" && { tintColor: "#FFFFFF" }]}
+                    />
+                </TouchableOpacity>
+            </View>
+
+            {/* Folio + Tags */}
+            <View style={styles.tagsRow}>
+                <Text style={[styles.accountNum, { color: colors.text }]}>
+                    ({fund.folioNo})
+                </Text>
+                <View style={[styles.tag, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#E9E9E9" }]}>
+                    <Image source={require("../images/dashboard/greendot.png")} style={styles.greenDotImage} />
+                    <Text style={[styles.tagText, { color: mode === "dark" ? "#CCCCCC" : "#333333" }]}>Direct Plan- Growth</Text>
+                </View>
+                <View style={[styles.tag1, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#E9E9E9" }]}>
+                    <Image source={require("../images/dashboard/greendot.png")} style={styles.greenDotImage} />
+                    <Text style={[styles.tagText, { color: mode === "dark" ? "#CCCCCC" : "#333333" }]}>Hybrid</Text>
+                </View>
+            </View>
+
+            <View style={[styles.divider, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#F0F0F0" }]} />
+
+            {/* Values */}
+            <View style={styles.valuesRow}>
+                <View style={styles.valueCol}>
+                    <Text style={styles.valueLabel}>Current Value</Text>
+                    <Text style={[styles.valueAmount, { color: colors.text }]}>
+                        ₹{parseFloat(fund.currentValue || 0).toLocaleString("en-IN")}
+                    </Text>
+                </View>
+                <View style={[styles.valueCol, { marginRight: wp(18) }]}>
+                    <Text style={styles.valueLabel}>Invested Value</Text>
+                    <Text style={[styles.valueAmount, { color: colors.text }]}>
+                        ₹{parseFloat(fund.investedValue || 0).toLocaleString("en-IN")}
+                    </Text>
+                </View>
+            </View>
+
+            <View style={styles.valuesRow}>
+                <View style={styles.valueCol}>
+                    <Text style={styles.valueLabel}>Unrealised Gain</Text>
+                    <Text style={styles.gainText}>
+                        ₹{parseFloat(fund.gain || 0).toLocaleString("en-IN")}
+                    </Text>
+                </View>
+                <View style={styles.valueCol}>
+                    <Text style={styles.valueLabel}>Today's Gain/Loss</Text>
+                    <Text style={styles.lossText}>
+                        ₹{(parseFloat(fund.currentValue || 0) - parseFloat(fund.investedValue || 0)).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                    </Text>
+                </View>
+            </View>
+
+            <View style={[styles.valuesRow, { marginBottom: 0 }]}>
+                <View style={styles.valueCol}>
+                    <Text style={styles.valueLabel}>Units</Text>
+                    <Text style={[styles.valueAmount, { color: colors.text }]}>
+                        {fund.balUnits}
+                    </Text>
+                </View>
+                <TouchableOpacity style={styles.viewTxnBtn} onPress={() => setShowModal(true)}>
+                    <Text style={styles.viewTxnText}>View Transactions</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+    );
+
+    const renderHeader = () => (
+        <View style={styles.filterRow}>
+            <TouchableOpacity
+                style={[styles.filterBtn, { backgroundColor: mode === "dark" ? "#1E1E1E" : "#FFFFFF" }]}
+            >
+                <Image
+                    source={mode === "dark" ? require("../images/dashboard/filter_dark.png") : require("../images/dashboard/filter.png")}
+                    style={styles.filterIcon}
+                />
+                <Text style={[styles.filterText, { color: colors.text }]}>Filters</Text>
+            </TouchableOpacity>
+
+            <FlatList
+                horizontal
+                data={FILTERS}
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item) => item}
+                contentContainerStyle={styles.chipsWrapper}
+                renderItem={({ item }) => {
+                    const isActive = active === item;
+                    return (
+                        <TouchableOpacity
+                            onPress={() => handleFilterChange(item)}
+                            style={[
+                                styles.chip,
+                                isActive ? styles.activeChip : [styles.inactiveChip, mode === "dark" && { backgroundColor: "#2A2A2A" }],
+                            ]}
+                        >
+                            <Text style={[styles.chipText, { color: isActive ? "#000000" : (mode === "dark" ? "#CCCCCC" : "#434343") }]}>
+                                {item}
+                            </Text>
+                        </TouchableOpacity>
+                    );
+                }}
+            />
+        </View>
+    );
+
+    const renderFooter = () => {
+        if (!isFetchingMore) return <View style={{ height: hp(20) }} />;
+        return (
+            <ActivityIndicator style={{ marginVertical: 20 }} size="small" color="#3A6FF8" />
+        );
+    };
 
     return (
         <View style={styles.outerContainer}>
-            {/* ── FILTER ROW — Figma: Frame 1707478214, width:356, height:45, space-between ── */}
-            <View style={styles.filterRow}>
-                {/* Filter button — Figma: Frame 1597885257, width:83, height:30, radius:50, shadow:0 0 20 #EEE */}
-                <TouchableOpacity
-                    style={[
-                        styles.filterBtn,
-                        { backgroundColor: mode === "dark" ? "#1E1E1E" : "#FFFFFF" },
-                    ]}
-                >
-                    <Image
-                        source={
-                            mode === "dark"
-                                ? require("../images/dashboard/filter_dark.png")
-                                : require("../images/dashboard/filter.png")
-                        }
-                        style={styles.filterIcon}
-                    />
-                    <Text style={[styles.filterText, { color: colors.text }]}>
-                        Filters
-                    </Text>
-                </TouchableOpacity>
-
-                {/* Chips — Figma: Frame 1597885253, width:273, height:45 */}
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    style={styles.chipsScroll}
-                    contentContainerStyle={styles.chipsWrapper}
-                >
-                    {FILTERS.map((item) => {
-                        const isActive = active === item;
-                        return (
-                            <TouchableOpacity
-                                key={item}
-                                onPress={() => setActive(item)}
-                                style={[
-                                    styles.chip,
-                                    isActive
-                                        ? styles.activeChip
-                                        : [styles.inactiveChip, mode === "dark" && { backgroundColor: "#2A2A2A" }],
-                                ]}
-                            >
-                                <Text style={[styles.chipText, { color: isActive ? "#000000" : (mode === "dark" ? "#CCCCCC" : "#434343") }]}>{item}</Text>
-                            </TouchableOpacity>
-                        );
-                    })}
-                </ScrollView>
-            </View>
-
-            {/* ── FUND CARD — Figma: Group 1707478200, width:357, height:326 ── */}
-            <View
-                style={[
-                    styles.fundCard,
-                    { backgroundColor: mode === "dark" ? "#111111" : "#FFFFFF" },
-                ]}
-            >
-                {loading ? (
-                    <ActivityIndicator size="small" color="#3A6FF8" />
-                ) : error ? (
-                    <Text style={{ color: "red" }}>Error loading fund</Text>
-                ) : fund ? (
-                    <>
-                        {/* Header */}
-                        <View style={styles.cardHeader}>
-                            <View style={styles.logoCircle}>
-                                <Image
-                                    source={require("../images/dashboard/sbi.png")}
-                                    style={styles.logoImage}
-                                    resizeMode="contain"
-                                />
-                            </View>
-                            <Text style={[styles.fundName, { color: colors.text }]} numberOfLines={2}>
-                                {fund.schemeName}
-                            </Text>
-                            <TouchableOpacity style={styles.dotsBtn}>
-                                <Image
-                                    source={require("../images/card/dot.png")}
-                                    style={[styles.dotIcon, mode === "dark" && { tintColor: "#FFFFFF" }]}
-                                />
-                            </TouchableOpacity>
-                        </View>
-
-                        {/* Folio + Tags */}
-                        <View style={styles.tagsRow}>
-                            <Text style={[styles.accountNum, { color: colors.text }]}>
-                                ({fund.folioNo})
-                            </Text>
-                            <View style={[styles.tag, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#E9E9E9" }]}>
-                                <Image
-                                    source={require("../images/dashboard/greendot.png")}
-                                    style={styles.greenDotImage}
-                                />
-                                <Text style={[styles.tagText, { color: mode === "dark" ? "#CCCCCC" : "#333333" }]}>Direct Plan- Growth</Text>
-                            </View>
-                            <View style={[styles.tag1, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#E9E9E9" }]}>
-                                <Image
-                                    source={require("../images/dashboard/greendot.png")}
-                                    style={styles.greenDotImage}
-                                />
-                                <Text style={[styles.tagText, { color: mode === "dark" ? "#CCCCCC" : "#333333" }]}>Hybrid</Text>
-                            </View>
-                        </View>
-
-                        <View style={[styles.divider, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#F0F0F0" }]} />
-
-                        {/* Current & Invested Value */}
-                        <View style={styles.valuesRow}>
-                            <View style={styles.valueCol}>
-                                <Text style={styles.valueLabel}>Current Value</Text>
-                                <Text style={[styles.valueAmount, { color: colors.text }]}>
-                                    ₹{parseFloat(fund.currentValue).toLocaleString("en-IN")}
-                                </Text>
-                            </View>
-                            <View style={[styles.valueCol, { marginRight: wp(18) }]}>
-                                <Text style={styles.valueLabel}>Invested Value</Text>
-                                <Text style={[styles.valueAmount, { color: colors.text }]}>
-                                    ₹{parseFloat(fund.investedValue).toLocaleString("en-IN")}
-                                </Text>
-                            </View>
-                        </View>
-
-                        {/* Unrealised Gain & Today's Gain/Loss */}
-                        <View style={styles.valuesRow}>
-                            <View style={styles.valueCol}>
-                                <Text style={styles.valueLabel}>Unrealised Gain</Text>
-                                <Text style={styles.gainText}>
-                                    ₹{parseFloat(fund.gain).toLocaleString("en-IN")}
-                                </Text>
-                            </View>
-                            <View style={styles.valueCol}>
-                                <Text style={styles.valueLabel}>Today's Gain/Loss</Text>
-                                <Text style={styles.lossText}>
-                                    ₹{(
-                                        parseFloat(fund.currentValue) - parseFloat(fund.investedValue)
-                                    ).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                                </Text>
-                            </View>
-                        </View>
-
-                        {/* Units & View Transactions */}
-                        <View style={[styles.valuesRow, { marginBottom: 0 }]}>
-                            <View style={styles.valueCol}>
-                                <Text style={styles.valueLabel}>Units</Text>
-                                <Text style={[styles.valueAmount, { color: colors.text }]}>
-                                    {fund.balUnits}
-                                </Text>
-                            </View>
-                            <TouchableOpacity
-                                style={styles.viewTxnBtn}
-                                onPress={() => setShowModal(true)}
-                            >
-                                <Text style={styles.viewTxnText}>View Transactions</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </>
-                ) : (
-                    <Text>No funds available</Text>
+            <FlatList
+                data={allFunds}
+                keyExtractor={(item, index) => item.folioNo + index}
+                renderItem={renderFundItem}
+                ListHeaderComponent={renderHeader}
+                ListFooterComponent={renderFooter}
+                onEndReached={loadMore}
+                onEndReachedThreshold={0.5}
+                showsVerticalScrollIndicator={false}
+                ListEmptyComponent={() => (
+                    !loading ? <Text style={styles.emptyText}>No funds available</Text> : null
                 )}
-            </View>
+            />
 
             <TransactionModal
                 visible={showModal}
                 onClose={() => setShowModal(false)}
-                transactions={transactions || []}
             />
         </View>
     );
@@ -228,24 +233,16 @@ const FilterCard = () => {
 export default FilterCard;
 
 const styles = StyleSheet.create({
-    /* ── OUTER CONTAINER — Figma: width:357, left:16 ── */
     outerContainer: {
-        // width: wp(357),
-        // marginLeft: wp(1),
-        // marginBottom: hp(16),
+        flex: 1,
+        paddingHorizontal: wp(16),
     },
-
-    /* ── FILTER ROW — Figma: Frame 1707478214, width:356, height:45, space-between ── */
     filterRow: {
-        width: wp(356),
-        height: hp(45),
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        marginBottom: hp(8),
+        marginVertical: hp(15),
     },
-
-    /* ── Filter Button — Figma: width:83, height:30, radius:50, shadow:0 0 20 #EEE ── */
     filterBtn: {
         width: wp(83),
         height: hp(30),
@@ -260,89 +257,56 @@ const styles = StyleSheet.create({
         shadowRadius: wp(20),
         elevation: 5,
     },
-
-    /* ── Filter icon — Figma: lets-icons:filter-big, width:16, height:16 ── */
     filterIcon: {
         width: wp(16),
         height: wp(16),
         resizeMode: "contain",
     },
-
-    /* ── "Filters" text — Figma: Urbanist SemiBold 12px, #000000 ── */
     filterText: {
         fontFamily: "Urbanist-SemiBold",
-        fontWeight: "600",
         fontSize: scaleFont(12),
-        lineHeight: scaleFont(12),
-        letterSpacing: -0.24,
-        textAlign: "center",
     },
-
-    /* ── Chips ScrollView — Figma: Frame 1597885253, width:273, height:45 ── */
-    chipsScroll: {
-        width: wp(273),
-        height: hp(45),
-    },
-
     chipsWrapper: {
         flexDirection: "row",
         alignItems: "center",
+        paddingLeft: wp(10),
         gap: wp(8),
-        paddingLeft: wp(3),
     },
-
-    /* ── Chip base — height:30, radius:50 ── */
     chip: {
         height: hp(30),
         borderRadius: wp(50),
         justifyContent: "center",
         alignItems: "center",
-        paddingHorizontal: wp(10),
+        paddingHorizontal: wp(12),
     },
-
-    /* ── Active chip — Figma: Rectangle 177, width:83, #FFDD6D ── */
     activeChip: {
-        minWidth: wp(83),
         backgroundColor: "#FFDD6D",
     },
-
-    /* ── Inactive chip — Figma: Rectangle 178, width:76, #EDEDED ── */
     inactiveChip: {
-        minWidth: wp(76),
         backgroundColor: "#EDEDED",
     },
-
-    /* ── Chip text — Urbanist SemiBold 12px, #434343 ── */
     chipText: {
         fontFamily: "Urbanist-SemiBold",
-        fontWeight: "600",
         fontSize: scaleFont(12),
-        lineHeight: scaleFont(12),
-        letterSpacing: -0.24,
-        textAlign: "center",
-        color: "#434343",
     },
-
-    /* ── FUND CARD — Figma: Group 1707478200, width:357, height:326 ── */
     fundCard: {
-        width: wp(357),
+        width: "100%",
         borderRadius: wp(16),
         paddingHorizontal: wp(16),
         paddingVertical: hp(14),
-        shadowColor: "#EEEEEE",
-        shadowOffset: { width: 0, height: 2 },
+        marginBottom: hp(16),
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.08,
-        shadowRadius: wp(12),
-        elevation: 4,
+        shadowRadius: 10,
+        elevation: 6,
     },
-
     cardHeader: {
         flexDirection: "row",
         alignItems: "center",
         gap: wp(10),
         marginBottom: hp(10),
     },
-
     logoCircle: {
         width: wp(44),
         height: wp(44),
@@ -351,143 +315,102 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-
     logoImage: {
         width: wp(36),
         height: wp(36),
         borderRadius: wp(18),
     },
-
     fundName: {
         flex: 1,
         fontFamily: "Urbanist-Bold",
-        fontWeight: "700",
         fontSize: scaleFont(14),
-        lineHeight: scaleFont(19),
-        letterSpacing: -0.2,
     },
-
     dotsBtn: {
         justifyContent: "center",
         alignItems: "center",
     },
-
     dotIcon: {
         width: wp(25),
         height: wp(25),
         resizeMode: "contain",
     },
-
     tagsRow: {
         flexDirection: "row",
         alignItems: "center",
         gap: wp(6),
         marginBottom: hp(10),
-        flexWrap: "nowrap",
     },
-
     accountNum: {
         fontFamily: "Urbanist-SemiBold",
-        fontWeight: "600",
         fontSize: scaleFont(11),
-        letterSpacing: 0.5,
         width: wp(84),
     },
-
     tag: {
         flexDirection: "row",
         alignItems: "center",
-        width: wp(143),
-        height: hp(20),
         paddingHorizontal: wp(8),
         paddingVertical: hp(4),
-        backgroundColor: "#E9E9E9",
         borderRadius: wp(20),
     },
-
     tag1: {
         flexDirection: "row",
         alignItems: "center",
-        width: wp(75),
-        height: hp(20),
         paddingHorizontal: wp(8),
         borderRadius: wp(20),
-        backgroundColor: "#E9E9E9",
     },
-
     greenDotImage: {
         width: wp(15),
         height: wp(15),
     },
-
     tagText: {
         fontFamily: "Urbanist-SemiBold",
-        fontWeight: "600",
-        paddingLeft: wp(6),
+        paddingLeft: wp(4),
         fontSize: scaleFont(10),
-        color: "#333333",
-        letterSpacing: -0.2,
     },
-
     divider: {
         height: 1,
-        backgroundColor: "#F0F0F0",
         marginBottom: hp(10),
     },
-
     valuesRow: {
         flexDirection: "row",
         justifyContent: "space-between",
-        paddingLeft: wp(10),
-        paddingRight: wp(14),
         marginBottom: hp(8),
     },
-
     valueCol: {
         gap: hp(2),
     },
-
     valueLabel: {
         fontFamily: "Urbanist-SemiBold",
-        fontWeight: "600",
         fontSize: scaleFont(12),
         color: "#9E9E9E",
-        letterSpacing: -0.2,
     },
-
     valueAmount: {
         fontFamily: "Urbanist-Bold",
-        fontWeight: "700",
         fontSize: scaleFont(14),
-        letterSpacing: -0.3,
     },
-
     gainText: {
         fontFamily: "Urbanist-Bold",
-        fontWeight: "700",
         fontSize: scaleFont(14),
         color: "#1AAD00",
-        letterSpacing: -0.3,
     },
-
     lossText: {
         fontFamily: "Urbanist-Bold",
-        fontWeight: "700",
         fontSize: scaleFont(14),
         color: "#CC0000",
-        letterSpacing: -0.3,
     },
-
     viewTxnBtn: {
         alignSelf: "flex-end",
     },
-
     viewTxnText: {
         fontFamily: "Urbanist-SemiBold",
-        fontWeight: "600",
         fontSize: scaleFont(13),
         color: "#3A6FF8",
         textDecorationLine: "underline",
-        letterSpacing: -0.2,
     },
+    emptyText: {
+        textAlign: "center",
+        marginTop: 50,
+        fontFamily: "Urbanist-SemiBold",
+        color: "#999",
+    }
 });

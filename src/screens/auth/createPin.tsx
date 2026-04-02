@@ -72,7 +72,7 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
 
             const res = await postData("api/auth/client-login", payload);
             if (res?.status === 1) {
-            const uniqueId = res?.result?.user?.uniqueid;
+            const uniqueId = res?.result?.user?.cid;
             await AsyncStorage.setItem("uniqueId", uniqueId);
            await AsyncStorage.setItem("user", JSON.stringify(res?.result?.user));
                 navigation.navigate("AllSet");

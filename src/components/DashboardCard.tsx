@@ -13,20 +13,19 @@ const formatNumber = (num: number = 0) => {
 
 const DashboardCard: React.FC = () => {
   const { mode } = useAppTheme();
-  const [cid, setCid] = useState<number | null>(null);
+const [cid, setCid] = useState<string | null>(null);
 
-  useEffect(() => {
-    const getData = async () => {
-      const storedId = await AsyncStorage.getItem("uniqueId");
+ useEffect(() => {
+  const getData = async () => {
+    const storedId = await AsyncStorage.getItem("uniqueId");
 
-      if (!storedId) return; // ✅ Fix: narrows string | null to string
+    if (!storedId) return;
 
-      const numericCid = Number(storedId.replace("C", ""));
-      setCid(numericCid);
-    };
+    setCid(storedId);
+  };
 
-    getData();
-  }, []);
+  getData();
+}, []);
 
   const { data, loading, error } = useGet(
     cid ? "/api/investor/getInvestorData" : null,
