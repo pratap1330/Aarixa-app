@@ -15,7 +15,8 @@ export type RootStackParamList = {
   AllSet: undefined;
   Tabs: undefined; 
   Explore :undefined,
-  reports :undefined
+  reports :undefined,
+  SipDetailsScreen : undefined
 }
 
 

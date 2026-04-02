@@ -124,6 +124,7 @@ const handleLogout = async () => {
     {
       label: "SIP Details",
       icon: require("../../images/setting/sip.png"),
+    onPress: () => navigation.navigate("SipDetailsScreen"),
     },
     {
       label: "Wallet",

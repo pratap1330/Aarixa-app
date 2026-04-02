@@ -13,10 +13,10 @@ import {
 } from "react-native"; 
 import LinearGradient from "react-native-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
-import { wp, hp } from "../../utils/responcive/responcive";
-import { useAppTheme } from "../../hooks/useTheme";
-import { useGet } from "../../hooks/useGet";
-import { usePost } from "../../hooks/usePost";
+import { wp, hp } from "../../../utils/responcive/responcive";
+import { useAppTheme } from "../../../hooks/useTheme";
+import { useGet } from "../../../hooks/useGet";
+import { usePost } from "../../../hooks/usePost";
 import {ActivityIndicator} from "react-native"
 // ─── Date Picker Modal ────────────────────────────────────────────────────────
 const DAYS   = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -374,7 +374,7 @@ const handleDownload = async () => {
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backContainer}>
           <Image
-            source={require("../../images/loginImage/back_arrow.png")}
+            source={require("../../../images/loginImage/back_arrow.png")}
             style={[styles.backIcon, mode === "dark" && { tintColor: "#FFFFFF" }]}
             resizeMode="contain"
           />
@@ -414,7 +414,7 @@ const handleDownload = async () => {
         >
           <Text style={[styles.selectText, { color: colors.text }]}>{selectName}</Text>
           <Image
-            source={require("../../images/setting/formkit_down.png")}
+            source={require("../../../images/setting/formkit_down.png")}
             style={[styles.dropIcon, { tintColor: colors.text }]}
             resizeMode="contain"
           />
@@ -437,7 +437,7 @@ const handleDownload = async () => {
           >
             <View style={styles.dateBoxInner}>
               <Image
-                source={require("../../images/setting/calendar.png")}
+                source={require("../../../images/setting/calendar.png")}
                 style={[styles.calendarIcon, { tintColor: "#007AFF" }]}
                 resizeMode="contain"
               />
@@ -455,7 +455,7 @@ const handleDownload = async () => {
           >
             <View style={styles.dateBoxInner}>
               <Image
-                source={require("../../images/setting/calendar.png")}
+                source={require("../../../images/setting/calendar.png")}
                 style={[styles.calendarIcon, { tintColor: "#007AFF" }]}
                 resizeMode="contain"
               />
@@ -488,7 +488,7 @@ const handleDownload = async () => {
   ) : (
     <>
       <Image
-        source={require("../../images/setting/download.png")}
+        source={require("../../../images/setting/download.png")}
         style={styles.downloadIcon}
         resizeMode="contain"
       />

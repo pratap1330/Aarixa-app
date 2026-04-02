@@ -15,7 +15,8 @@ import CreatePinScreen from "../../screens/auth/createPin";
 import AllSetScreen from "../../screens/auth/allSet";
 import ExploreScreen from "../../screens/setting/exploreScreen";
 import TabNavigator from "../tab/TabNavigator";
-import ReportsScreen from "../../screens/report/reportScreen";
+import ReportsScreen from "../../screens/setting/report/reportScreen";
+import ShipDetailsScreen from '../../screens/setting/sipDetails/sipStpDetails'
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -49,6 +50,11 @@ const StackNavigator = () => {
         <Stack.Screen
           name="Explore"
           component={ExploreScreen}
+          options={{ headerShown: false }}
+        />
+          <Stack.Screen
+          name="SipDetailsScreen"
+          component={ShipDetailsScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
