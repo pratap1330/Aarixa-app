@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useMemo } from "react";
 import {
   View,
   Text,
@@ -7,12 +7,17 @@ import {
   Image,
   ScrollView,
   Modal,
-} from "react-native";
+  FlatList,
+  TextInput,
+  Alert,Linking
+} from "react-native"; 
 import LinearGradient from "react-native-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { wp, hp } from "../../utils/responcive/responcive";
 import { useAppTheme } from "../../hooks/useTheme";
-
+import { useGet } from "../../hooks/useGet";
+import { usePost } from "../../hooks/usePost";
+import {ActivityIndicator} from "react-native"
 // ─── Date Picker Modal ────────────────────────────────────────────────────────
 const DAYS   = Array.from({ length: 31 }, (_, i) => i + 1);
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -38,6 +43,7 @@ const DatePickerModal = ({
   const cardBg   = mode === "dark" ? "#1E1E1E" : "#FFFFFF";
   const textColor = colors.text;
   const accent   = "#3366FF";
+  
 
   const Column = ({
     data,
@@ -161,37 +167,78 @@ const pickerStyles = StyleSheet.create({
 const DropdownModal = ({
   visible,
   onClose,
-  options,
+  data,
   onSelect,
   colors,
   mode,
-}: {
-  visible: boolean;
-  onClose: () => void;
-  options: string[];
-  onSelect: (v: string) => void;
-  colors: any;
-  mode: string;
-}) => {
+  loading,
+}: any) => {
+  const [search, setSearch] = useState("");
+  const [visibleCount, setVisibleCount] = useState(10);
+
+  const filteredData = useMemo(() => {
+    return data.filter((item: any) =>
+      item?.investorName?.toLowerCase().includes(search.toLowerCase())
+    );
+    
+  }, [search, data]);
+  
+
+  const visibleData = filteredData.slice(0, visibleCount);
+
+  const loadMore = () => {
+    if (visibleCount < filteredData.length) {
+      setVisibleCount(prev => prev + 10);
+    }
+    
+  };
+
+  
   const cardBg = mode === "dark" ? "#1E1E1E" : "#FFFFFF";
+
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableOpacity style={dropStyles.overlay} activeOpacity={1} onPress={onClose}>
-        <View style={[dropStyles.menu, { backgroundColor: cardBg }]}>
-          {options.map((opt, idx) => (
-            <React.Fragment key={idx}>
-              <TouchableOpacity
-                style={dropStyles.item}
-                activeOpacity={0.7}
-                onPress={() => { onSelect(opt); onClose(); }}
-              >
-                <Text style={[dropStyles.itemText, { color: colors.text }]}>{opt}</Text>
-              </TouchableOpacity>
-              {idx < options.length - 1 && (
-                <View style={[dropStyles.sep, { backgroundColor: mode === "dark" ? "#333" : "#F0F0F0" }]} />
+        <View style={[dropStyles.menu, { backgroundColor: cardBg, maxHeight: "80%" }]}>
+
+          {/* 🔍 SEARCH */}
+          <TextInput
+            placeholder="Search..."
+            value={search}
+            onChangeText={setSearch}
+            style={{ padding: 12, borderBottomWidth: 1 }}
+          />
+
+          {/* ⏳ LOADER */}
+          {loading ? (
+            <ActivityIndicator style={{ marginTop: 20 }} />
+          ) : (
+            <FlatList
+              data={visibleData}
+              keyExtractor={(_, i) => i.toString()}
+              onEndReached={loadMore}
+              onEndReachedThreshold={0.5}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={dropStyles.item}
+                   onPress={() => {
+      onSelect(item);  
+      onClose();
+    }}
+                >
+                  <Text style={[dropStyles.itemText, { color: colors.text }]}>
+                    {item.investorName}
+                  </Text>
+                </TouchableOpacity>
               )}
-            </React.Fragment>
-          ))}
+              ListFooterComponent={
+                visibleCount < filteredData.length ? (
+                  <ActivityIndicator style={{ margin: 10 }} />
+                ) : null
+              }
+            />
+          )}
+
         </View>
       </TouchableOpacity>
     </Modal>
@@ -208,11 +255,22 @@ const dropStyles = StyleSheet.create({
 
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 const ReportsScreen = () => {
+    
+const { data,loading } = useGet<any>(
+  "api/reports/family-heads"
+);
+
+
+const { postData, loading: reportLoading } = usePost();
+
+const dropdownOptions = data?.result || [];
   const navigation = useNavigation<any>();
   const { colors, mode } = useAppTheme();
 
   const [selected,      setSelected]      = useState("Portfolio Valuation");
   const [selectName,    setSelectName]    = useState("Select name");
+  const [selectedInvestor, setSelectedInvestor] = useState<any>(null);
+  
   const [fromDate,      setFromDate]      = useState("DD / MM / YYYY");
   const [toDate,        setToDate]        = useState("DD / MM / YYYY");
   const [showDropdown,  setShowDropdown]  = useState(false);
@@ -232,10 +290,83 @@ const ReportsScreen = () => {
     { label: "Dividend Report",     color: "#527EFF" },
   ];
 
-  const dropdownOptions = tabs.map(t => t.label);
+//   const dropdownOptions = tabs.map(t => t.label);
   const isPlaceholder  = fromDate === "DD / MM / YYYY";
   const isPlaceholderT = toDate   === "DD / MM / YYYY";
 
+
+  const isCustomDate =
+  fromDate !== "DD / MM / YYYY" && toDate !== "DD / MM / YYYY";
+
+const dateFilterType = isCustomDate ? "CUSTOM" : "SINCE_INCEPTION";
+
+
+const handleDownload = async () => {
+   if (!selectedInvestor) {
+    Alert.alert("Error", "Please select investor");
+    return;
+  }
+  if (dateFilterType === "CUSTOM") {
+    if (
+      fromDate === "DD / MM / YYYY" ||
+      toDate === "DD / MM / YYYY"
+    ) {
+      Alert.alert("Error", "Please select both dates");
+      return;
+    }
+  }
+
+  const { fhid, cid } = selectedInvestor;
+
+  let url = "";
+  let body: any = {};
+
+  if (dateFilterType === "CUSTOM") {
+    body = {
+      fromDate,
+      toDate,
+    };
+  }
+
+  if (selected === "Portfolio Valuation") {
+    url = `/api/reports/valuation-pdf?isSummary=0&fhid=${fhid}&cid=${cid}&dateFilterType=${dateFilterType}`;
+  } 
+  else if (selected === "Portfolio Summary") {
+    url = `/api/reports/valuation-pdf?isSummary=1&fhid=${fhid}&cid=${cid}&dateFilterType=${dateFilterType}`;
+  } 
+  else if (selected === "Transaction Reports") {
+    url = `/api/reports/getTransactionReport-pdf?fhid=${fhid}&cid=${cid}&dateFilterType=${dateFilterType}`;
+  } 
+  else {
+    Alert.alert("Error", "API not implemented for this tab");
+    return;
+  }
+
+  try {
+    const res = await postData(url, body);
+    console.log("Report Response:", res);
+
+    if (!res?.success) {
+      Alert.alert("Error", res?.message);
+      return;
+    }
+
+    if (res?.url) {
+      Linking.openURL(res.url);
+    } else {
+      Alert.alert("Error", "No file URL received");
+    }
+
+  } catch (err: any) {
+//   console.log("Error:", err);
+  const message =
+    err?.response?.data?.message ||  
+    err?.message ||            
+    "Something went wrong";
+
+  Alert.alert("Error", message);
+}
+};
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
 
@@ -343,27 +474,45 @@ const ReportsScreen = () => {
           end={{ x: 0.5, y: 1 }}
           style={styles.downloadBtn}
         >
-          <TouchableOpacity activeOpacity={0.8} style={styles.downloadBtnInner}>
-            <Image
-              source={require("../../images/setting/download.png")}
-              style={styles.downloadIcon}
-              resizeMode="contain"
-            />
-            <Text style={styles.downloadBtnText}>Download Report</Text>
-          </TouchableOpacity>
+         <TouchableOpacity
+  activeOpacity={0.8}
+  style={[
+  styles.downloadBtnInner,
+  { opacity: reportLoading || !selectedInvestor ? 0.6 : 1 }
+]}
+  onPress={handleDownload}
+  disabled={reportLoading || !selectedInvestor}
+>
+  {reportLoading ? (
+    <ActivityIndicator color="#fff" />
+  ) : (
+    <>
+      <Image
+        source={require("../../images/setting/download.png")}
+        style={styles.downloadIcon}
+        resizeMode="contain"
+      />
+      <Text style={styles.downloadBtnText}>Download Report</Text>
+    </>
+  )}
+</TouchableOpacity>
         </LinearGradient>
 
       </View>
 
-      {/* Modals */}
-      <DropdownModal
-        visible={showDropdown}
-        onClose={() => setShowDropdown(false)}
-        options={dropdownOptions}
-        onSelect={setSelectName}
-        colors={colors}
-        mode={mode}
-      />
+<DropdownModal
+  visible={showDropdown}
+  onClose={() => setShowDropdown(false)}
+  data={dropdownOptions}
+  loading={loading}
+  colors={colors}
+  mode={mode}
+  onSelect={(item: any) => {
+    console.log("🔥 Selected item:", item);
+   setSelectName(item.investorName); 
+    setSelectedInvestor(item);  
+  }}
+/>
       <DatePickerModal
         visible={showFromPicker}
         onClose={() => setShowFromPicker(false)}
