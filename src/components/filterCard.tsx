@@ -105,14 +105,14 @@ const FilterCard = () => {
                 <Text style={[styles.accountNum, { color: colors.text }]}>
                     ({fund.folioNo})
                 </Text>
-                <View style={[styles.tag, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#E9E9E9" }]}>
+                {/* <View style={[styles.tag, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#E9E9E9" }]}>
                     <Image source={require("../images/dashboard/greendot.png")} style={styles.greenDotImage} />
                     <Text style={[styles.tagText, { color: mode === "dark" ? "#CCCCCC" : "#333333" }]}>Direct Plan- Growth</Text>
                 </View>
                 <View style={[styles.tag1, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#E9E9E9" }]}>
                     <Image source={require("../images/dashboard/greendot.png")} style={styles.greenDotImage} />
                     <Text style={[styles.tagText, { color: mode === "dark" ? "#CCCCCC" : "#333333" }]}>Hybrid</Text>
-                </View>
+                </View> */}
             </View>
 
             <View style={[styles.divider, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#F0F0F0" }]} />
