@@ -49,11 +49,11 @@ const FilterCard = () => {
 
     // Append data when API returns results
     useEffect(() => {
-        if (data?.result) {
+        if (data?.result?.data) {
             if (currentPage === 1) {
-                setAllFunds(data.result);
+                setAllFunds(data?.result?.data);
             } else {
-                setAllFunds((prev) => [...prev, ...data.result]);
+                setAllFunds((prev) => [...prev, ...data?.result?.data]);
             }
             setIsFetchingMore(false);
         }
@@ -67,7 +67,7 @@ const FilterCard = () => {
 
     const loadMore = () => {
         // Only load more if we aren't already loading and there is data to load
-        if (!loading && !isFetchingMore && data?.result?.length === 10) {
+        if (!loading && !isFetchingMore && data?.result?.data.length === 10) {
             setIsFetchingMore(true);
             setCurrentPage((prev) => prev + 1);
         }
