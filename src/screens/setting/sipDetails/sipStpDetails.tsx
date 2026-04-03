@@ -12,6 +12,9 @@ import {
 import { useAppTheme } from "../../../hooks/useTheme";
 import { wp, hp, scaleFont } from "../../../utils/responcive/responcive";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useGet } from "../../../hooks/useGet";
+import { useEffect } from "react";
 const HDFC_IMG = require("../../../images/setting/HDFC.png");
 
 const SIP_DATA = [
@@ -58,50 +61,77 @@ const STP_DATA = [
 type TabType = "SIP" | "STP";
 
 const SipDetailsScreen = () => {
+
+  const [cid, setCid] = useState<string | null>(null);
+const [pid, setPid] = useState<string | null>(null);
   const { colors, mode } = useAppTheme();
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState<TabType>("SIP");
 
   const isDark = mode === "dark";
-  const data = activeTab === "SIP" ? SIP_DATA : STP_DATA;
 
-  const renderItem = ({ item }: { item: (typeof SIP_DATA)[0] }) => (
-    <View
-      style={[
-        styles.card,
-        { backgroundColor: isDark ? "#1A1A1A" : "#FFFFFF" },
-      ]}
-    >
-      {/* Left: logo + text */}
-      <View style={styles.cardLeft}>
-        <View style={styles.logoWrap}>
-          <Image source={HDFC_IMG} style={styles.logoImg} resizeMode="contain" />
-        </View>
-        <View style={styles.textCol}>
-          <Text style={[styles.fundName, { color: isDark ? "#FFF" : "#000000" }]}>
-            {item.name}
-          </Text>
-          <View style={styles.folioRow}>
-            <Text style={[styles.folioText, { color: isDark ? "#AAA" : "#777777" }]}>
-              Folio No: {item.folioNo}
-            </Text>
-            <Text style={[styles.folioDivider, { color: isDark ? "#AAA" : "#777777" }]}>
-              {" "}|{" "}
-            </Text>
-            <Text style={[styles.folioText, { color: isDark ? "#AAA" : "#777777" }]}>
-              {item.date}
-            </Text>
-          </View>
-        </View>
+
+  const { data: sipResponse, loading } = useGet<any>(
+  cid && pid
+    ? `api/investor/getinvestorSip?cid=${cid}&txnCol=${activeTab}&pid=${pid}&currentPage=1&pageSize=10&levelNo=1`
+    : "",
+  {},
+  !!cid && !!pid 
+);
+
+
+const apiData = sipResponse?.result?.data || [];
+const data = apiData;
+useEffect(() => {
+  const getUserData = async () => {
+    const userStr = await AsyncStorage.getItem("user");
+
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      setCid(user?.cid);
+      setPid(user?.pid);
+    }
+  };
+
+  getUserData();
+}, []);
+
+ const renderItem = ({ item }: any) => (
+  <View
+    style={[
+      styles.card,
+      { backgroundColor: isDark ? "#1A1A1A" : "#FFFFFF" },
+    ]}
+  >
+    <View style={styles.cardLeft}>
+      <View style={styles.logoWrap}>
+        <Image source={HDFC_IMG} style={styles.logoImg} />
       </View>
 
-      {/* Right: amount */}
-      <Text style={[styles.amount, { color: isDark ? "#FFF" : "#000000" }]}>
-        {item.amount}
-      </Text>
-    </View>
-  );
+      <View style={styles.textCol}>
+        <Text style={[styles.fundName, { color: isDark ? "#FFF" : "#000" }]}>
+          {item?.schemeName || "N/A"}
+        </Text>
 
+        <View style={styles.folioRow}>
+          <Text style={[styles.folioText, { color: isDark ? "#AAA" : "#777" }]}>
+            Folio No: {item?.folioNo || "-"}
+          </Text>
+
+          <Text style={styles.folioDivider}> | </Text>
+
+          <Text style={[styles.folioText, { color: isDark ? "#AAA" : "#777" }]}>
+            {item?.txnDate || "-"}
+          </Text>
+        </View>
+      </View>
+    </View>
+
+    <Text style={[styles.amount, { color: isDark ? "#FFF" : "#000" }]}>
+      ₹{item?.amount || 0}
+    </Text>
+  </View>
+);
   return (
     <SafeAreaView
       style={[
@@ -138,8 +168,6 @@ const SipDetailsScreen = () => {
         </View>
       </View>
 
-      {/* blue border under header */}
-      {/* <View style={styles.headerBorder} /> */}
 
       {/* ── BODY ── */}
       <View
