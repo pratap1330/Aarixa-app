@@ -72,8 +72,8 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
 
             const res = await postData("api/auth/client-login", payload);
             if (res?.status === 1) {
-            const uniqueId = res?.result?.user?.cid;
-            await AsyncStorage.setItem("uniqueId", uniqueId);
+            const cid = res?.result?.user?.cid;
+            await AsyncStorage.setItem("cid", cid);
            await AsyncStorage.setItem("user", JSON.stringify(res?.result?.user));
                 navigation.navigate("AllSet");
             }
@@ -521,7 +521,7 @@ const styles = StyleSheet.create({
 //       const payload = { username, Password: password, Passcode: finalPin, otp };
 //       const res = await postData('api/auth/client-login', payload);
 //       if (res?.status === 1) {
-//         await AsyncStorage.setItem('uniqueId', res?.result?.user?.cid);
+//         await AsyncStorage.setItem('cid', res?.result?.user?.cid);
 //         await AsyncStorage.setItem('user', JSON.stringify(res?.result?.user));
 //         setSuccess(true);
 //         setTimeout(() => navigation.navigate('AllSet'), 800);

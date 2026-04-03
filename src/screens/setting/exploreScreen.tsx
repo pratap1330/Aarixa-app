@@ -88,7 +88,7 @@ const handleLogout = async () => {
         text: "Yes",
         onPress: async () => {
           // ✅ remove specific keys
-          await AsyncStorage.removeItem("uniqueId");
+          await AsyncStorage.removeItem("cid");
           await AsyncStorage.removeItem("user");
 
           // ✅ OR clear everything (optional)

@@ -31,7 +31,7 @@ const FilterCard = () => {
     useEffect(() => {
         const getCid = async () => {
             try {
-                const storedCid = await AsyncStorage.getItem("uniqueId");
+                const storedCid = await AsyncStorage.getItem("cid");
                 if (storedCid) setCid(storedCid);
             } catch (err) {
                 console.log("Error reading cid from AsyncStorage", err);

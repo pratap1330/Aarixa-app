@@ -17,7 +17,7 @@ const [cid, setCid] = useState<string | null>(null);
 
  useEffect(() => {
   const getData = async () => {
-    const storedId = await AsyncStorage.getItem("uniqueId");
+    const storedId = await AsyncStorage.getItem("cid");
 
     if (!storedId) return;
 
