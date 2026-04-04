@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
     View,
@@ -22,6 +21,9 @@ const FilterCard = () => {
     const [cid, setCid] = useState<string | null>(null);
     const { colors, mode } = useAppTheme();
     const [active, setActive] = useState("Equity Funds");
+
+    // Selected fund's folioNo for transaction modal
+    const [selectedFolid, setSelectedFolid] = useState<string | null>(null);
 
     // Pagination States
     const [allFunds, setAllFunds] = useState<any[]>([]);
@@ -61,16 +63,23 @@ const FilterCard = () => {
 
     const handleFilterChange = (filter: string) => {
         setActive(filter);
-        setAllFunds([]); // Clear list for new filter
-        setCurrentPage(1); // Reset to page 1
+        setAllFunds([]);
+        setCurrentPage(1);
     };
 
     const loadMore = () => {
-        // Only load more if we aren't already loading and there is data to load
         if (!loading && !isFetchingMore && data?.result?.data.length === 10) {
             setIsFetchingMore(true);
             setCurrentPage((prev) => prev + 1);
         }
+    };
+
+    // Open modal with selected fund's folioNo (folid)
+    const handleViewTransactions = (fund: any) => {
+        // Pick folioNo from fund object; fallback to "765" if not present
+        const folid = fund?.folioId ?? "765";
+        setSelectedFolid(String(folid));
+        setShowModal(true);
     };
 
     const renderFundItem = ({ item: fund }: { item: any }) => (
@@ -105,14 +114,6 @@ const FilterCard = () => {
                 <Text style={[styles.accountNum, { color: colors.text }]}>
                     ({fund.folioNo})
                 </Text>
-                {/* <View style={[styles.tag, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#E9E9E9" }]}>
-                    <Image source={require("../images/dashboard/greendot.png")} style={styles.greenDotImage} />
-                    <Text style={[styles.tagText, { color: mode === "dark" ? "#CCCCCC" : "#333333" }]}>Direct Plan- Growth</Text>
-                </View>
-                <View style={[styles.tag1, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#E9E9E9" }]}>
-                    <Image source={require("../images/dashboard/greendot.png")} style={styles.greenDotImage} />
-                    <Text style={[styles.tagText, { color: mode === "dark" ? "#CCCCCC" : "#333333" }]}>Hybrid</Text>
-                </View> */}
             </View>
 
             <View style={[styles.divider, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#F0F0F0" }]} />
@@ -155,7 +156,10 @@ const FilterCard = () => {
                         {fund.balUnits}
                     </Text>
                 </View>
-                <TouchableOpacity style={styles.viewTxnBtn} onPress={() => setShowModal(true)}>
+                <TouchableOpacity
+                    style={styles.viewTxnBtn}
+                    onPress={() => handleViewTransactions(fund)}
+                >
                     <Text style={styles.viewTxnText}>View Transactions</Text>
                 </TouchableOpacity>
             </View>
@@ -223,9 +227,15 @@ const FilterCard = () => {
                 )}
             />
 
+            {/* Pass folid and cid to modal */}
             <TransactionModal
                 visible={showModal}
-                onClose={() => setShowModal(false)}
+                onClose={() => {
+                    setShowModal(false);
+                    setSelectedFolid(null);
+                }}
+                folid={selectedFolid ?? "765"}
+                cid={cid ?? ""}
             />
         </View>
     );

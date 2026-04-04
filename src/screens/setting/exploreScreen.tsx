@@ -201,33 +201,27 @@ const handleLogout = async () => {
           </TouchableOpacity>
         </View>
 
-        {/* ── Card 2 – Feature rows ── */}
+       
         <View style={[styles.card, styles.cardTall, { backgroundColor: cardBg }]}>
-          {/* Night Mode row (has toggle instead of arrow) */}
           <View style={styles.row}>
-            {/* Left icon */}
             <View style={styles.iconCircle}>
-              <Image
+              {/* <Image
                 source={require("../../images/setting/darkmode.png")}
                 style={styles.rowIcon}
                 resizeMode="contain"
-              />
+              /> */}
             </View>
 
-            {/* Label */}
-            <Text style={[styles.rowLabel, { color: colors.text }]} numberOfLines={1}>
+            {/* <Text style={[styles.rowLabel, { color: colors.text }]} numberOfLines={1}>
               Night Mode
-            </Text>
+            </Text> */}
 
-            {/* Toggle */}
-            <View style={styles.toggleWrap}>
-              {/* Background image */}
+            {/* <View style={styles.toggleWrap}>
               <Image
                 source={require("../../images/setting/Background.png")}
                 style={styles.toggleBg}
                 resizeMode="contain"
               />
-              {/* Knob image, shifts right when ON */}
               <Image
                 source={require("../../images/setting/Knob.png")}
                 style={[
@@ -236,19 +230,16 @@ const handleLogout = async () => {
                 ]}
                 resizeMode="contain"
               />
-              {/* Invisible pressable overlay */}
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={StyleSheet.absoluteFillObject}
                 onPress={() => dispatch(toggleTheme())}
               />
-            </View>
+            </View> */}
           </View>
 
-          {/* Separator */}
           <View style={[styles.separator, { backgroundColor: sepColor }]} />
 
-          {/* All navigation rows */}
           {navRows.map((item, idx) => (
             <React.Fragment key={item.label}>
               <SettingsRow {...item} />
