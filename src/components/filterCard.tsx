@@ -77,10 +77,31 @@ const FilterCard = () => {
     // Open modal with selected fund's folioNo (folid)
     const handleViewTransactions = (fund: any) => {
         // Pick folioNo from fund object; fallback to "765" if not present
-        const folid = fund?.folioId ?? "765";
+        const folid = fund?.folid ?? "765";
         setSelectedFolid(String(folid));
         setShowModal(true);
     };
+
+    const getInitials = (name: string) => {
+  if (!name) return "";
+
+  const words = name.trim().split(" ");
+  return words.slice(0, 2).map(w => w[0]).join("").toUpperCase();
+};
+
+const getColorFromText = (text: string) => {
+  let hash = 0;
+
+  for (let i = 0; i < text.length; i++) {
+    hash = text.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  const hue = Math.abs(hash) % 360;
+  const saturation = 70;
+  const lightness = 50;
+
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+};
 
     const renderFundItem = ({ item: fund }: { item: any }) => (
         <View
@@ -91,13 +112,27 @@ const FilterCard = () => {
         >
             {/* Header */}
             <View style={styles.cardHeader}>
-                <View style={styles.logoCircle}>
+                {/* <View style={styles.logoCircle}>
                     <Image
                         source={require("../images/dashboard/sbi.png")}
                         style={styles.logoImage}
                         resizeMode="contain"
                     />
-                </View>
+                </View> */}
+                <View
+    style={[
+        styles.logoCircle,
+        {
+            backgroundColor: getColorFromText(fund.schemeName),
+            justifyContent: "center",
+            alignItems: "center",
+        },
+    ]}
+>
+    <Text style={{ color: "#fff", fontWeight: "700", fontSize: 14 }}>
+        {getInitials(fund.schemeName)}
+    </Text>
+               </View>
                 <Text style={[styles.fundName, { color: colors.text }]} numberOfLines={2}>
                     {fund.schemeName}
                 </Text>
@@ -301,16 +336,17 @@ const styles = StyleSheet.create({
         fontSize: scaleFont(12),
     },
     fundCard: {
-        width: "100%",
+        width: "99%",
         borderRadius: wp(16),
         paddingHorizontal: wp(16),
         paddingVertical: hp(14),
         marginBottom: hp(16),
-        shadowColor: "#000",
+        marginHorizontal :hp(2),
+        // shadowColor: "#000",
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.08,
         shadowRadius: 10,
-        elevation: 6,
+        elevation: 0.5,
     },
     cardHeader: {
         flexDirection: "row",

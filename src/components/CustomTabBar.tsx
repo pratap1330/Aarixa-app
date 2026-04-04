@@ -95,14 +95,29 @@ export default CustomTabBar;
 const styles = StyleSheet.create({
 
   // outer container
-  container: {
-    width: wp(367),
-    height: hp(58),
-    alignSelf: "center",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: hp(24)
-  },
+//  container: {
+//   width: wp(367),
+//   height: hp(58),
+//   alignSelf: "center",
+//   justifyContent: "center",
+//   alignItems: "center",
+//   backgroundColor: 'transparent',
+//   marginBottom: hp(24)
+// },
+
+container: {
+  position: "absolute",
+  bottom: hp(30), 
+  alignSelf: "center",
+
+  width: wp(367),
+  height: hp(58),
+
+  justifyContent: "center",
+  alignItems: "center",
+
+  backgroundColor: "transparent",
+},
 
 
   // inner container (358 x 71, radius 50)
@@ -110,10 +125,10 @@ const styles = StyleSheet.create({
     width: wp(358),
     height: hp(71),
     borderRadius: 50,
-
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    elevation: 6,
 
     paddingHorizontal: wp(12),
 
