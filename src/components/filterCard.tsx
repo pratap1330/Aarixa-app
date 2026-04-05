@@ -20,6 +20,7 @@ const FilterCard = () => {
     const [showModal, setShowModal] = useState(false);
     const [cid, setCid] = useState<string | null>(null);
     const { colors, mode } = useAppTheme();
+    const [selectedSchemeName, setSelectedSchemeName] = useState<string | null>(null);
     const [active, setActive] = useState("Equity Funds");
 
     // Selected fund's folioNo for transaction modal
@@ -61,11 +62,11 @@ const FilterCard = () => {
         }
     }, [data]);
 
-    const handleFilterChange = (filter: string) => {
-        setActive(filter);
-        setAllFunds([]);
-        setCurrentPage(1);
-    };
+    // const handleFilterChange = (filter: string) => {
+    //     setActive(filter);
+    //     setAllFunds([]);
+    //     setCurrentPage(1);
+    // };
 
     const loadMore = () => {
         if (!loading && !isFetchingMore && data?.result?.data.length === 10) {
@@ -79,6 +80,7 @@ const FilterCard = () => {
         // Pick folioNo from fund object; fallback to "765" if not present
         const folid = fund?.folid ?? "765";
         setSelectedFolid(String(folid));
+        setSelectedSchemeName(fund?.schemeName || ""); 
         setShowModal(true);
     };
 
@@ -223,7 +225,7 @@ const getColorFromText = (text: string) => {
                     const isActive = active === item;
                     return (
                         <TouchableOpacity
-                            onPress={() => handleFilterChange(item)}
+                            // onPress={() => handleFilterChange(item)}
                             style={[
                                 styles.chip,
                                 isActive ? styles.activeChip : [styles.inactiveChip, mode === "dark" && { backgroundColor: "#2A2A2A" }],
@@ -271,6 +273,7 @@ const getColorFromText = (text: string) => {
                 }}
                 folid={selectedFolid ?? "765"}
                 cid={cid ?? ""}
+                schemeName={selectedSchemeName ?? ""}
             />
         </View>
     );

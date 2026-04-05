@@ -20,8 +20,8 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const BASE_WIDTH = 390;
 const BASE_HEIGHT = 977;
 
-const scaleW    = (size: number) => (SCREEN_WIDTH / BASE_WIDTH) * size;
-const scaleH    = (size: number) => (SCREEN_HEIGHT / BASE_HEIGHT) * size;
+const scaleW = (size: number) => (SCREEN_WIDTH / BASE_WIDTH) * size;
+const scaleH = (size: number) => (SCREEN_HEIGHT / BASE_HEIGHT) * size;
 const scaleFont = (size: number) => Math.round((SCREEN_WIDTH / BASE_WIDTH) * size);
 
 const PAGE_SIZE = 10;
@@ -31,39 +31,40 @@ const PAGE_SIZE = 10;
 type TransactionStatus = "success" | "failed" | "processing";
 
 interface ApiTransaction {
-  buyid:        string | null;
-  sellid:       string | null;
-  amount:       number;
-  units:        number;
-  nav:          number;
-  txnType:      string;
+  buyid: string | null;
+  sellid: string | null;
+  amount: number;
+  units: number;
+  nav: number;
+  txnType: string;
   balanceUnits: number;
-  navDate:      string;
-  arnNo:        string;
-  adjNav:       string | null;
+  navDate: string;
+  arnNo: string;
+  adjNav: string | null;
 }
 
 interface Props {
   visible: boolean;
   onClose: () => void;
-  folid:   string;   // folioNo from fund card (fallback "765")
-  cid:     string;   // from AsyncStorage
+  folid: string;
+  cid: string;
+  schemeName: string;
 }
 
 // ─── Status colours ───────────────────────────────────────────────────────────
 
-const STATUS_COLORS: Record<TransactionStatus, { bg: string; text: string }> = {
-  success:    { bg: "#4CFF0026", text: "#1AAD00" },
-  failed:     { bg: "#FF000026", text: "#CC0000" },
-  processing: { bg: "#FF840026", text: "#C05E00" },
-};
+// const STATUS_COLORS: Record<TransactionStatus, { bg: string; text: string }> = {
+//   success:    { bg: "#4CFF0026", text: "#1AAD00" },
+//   failed:     { bg: "#FF000026", text: "#CC0000" },
+//   processing: { bg: "#FF840026", text: "#C05E00" },
+// };
 
-const getStatus = (txnType: string): TransactionStatus => {
-  const t = txnType?.toLowerCase() ?? "";
-  if (t === "swo" || t === "red" || t === "sell") return "failed";
-  if (t === "sip" || t === "purchase" || t === "buy") return "success";
-  return "processing";
-};
+// const getStatus = (txnType: string): TransactionStatus => {
+//   const t = txnType?.toLowerCase() ?? "";
+//   if (t === "swo" || t === "red" || t === "sell" || t === "redemption") return "failed";
+//   if (t === "sip" || t === "purchase" || t === "buy") return "success";
+//   return "processing";
+// };
 
 const formatINR = (value: number) =>
   `₹${value.toLocaleString("en-IN", {
@@ -71,11 +72,86 @@ const formatINR = (value: number) =>
     maximumFractionDigits: 2,
   })}`;
 
+// ─── Avatar helpers ───────────────────────────────────────────────────────────
+
+const getInitials = (name: string) => {
+  if (!name) return "";
+  const words = name.trim().split(" ");
+  return words.slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+};
+
+const getColorFromText = (text: string) => {
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) {
+    hash = text.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue = Math.abs(hash) % 360;
+  return `hsl(${hue}, 70%, 45%)`;
+};
+
+// ─── SchemeHeader (shown once above the list) ─────────────────────────────────
+
+const SchemeHeader: React.FC<{ schemeName: string; mode: string }> = ({
+  schemeName,
+  mode,
+}) => {
+  const initials = getInitials(schemeName);
+  const bgColor = getColorFromText(schemeName);
+  const nameColor = mode === "dark" ? "#FFFFFF" : "#000000";
+
+  return (
+    <View style={schemeHeader.container}>
+      <View style={[schemeHeader.avatar, { backgroundColor: bgColor }]}>
+        <Text style={schemeHeader.avatarText}>{initials}</Text>
+      </View>
+      <Text
+        style={[schemeHeader.name, { color: nameColor }]}
+        numberOfLines={2}
+        ellipsizeMode="tail"
+      >
+        {schemeName}
+      </Text>
+    </View>
+  );
+};
+
+const schemeHeader = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: scaleH(20),
+    gap: scaleW(10),
+    paddingHorizontal: scaleW(2),
+  },
+  avatar: {
+    width: scaleW(42),
+    height: scaleW(42),
+    borderRadius: scaleW(21),
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  avatarText: {
+    color: "#FFFFFF",
+    fontSize: scaleFont(14),
+    fontFamily: "Urbanist-SemiBold",
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  name: {
+    flex: 1,
+    fontFamily: "Urbanist-SemiBold",
+    fontWeight: "600",
+    fontSize: scaleFont(16),
+    lineHeight: scaleFont(22),
+  },
+});
+
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 const LabelValue: React.FC<{
-  label:       string;
-  value:       string;
+  label: string;
+  value: string;
   valueStyle?: object;
 }> = ({ label, value, valueStyle }) => (
   <View style={card.labelValueContainer}>
@@ -84,101 +160,100 @@ const LabelValue: React.FC<{
   </View>
 );
 
-const StatusBadge: React.FC<{ status: TransactionStatus }> = ({ status }) => {
-  const { bg, text } = STATUS_COLORS[status];
-  const label =
-    status === "success"   ? "Success"    :
-    status === "failed"    ? "Failed"     :
-                             "Processing";
-  return (
-    <View style={[card.badge, { backgroundColor: bg }]}>
-      <Text style={[card.badgeText, { color: text }]}>{label}</Text>
-    </View>
-  );
-};
+// const StatusBadge: React.FC<{ status: TransactionStatus }> = ({ status }) => {
+//   const { bg, text } = STATUS_COLORS[status];
+//   const label =
+//     status === "success"   ? "Completed"  :
+//     status === "failed"    ? "Failed"     :
+//                              "Processing";
+//   return (
+//     <View style={[card.badge, { backgroundColor: bg }]}>
+//       <Text style={[card.badgeText, { color: text }]}>{label}</Text>
+//     </View>
+//   );
+// };
+
+// ─── TransactionCard (no scheme name / avatar here) ──────────────────────────
 
 const TransactionCard: React.FC<{ item: ApiTransaction }> = ({ item }) => {
   const { colors, mode } = useAppTheme();
-  const cardBg     = mode === "dark" ? "#1E1E1E" : "#FFFFFF";
+  const cardBg = mode === "dark" ? "#1E1E1E" : "#FFFFFF";
   const cardBorder = mode === "dark" ? "#333333" : "#EEEEEE";
-  const dividerBg  = mode === "dark" ? "#2A2A2A" : "#F0F0F0";
+  const dividerBg = mode === "dark" ? "#2A2A2A" : "#F0F0F0";
   const valueColor = { color: colors.text };
-  const status     = getStatus(item.txnType);
+  // const status     = getStatus(item.txnType);
 
   return (
     <View style={[card.container, { backgroundColor: cardBg, borderColor: cardBorder }]}>
-      <View style={card.headerRow}>
-        <Image
-          source={require("../../images/dashboard/sbi.png")}
-          style={card.fundIcon}
-          resizeMode="contain"
-        />
-        <Text style={[card.fundName, valueColor]} numberOfLines={1} ellipsizeMode="tail">
-          {item.txnType} — {item.arnNo}
-        </Text>
+
+      {/* Row 1: Trans. Date | Tran. Type */}
+      <View style={card.dataRow}>
+        <LabelValue label="Trans. Date" value={item.navDate} valueStyle={valueColor} />
+        <LabelValue label="Tran. Type" value={item.txnType} valueStyle={valueColor} />
       </View>
 
       <View style={[card.divider, { backgroundColor: dividerBg }]} />
 
+      {/* Row 2: Amount | NAV */}
       <View style={card.dataRow}>
-        <LabelValue label="NAV Date" value={item.navDate}           valueStyle={valueColor} />
-        <LabelValue label="Txn Type" value={item.txnType}           valueStyle={valueColor} />
+        <LabelValue
+          label="Amount"
+          value={formatINR(item.amount)}
+          valueStyle={[valueColor, { marginRight: 14 }]}
+        />
+
+        <LabelValue
+          label="NAV"
+          value={formatINR(item.nav)}
+          valueStyle={[valueColor, { marginRight: 14 }]}
+        />
       </View>
 
-      <View style={card.dataRow}>
-        <LabelValue label="Amount"   value={formatINR(item.amount)} valueStyle={valueColor} />
-        <LabelValue label="NAV"      value={formatINR(item.nav)}    valueStyle={valueColor} />
-      </View>
-
-      <View style={card.dataRow}>
-        <LabelValue label="Units"         value={String(item.units)}        valueStyle={valueColor} />
-        <LabelValue label="Balance Units" value={String(item.balanceUnits)} valueStyle={valueColor} />
-      </View>
-
-      <View style={card.dataRow}>
-        <LabelValue label="ARN No" value={item.arnNo} valueStyle={valueColor} />
-        <StatusBadge status={status} />
+      {/* Row 3: Units | Status badge */}
+      <View style={[card.dataRow, { alignItems: "flex-end" }]}>
+        <LabelValue label="Units" value={String(item.units)} valueStyle={valueColor} />
+        {/* <StatusBadge status={status} /> */}
       </View>
     </View>
   );
 };
 
-// ─── Main Modal ───────────────────────────────────────────────────────────────
+// ─── Modal ────────────────────────────────────────────────────────────────────
 
-const TransactionModal: React.FC<Props> = ({ visible, onClose, folid, cid }) => {
+const TransactionModal: React.FC<Props> = ({
+  visible,
+  onClose,
+  folid,
+  cid,
+  schemeName,
+}) => {
   const { colors, mode } = useAppTheme();
-  const sheetBg    = mode === "dark" ? "#1E1E1E" : "#FAFAFA";
+  const sheetBg = mode === "dark" ? "#1E1E1E" : "#FAFAFA";
   const titleColor = mode === "dark" ? "#FFFFFF" : "#000000";
 
-  const translateY     = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+  const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
 
   const [allTransactions, setAllTransactions] = useState<ApiTransaction[]>([]);
-  const [currentPage,     setCurrentPage]     = useState(1);
-  const [hasMore,         setHasMore]         = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
-  // ── URL — empty string when modal hidden so useGet skips the call ──────────
   const apiUrl =
-    visible && folid && cid
-      ? `api/dataimport/getFolStatement?folid=${folid}&cid=${cid}&currentPage=${currentPage}&pageSize=${PAGE_SIZE}`
+    visible && folid
+      ? `api/dataimport/getFolStatement?folid=${folid}&currentPage=${currentPage}&pageSize=${PAGE_SIZE}`
       : "";
 
   const { data, loading } = useGet(apiUrl, {}, !!apiUrl);
 
-  // ── Accumulate pages ───────────────────────────────────────────────────────
   useEffect(() => {
     if (!data?.result?.data) return;
-
     const fetched: ApiTransaction[] = data.result.data;
-
     setAllTransactions((prev) =>
       currentPage === 1 ? fetched : [...prev, ...fetched]
     );
-
     setHasMore(fetched.length === PAGE_SIZE);
   }, [data]);
 
-  // ── Reset on open / folid change ───────────────────────────────────────────
   useEffect(() => {
     if (visible) {
       setAllTransactions([]);
@@ -187,18 +262,15 @@ const TransactionModal: React.FC<Props> = ({ visible, onClose, folid, cid }) => 
     }
   }, [visible, folid]);
 
-  // ── Scroll-to-bottom → load next page ─────────────────────────────────────
   const handleScroll = ({ nativeEvent }: any) => {
     const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
     const nearBottom =
       layoutMeasurement.height + contentOffset.y >= contentSize.height - 40;
-
     if (nearBottom && !loading && hasMore) {
       setCurrentPage((prev) => prev + 1);
     }
   };
 
-  // ── Slide animation ────────────────────────────────────────────────────────
   useEffect(() => {
     if (visible) {
       translateY.setValue(SCREEN_HEIGHT);
@@ -227,7 +299,7 @@ const TransactionModal: React.FC<Props> = ({ visible, onClose, folid, cid }) => 
     }
   }, [visible]);
 
-  const isFirstLoad    = loading && currentPage === 1 && allTransactions.length === 0;
+  const isFirstLoad = loading && currentPage === 1 && allTransactions.length === 0;
   const isFetchingMore = loading && currentPage > 1;
 
   return (
@@ -246,6 +318,7 @@ const TransactionModal: React.FC<Props> = ({ visible, onClose, folid, cid }) => 
         >
           <View style={styles.handle} />
 
+          {/* ── Title row ── */}
           <View style={styles.titleRow}>
             <View style={styles.titleSpacer} />
             <Text style={[styles.title, { color: titleColor }]}>
@@ -253,7 +326,10 @@ const TransactionModal: React.FC<Props> = ({ visible, onClose, folid, cid }) => 
             </Text>
             <TouchableOpacity
               onPress={onClose}
-              style={[styles.closeBtn, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#FFFFFF" }]}
+              style={[
+                styles.closeBtn,
+                { backgroundColor: mode === "dark" ? "#2A2A2A" : "#FFFFFF" },
+              ]}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
               <Image
@@ -263,6 +339,9 @@ const TransactionModal: React.FC<Props> = ({ visible, onClose, folid, cid }) => 
               />
             </TouchableOpacity>
           </View>
+
+          {/* ── Scheme header — shown once, above the scroll list ── */}
+          <SchemeHeader schemeName={schemeName} mode={mode} />
 
           {isFirstLoad ? (
             <View style={styles.centeredLoader}>
@@ -309,6 +388,8 @@ const TransactionModal: React.FC<Props> = ({ visible, onClose, folid, cid }) => 
 
 export default TransactionModal;
 
+// ─── Modal styles ─────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
@@ -330,12 +411,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignSelf: "center",
     marginBottom: scaleH(16),
+    backgroundColor: "#CCCCCC",
   },
   titleRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: scaleH(24),
+    marginBottom: scaleH(20),
     height: scaleH(35),
   },
   titleSpacer: { width: scaleW(35) },
@@ -390,6 +472,8 @@ const styles = StyleSheet.create({
   },
 });
 
+// ─── Card styles ──────────────────────────────────────────────────────────────
+
 const card = StyleSheet.create({
   container: {
     width: scaleW(357),
@@ -407,27 +491,8 @@ const card = StyleSheet.create({
     elevation: 6,
     gap: scaleH(10),
   },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    height: scaleH(35),
-    gap: scaleW(10),
-  },
-  fundIcon: {
-    width: scaleW(35),
-    height: scaleW(35),
-    borderRadius: scaleW(35) / 2,
-  },
-  fundName: {
-    flex: 1,
-    fontFamily: "Urbanist-SemiBold",
-    fontWeight: "600",
-    fontSize: scaleFont(16),
-    lineHeight: scaleFont(16),
-  },
   divider: {
     height: 1,
-    marginVertical: scaleH(4),
   },
   dataRow: {
     flexDirection: "row",
@@ -437,7 +502,7 @@ const card = StyleSheet.create({
   labelValueContainer: { gap: scaleH(5) },
   label: {
     fontFamily: "Urbanist-SemiBold",
-    fontWeight: "600",
+    // fontWeight:  "600",
     fontSize: scaleFont(12),
     color: "#878787",
     lineHeight: scaleFont(12),
