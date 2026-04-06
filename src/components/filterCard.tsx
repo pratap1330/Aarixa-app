@@ -122,22 +122,23 @@ const getColorFromText = (text: string) => {
                     />
                 </View> */}
                 <View
-    style={[
-        styles.logoCircle,
-        {
-            backgroundColor: getColorFromText(fund.schemeName),
-            justifyContent: "center",
-            alignItems: "center",
-        },
-    ]}
+    // style={[
+    //     styles.logoCircle,
+    //     {
+    //         backgroundColor: getColorFromText(fund.schemeName),
+    //         justifyContent: "center",
+    //         alignItems: "center",
+    //     },
+    // ]}
 >
-    <Text style={{ color: "#fff", fontWeight: "700", fontSize: 14 }}>
+    {/* <Text style={{ color: "#fff", fontWeight: "700", fontSize: 14 }}>
         {getInitials(fund.schemeName)}
-    </Text>
+    </Text> */}
                </View>
                 <Text style={[styles.fundName, { color: colors.text }]} numberOfLines={2}>
                     {fund.schemeName}
                 </Text>
+                
                 <TouchableOpacity style={styles.dotsBtn}>
                     <Image
                         source={require("../images/card/dot.png")}
@@ -373,6 +374,7 @@ const styles = StyleSheet.create({
     fundName: {
         flex: 1,
         fontFamily: "Urbanist-Bold",
+        marginLeft : -10,
         fontSize: scaleFont(14),
     },
     dotsBtn: {
