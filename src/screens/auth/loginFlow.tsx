@@ -251,8 +251,8 @@ import { validateUsername, validatePassword } from '../../utils/validation/valid
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
-const LoginFlow: React.FC<Props> = ({ navigation }) => {
-  // const phoneNo = 
+const LoginFlow: React.FC<Props> = ({ navigation,route }) => {
+  const {phone} = route.params;
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -277,6 +277,7 @@ const LoginFlow: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('OTPVerification', {
       username,
       password,
+      phone
     });
   };
 

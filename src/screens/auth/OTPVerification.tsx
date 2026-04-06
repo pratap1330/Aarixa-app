@@ -20,7 +20,7 @@ const scaleFont = (size: number) => (SCREEN_WIDTH / 375) * size;
 type Props = NativeStackScreenProps<RootStackParamList, 'OTPVerification'>;
 
 const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
-    const { username, password } = route.params;
+    const { username, password ,phone} = route.params;
     const [otp, setOtp] = useState(Array(4).fill(''));
     const inputRefs = useRef<TextInput[]>([]);
     const isOtpComplete = otp.every(digit => digit !== '');
@@ -95,14 +95,14 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
             </Text>
 
             {/* Phone */}
-            {/* <View style={styles.phoneContainer}>
+            <View style={styles.phoneContainer}>
                 <Image
                     source={require('../../images/loginImage/india.png')}
                     style={styles.flag}
                     resizeMode="contain"
                 />
-                <Text style={styles.phoneText}>+91 98765 43210</Text>
-            </View> */}
+                <Text style={styles.phoneText}>{phone}</Text>
+            </View>
 
             {/* OTP Inputs */}
             <View style={styles.otpContainer}>

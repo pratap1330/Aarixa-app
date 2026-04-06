@@ -1,11 +1,14 @@
 export type RootStackParamList = {
-  Login: undefined;
+  // Login: undefined;
   SplashScreen: undefined;
-  LoginPhone :undefined,
-  LoginFlow :undefined
+  LoginPhone :undefined;
+Login: {
+  phone: string;
+};
   OTPVerification: {
     username: string;
     password: string;
+    phone :string;
   };
 
   CreatePin: {
@@ -16,9 +19,9 @@ export type RootStackParamList = {
 
   AllSet: undefined;
   Tabs: undefined; 
-  Explore :undefined,
-  reports :undefined,
-  SipDetailsScreen : undefined
+  Explore :undefined;
+  reports :undefined;
+  SipDetailsScreen : undefined;
 }
 
 
