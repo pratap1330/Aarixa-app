@@ -10,6 +10,7 @@ import { RootStackParamList } from "../../utils/NavigationType/type";
 import SplashScreen from "../../screens/splashScreen/splashScreen";
 // import LoginScreen from "../../screens/auth/login";
 import LoginScreen from "../../screens/auth/loginFlow";
+import LoginPhone from '../../screens/auth/loginPhone'
 import OtpVerificationScreen from "../../screens/auth/OTPVerification";
 import CreatePinScreen from "../../screens/auth/createPin";
 import AllSetScreen from "../../screens/auth/allSet";
@@ -36,6 +37,12 @@ const StackNavigator = () => {
         <Stack.Screen
           name="OTPVerification"
           component={OtpVerificationScreen}
+        />
+
+
+          <Stack.Screen
+          name="LoginPhone"
+          component={LoginPhone}
         />
 
         <Stack.Screen

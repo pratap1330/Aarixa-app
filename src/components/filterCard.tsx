@@ -173,32 +173,6 @@ const getColorFromText = (text: string) => {
     </View>
 )}
 
-<View style={{ flex: 1 }}>
-    
-    {/* 👇 Overlay (jab menu open ho) */}
-    {activeMenu && (
-        <TouchableOpacity
-            style={styles.overlay}
-            activeOpacity={1}
-            onPress={() => setActiveMenu(null)}
-        />
-    )}
-
-    <View style={styles.outerContainer}>
-        <FlatList
-            data={allFunds}
-            keyExtractor={(item, index) => item.folioNo + index}
-            renderItem={renderFundItem}
-            ListHeaderComponent={renderHeader}
-            ListFooterComponent={renderFooter}
-            onEndReached={loadMore}
-            onEndReachedThreshold={0.5}
-            showsVerticalScrollIndicator={false}
-        />
-    </View>
-
-</View>
-
             {/* Folio + Tags */}
             <View style={styles.tagsRow}>
                 <Text style={[styles.accountNum, { color: colors.text }]}>
@@ -544,13 +518,4 @@ dropdownText: {
     fontSize: scaleFont(12),
     color: "#333",
 },
-overlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 1,
-},
-
 });

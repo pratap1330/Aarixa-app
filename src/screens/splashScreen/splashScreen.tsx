@@ -39,7 +39,7 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
         }).start(() => {
 
           setTimeout(() => {
-            navigation.replace('Login');
+            navigation.replace('LoginPhone');
           }, 1000);
 
         });
