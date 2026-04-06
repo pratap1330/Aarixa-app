@@ -1,7 +1,8 @@
 export type RootStackParamList = {
   Login: undefined;
   SplashScreen: undefined;
-  LoginPhone :undefined
+  LoginPhone :undefined,
+  LoginFlow :undefined
   OTPVerification: {
     username: string;
     password: string;

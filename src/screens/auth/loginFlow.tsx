@@ -251,7 +251,7 @@ import { validateUsername, validatePassword } from '../../utils/validation/valid
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
-const LoginFlow: React.FC<Props> = ({ navigation,route }) => {
+const LoginFlow: React.FC<Props> = ({ navigation }) => {
   // const phoneNo = 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
