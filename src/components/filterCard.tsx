@@ -18,6 +18,7 @@ const FILTERS = ["Equity Funds", "Debt Funds", "Hybrid Funds"];
 
 const FilterCard = () => {
     const [showModal, setShowModal] = useState(false);
+    const [activeMenu, setActiveMenu] = useState<string | null>(null);  
     const [cid, setCid] = useState<string | null>(null);
     const { colors, mode } = useAppTheme();
     const [selectedSchemeName, setSelectedSchemeName] = useState<string | null>(null);
@@ -139,13 +140,64 @@ const getColorFromText = (text: string) => {
                     {fund.schemeName}
                 </Text>
                 
-                <TouchableOpacity style={styles.dotsBtn}>
-                    <Image
-                        source={require("../images/card/dot.png")}
-                        style={[styles.dotIcon, mode === "dark" && { tintColor: "#FFFFFF" }]}
-                    />
-                </TouchableOpacity>
+        <TouchableOpacity
+    style={styles.dotsBtn}
+    onPress={() =>
+        setActiveMenu(activeMenu === fund.folioNo ? null : fund.folioNo)
+    }
+>
+    <Image
+        source={require("../images/card/dot.png")}
+        style={[
+            styles.dotIcon,
+            mode === "dark" && { tintColor: "#FFFFFF" },
+        ]}
+    />
+</TouchableOpacity>
             </View>
+
+{activeMenu === fund.folioNo && (
+    <View style={styles.dropdown}>
+        {["Invest Lumpsum", "STP", "SWP", "Switch", "Redeem"].map((item, index) => (
+            <TouchableOpacity
+                key={index}
+                style={styles.dropdownItem}
+                onPress={() => {
+                    console.log(item);
+                    setActiveMenu(null);
+                }}
+            >
+                <Text style={styles.dropdownText}>{item}</Text>
+            </TouchableOpacity>
+        ))}
+    </View>
+)}
+
+<View style={{ flex: 1 }}>
+    
+    {/* 👇 Overlay (jab menu open ho) */}
+    {activeMenu && (
+        <TouchableOpacity
+            style={styles.overlay}
+            activeOpacity={1}
+            onPress={() => setActiveMenu(null)}
+        />
+    )}
+
+    <View style={styles.outerContainer}>
+        <FlatList
+            data={allFunds}
+            keyExtractor={(item, index) => item.folioNo + index}
+            renderItem={renderFundItem}
+            ListHeaderComponent={renderHeader}
+            ListFooterComponent={renderFooter}
+            onEndReached={loadMore}
+            onEndReachedThreshold={0.5}
+            showsVerticalScrollIndicator={false}
+        />
+    </View>
+
+</View>
 
             {/* Folio + Tags */}
             <View style={styles.tagsRow}>
@@ -464,5 +516,41 @@ const styles = StyleSheet.create({
         marginTop: 50,
         fontFamily: "Urbanist-SemiBold",
         color: "#999",
-    }
+    },
+    dropdown: {
+    position: "absolute",
+    top: hp(40),
+    right: wp(10),
+    width: wp(145),
+    backgroundColor: "#FFFFFF",
+    borderRadius: wp(8),
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    zIndex: 999,
+},
+
+dropdownItem: {
+    height: hp(35),
+    justifyContent: "center",
+    paddingHorizontal: wp(15),
+    borderBottomWidth: 1,
+    borderBottomColor: "#EAEAEA",
+},
+
+dropdownText: {
+    fontFamily: "Urbanist-Medium",
+    fontSize: scaleFont(12),
+    color: "#333",
+},
+overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1,
+},
+
 });
