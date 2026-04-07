@@ -14,23 +14,36 @@ import TransactionModal from "../components/models/TransactionModal";
 import { useGet } from "../hooks/useGet";
 import { wp, hp, scaleFont } from "../utils/responcive/responcive";
 
-const FILTERS = ["Equity Funds", "Debt Funds", "Hybrid Funds"];
+// Category label mapping
+const CATEGORY_LABEL_MAP: Record<string, string> = {
+    Equity: "Equity Funds",
+    Debt: "Debt Funds",
+    Hybrid: "Hybrid Funds",
+    ELSS: "ELSS Funds",
+    Index: "Index Funds",
+    Liquid: "Liquid Funds",
+    Gold: "Gold Funds",
+    International: "International Funds",
+};
+
+const getCategoryLabel = (cat: string) => CATEGORY_LABEL_MAP[cat] ?? cat;
 
 const FilterCard = () => {
     const [showModal, setShowModal] = useState(false);
-    const [activeMenu, setActiveMenu] = useState<string | null>(null);  
+    const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [cid, setCid] = useState<string | null>(null);
     const { colors, mode } = useAppTheme();
     const [selectedSchemeName, setSelectedSchemeName] = useState<string | null>(null);
-    const [active, setActive] = useState("Equity Funds");
-
-    // Selected fund's folioNo for transaction modal
+    const [active, setActive] = useState("All");
     const [selectedFolid, setSelectedFolid] = useState<string | null>(null);
 
     // Pagination States
     const [allFunds, setAllFunds] = useState<any[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [isFetchingMore, setIsFetchingMore] = useState(false);
+
+    // Dynamic filters
+    const [filters, setFilters] = useState<string[]>(["All"]);
 
     useEffect(() => {
         const getCid = async () => {
@@ -44,6 +57,9 @@ const FilterCard = () => {
         getCid();
     }, []);
 
+
+    
+
     // API Call
     const { data, loading, error } = useGet(
         cid ? `api/investor/getInvestedFunds?cid=${cid}&levelNo=1&currentPage=${currentPage}&pageSize=10` : "",
@@ -51,60 +67,62 @@ const FilterCard = () => {
         !!cid
     );
 
-    // Append data when API returns results
+    // Append data and rebuild dynamic filters
     useEffect(() => {
         if (data?.result?.data) {
+            // ─── TESTING: inject extra dummy categories ───────────────────────
+            // const testExtras = [
+            //     { ...data.result.data[0], folioNo: "TEST-ELSS-1", category: "ELSS" },
+            //     { ...data.result.data[0], folioNo: "TEST-INDEX-1", category: "Index" },
+            //     { ...data.result.data[0], folioNo: "TEST-HYBRID-1", category: "Hybrid" },
+            //     { ...data.result.data[0], folioNo: "TEST-LIQUID-1", category: "Liquid" },
+            // ];
+            const incoming = [...data.result.data];
+            // ─────────────────────────────────────────────────────────────────
+
+            const updatedFunds =
+                currentPage === 1 ? incoming : [...allFunds, ...incoming];
+
             if (currentPage === 1) {
-                setAllFunds(data?.result?.data);
+                setAllFunds(incoming);
             } else {
-                setAllFunds((prev) => [...prev, ...data?.result?.data]);
+                setAllFunds((prev) => [...prev, ...incoming]);
             }
+
+            // Build filter tabs from unique categories in accumulated data
+            const seen = new Set<string>();
+            const categories: string[] = ["All"];
+            updatedFunds.forEach((fund: any) => {
+                const label = getCategoryLabel(fund.category?.trim());
+                if (label && !seen.has(label)) {
+                    seen.add(label);
+                    categories.push(label);
+                }
+            });
+            setFilters(categories);
             setIsFetchingMore(false);
         }
     }, [data]);
 
-    // const handleFilterChange = (filter: string) => {
-    //     setActive(filter);
-    //     setAllFunds([]);
-    //     setCurrentPage(1);
-    // };
-
     const loadMore = () => {
-        if (!loading && !isFetchingMore && data?.result?.data.length === 10) {
+        if (!loading && !isFetchingMore && data?.result?.data?.length === 10) {
             setIsFetchingMore(true);
             setCurrentPage((prev) => prev + 1);
         }
     };
 
-    // Open modal with selected fund's folioNo (folid)
     const handleViewTransactions = (fund: any) => {
-        // Pick folioNo from fund object; fallback to "765" if not present
         const folid = fund?.folid ?? "765";
         setSelectedFolid(String(folid));
-        setSelectedSchemeName(fund?.schemeName || ""); 
+        setSelectedSchemeName(fund?.schemeName || "");
         setShowModal(true);
     };
 
-    const getInitials = (name: string) => {
-  if (!name) return "";
-
-  const words = name.trim().split(" ");
-  return words.slice(0, 2).map(w => w[0]).join("").toUpperCase();
-};
-
-const getColorFromText = (text: string) => {
-  let hash = 0;
-
-  for (let i = 0; i < text.length; i++) {
-    hash = text.charCodeAt(i) + ((hash << 5) - hash);
-  }
-
-  const hue = Math.abs(hash) % 360;
-  const saturation = 70;
-  const lightness = 50;
-
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-};
+    // Filter funds based on active tab
+    const filteredFunds = allFunds.filter((fund) => {
+        if (active === "All") return true;
+        return getCategoryLabel(fund.category?.trim()) === active;
+    });
 
     const renderFundItem = ({ item: fund }: { item: any }) => (
         <View
@@ -115,69 +133,54 @@ const getColorFromText = (text: string) => {
         >
             {/* Header */}
             <View style={styles.cardHeader}>
-                {/* <View style={styles.logoCircle}>
-                    <Image
-                        source={require("../images/dashboard/sbi.png")}
-                        style={styles.logoImage}
-                        resizeMode="contain"
-                    />
-                </View> */}
-                <View
-    // style={[
-    //     styles.logoCircle,
-    //     {
-    //         backgroundColor: getColorFromText(fund.schemeName),
-    //         justifyContent: "center",
-    //         alignItems: "center",
-    //     },
-    // ]}
->
-    {/* <Text style={{ color: "#fff", fontWeight: "700", fontSize: 14 }}>
-        {getInitials(fund.schemeName)}
-    </Text> */}
-               </View>
+                <View />
                 <Text style={[styles.fundName, { color: colors.text }]} numberOfLines={2}>
                     {fund.schemeName}
                 </Text>
-                
-        <TouchableOpacity
-    style={styles.dotsBtn}
-    onPress={() =>
-        setActiveMenu(activeMenu === fund.folioNo ? null : fund.folioNo)
-    }
->
-    <Image
-        source={require("../images/card/dot.png")}
-        style={[
-            styles.dotIcon,
-            mode === "dark" && { tintColor: "#FFFFFF" },
-        ]}
-    />
-</TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.dotsBtn}
+                    onPress={() =>
+                        setActiveMenu(activeMenu === fund.folioNo ? null : fund.folioNo)
+                    }
+                >
+                    <Image
+                        source={require("../images/card/dot.png")}
+                        style={[
+                            styles.dotIcon,
+                            mode === "dark" && { tintColor: "#FFFFFF" },
+                        ]}
+                    />
+                </TouchableOpacity>
             </View>
 
-{activeMenu === fund.folioNo && (
-    <View style={styles.dropdown}>
-        {["Invest Lumpsum", "STP", "SWP", "Switch", "Redeem"].map((item, index) => (
-            <TouchableOpacity
-                key={index}
-                style={styles.dropdownItem}
-                onPress={() => {
-                    console.log(item);
-                    setActiveMenu(null);
-                }}
-            >
-                <Text style={styles.dropdownText}>{item}</Text>
-            </TouchableOpacity>
-        ))}
-    </View>
-)}
+            {activeMenu === fund.folioNo && (
+                <View style={styles.dropdown}>
+                    {["Invest Lumpsum", "STP", "SWP", "Switch", "Redeem"].map((item, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            style={styles.dropdownItem}
+                            onPress={() => {
+                                console.log(item);
+                                setActiveMenu(null);
+                            }}
+                        >
+                            <Text style={styles.dropdownText}>{item}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            )}
 
             {/* Folio + Tags */}
             <View style={styles.tagsRow}>
                 <Text style={[styles.accountNum, { color: colors.text }]}>
                     ({fund.folioNo})
                 </Text>
+                {/* Category badge */}
+                <View style={[styles.categoryBadge, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#EEF2FF" }]}>
+                    <Text style={styles.categoryBadgeText}>
+                        {getCategoryLabel(fund.category)}
+                    </Text>
+                </View>
             </View>
 
             <View style={[styles.divider, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#F0F0F0" }]} />
@@ -236,7 +239,9 @@ const getColorFromText = (text: string) => {
                 style={[styles.filterBtn, { backgroundColor: mode === "dark" ? "#1E1E1E" : "#FFFFFF" }]}
             >
                 <Image
-                    source={mode === "dark" ? require("../images/dashboard/filter_dark.png") : require("../images/dashboard/filter.png")}
+                    source={mode === "dark"
+                        ? require("../images/dashboard/filter_dark.png")
+                        : require("../images/dashboard/filter.png")}
                     style={styles.filterIcon}
                 />
                 <Text style={[styles.filterText, { color: colors.text }]}>Filters</Text>
@@ -244,7 +249,7 @@ const getColorFromText = (text: string) => {
 
             <FlatList
                 horizontal
-                data={FILTERS}
+                data={filters}
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(item) => item}
                 contentContainerStyle={styles.chipsWrapper}
@@ -252,10 +257,12 @@ const getColorFromText = (text: string) => {
                     const isActive = active === item;
                     return (
                         <TouchableOpacity
-                            // onPress={() => handleFilterChange(item)}
+                            onPress={() => setActive(item)}
                             style={[
                                 styles.chip,
-                                isActive ? styles.activeChip : [styles.inactiveChip, mode === "dark" && { backgroundColor: "#2A2A2A" }],
+                                isActive
+                                    ? styles.activeChip
+                                    : [styles.inactiveChip, mode === "dark" && { backgroundColor: "#2A2A2A" }],
                             ]}
                         >
                             <Text style={[styles.chipText, { color: isActive ? "#000000" : (mode === "dark" ? "#CCCCCC" : "#434343") }]}>
@@ -278,7 +285,7 @@ const getColorFromText = (text: string) => {
     return (
         <View style={styles.outerContainer}>
             <FlatList
-                data={allFunds}
+                data={filteredFunds}
                 keyExtractor={(item, index) => item.folioNo + index}
                 renderItem={renderFundItem}
                 ListHeaderComponent={renderHeader}
@@ -291,7 +298,6 @@ const getColorFromText = (text: string) => {
                 )}
             />
 
-            {/* Pass folid and cid to modal */}
             <TransactionModal
                 visible={showModal}
                 onClose={() => {
@@ -315,6 +321,7 @@ const styles = StyleSheet.create({
     },
     filterRow: {
         flexDirection: "row",
+        width: '99%', 
         alignItems: "center",
         justifyContent: "space-between",
         marginVertical: hp(15),
@@ -371,8 +378,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: wp(16),
         paddingVertical: hp(14),
         marginBottom: hp(16),
-        marginHorizontal :hp(2),
-        // shadowColor: "#000",
+        marginHorizontal: hp(2),
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.08,
         shadowRadius: 10,
@@ -400,7 +406,7 @@ const styles = StyleSheet.create({
     fundName: {
         flex: 1,
         fontFamily: "Urbanist-Bold",
-        marginLeft : -10,
+        marginLeft: -10,
         fontSize: scaleFont(14),
     },
     dotsBtn: {
@@ -422,6 +428,16 @@ const styles = StyleSheet.create({
         fontFamily: "Urbanist-SemiBold",
         fontSize: scaleFont(11),
         width: wp(84),
+    },
+    categoryBadge: {
+        paddingHorizontal: wp(8),
+        paddingVertical: hp(3),
+        borderRadius: wp(20),
+    },
+    categoryBadgeText: {
+        fontFamily: "Urbanist-SemiBold",
+        fontSize: scaleFont(10),
+        color: "#3A6FF8",
     },
     tag: {
         flexDirection: "row",
@@ -492,30 +508,28 @@ const styles = StyleSheet.create({
         color: "#999",
     },
     dropdown: {
-    position: "absolute",
-    top: hp(40),
-    right: wp(10),
-    width: wp(145),
-    backgroundColor: "#FFFFFF",
-    borderRadius: wp(8),
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    zIndex: 999,
-},
-
-dropdownItem: {
-    height: hp(35),
-    justifyContent: "center",
-    paddingHorizontal: wp(15),
-    borderBottomWidth: 1,
-    borderBottomColor: "#EAEAEA",
-},
-
-dropdownText: {
-    fontFamily: "Urbanist-Medium",
-    fontSize: scaleFont(12),
-    color: "#333",
-},
+        position: "absolute",
+        top: hp(40),
+        right: wp(10),
+        width: wp(145),
+        backgroundColor: "#FFFFFF",
+        borderRadius: wp(8),
+        elevation: 5,
+        shadowColor: "#000",
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        zIndex: 999,
+    },
+    dropdownItem: {
+        height: hp(35),
+        justifyContent: "center",
+        paddingHorizontal: wp(15),
+        borderBottomWidth: 1,
+        borderBottomColor: "#EAEAEA",
+    },
+    dropdownText: {
+        fontFamily: "Urbanist-Medium",
+        fontSize: scaleFont(12),
+        color: "#333",
+    },
 });
