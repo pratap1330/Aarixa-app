@@ -29,3 +29,4 @@ export const usePost = <T = any>() => {
     postData,
   };
 };
+
