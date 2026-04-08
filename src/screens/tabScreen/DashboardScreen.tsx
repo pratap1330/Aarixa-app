@@ -114,7 +114,7 @@ const Dashboard = () => {
         </View>
 
         <View
-          style={{ marginTop: scale(20), alignItems: "center", }}
+          style={{ marginTop: scale(20), alignItems: "center", marginBottom :scale(80) }}
         >
 
           <FilterCard />
