@@ -14,8 +14,10 @@ import { Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../utils/NavigationType/type';
 import { usePost } from '../../hooks/usePost';
+import Back from '../../images/loginImage/back.svg';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Lock from '../../images/loginImage/lock.svg';
 const wp = (size: number) => (SCREEN_WIDTH / 375) * size;
 const hp = (size: number) => (SCREEN_HEIGHT / 812) * size;
 const scaleFont = (size: number) => (SCREEN_WIDTH / 375) * size;
@@ -78,7 +80,6 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
                 navigation.navigate("AllSet");
             }
             else {
-                 console.log(res)
                 Alert.alert(res?.message);
             }
 
@@ -100,10 +101,7 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
                 style={styles.backButton}
                 onPress={() => navigation.goBack()}
             >
-                <Image
-                    source={require('../../images/loginImage/back.png')}
-                    style={styles.backIcon}
-                />
+                <Back style={styles.backIcon} />
             </TouchableOpacity>
 
 
@@ -114,12 +112,7 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
 
 
             {/* Image */}
-            <Image
-                source={require('../../images/loginImage/pin.png')}
-                style={styles.image}
-                resizeMode="contain"
-            />
-
+            <Lock style={styles.image} />
 
             {/* Box */}
             <View style={styles.box}>

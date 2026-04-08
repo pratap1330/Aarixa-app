@@ -13,6 +13,9 @@ import {
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../utils/NavigationType/type';
+import OtpImage from '../../images/loginImage/otp.svg';
+import India from '../../images/loginImage/india.svg';
+import Back from '../../images/loginImage/back.svg';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const scaleFont = (size: number) => (SCREEN_WIDTH / 375) * size;
@@ -72,22 +75,16 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
                 style={styles.backButton}
                 onPress={() => navigation.goBack()}
             >
-                <Image
-                    source={require('../../images/loginImage/back.png')}
-                    style={styles.backIcon}
-                    resizeMode="contain"
-                />
+                <Back style={styles.backIcon} />
             </TouchableOpacity>
 
             {/* Title */}
             <Text style={styles.title}>OTP Verification</Text>
+/Users/harsh/Downloads/back.svg
 
-            {/* Image */}
-            <Image
-                source={require('../../images/loginImage/otp.png')}
-                style={styles.image}
-                resizeMode="contain"
-            />
+
+<OtpImage style={styles.image}/>
+
 
             {/* Subtitle */}
             <Text style={styles.subtitle}>
@@ -96,11 +93,7 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
 
             {/* Phone */}
             <View style={styles.phoneContainer}>
-                <Image
-                    source={require('../../images/loginImage/india.png')}
-                    style={styles.flag}
-                    resizeMode="contain"
-                />
+                <India style={styles.flag} />
                 <Text style={styles.phoneText}>+91{phone}</Text>
             </View>
 

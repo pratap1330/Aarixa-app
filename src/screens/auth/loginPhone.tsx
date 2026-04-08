@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../utils/NavigationType/type';
-
+import India from '../../images/loginImage/india.svg';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 // Base design width from Figma = 390px
@@ -97,10 +97,7 @@ const LoginPhone: React.FC<Props> = ({ navigation }) => {
           <View style={styles.inputRow}>
             {/* Country flag box */}
            <View style={styles.flagBox}>
-  <Image
-    source={require("../../images/loginImage/india.png")}
-    style={styles.flagImage}
-  />
+  <India style={styles.flagImage} />
 </View>
 
             {/* Phone input field */}

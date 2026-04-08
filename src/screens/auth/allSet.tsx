@@ -10,6 +10,7 @@ import {
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/NavigationType/type";
+import AllSet from "../../images/loginImage/allset.svg";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -33,11 +34,7 @@ const AllSetScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
 
-      <Image
-        source={require("../../images/loginImage/allset.png")}
-        style={styles.image}
-        resizeMode="contain"
-      />
+      <AllSet style={styles.image} />
 
       <Text style={styles.title}>
         You're All Set!

@@ -13,6 +13,7 @@ import { useAppTheme } from "../hooks/useTheme";
 import TransactionModal from "../components/models/TransactionModal";
 import { useGet } from "../hooks/useGet";
 import { wp, hp, scaleFont } from "../utils/responcive/responcive";
+import Dot from "../images/card/dot.svg";
 
 // Category label mapping
 const CATEGORY_LABEL_MAP: Record<string, string> = {
@@ -143,13 +144,11 @@ const FilterCard = () => {
                         setActiveMenu(activeMenu === fund.folioNo ? null : fund.folioNo)
                     }
                 >
-                    <Image
-                        source={require("../images/card/dot.png")}
-                        style={[
-                            styles.dotIcon,
-                            mode === "dark" && { tintColor: "#FFFFFF" },
-                        ]}
-                    />
+                  <Dot
+                    width={wp(25)}
+                    height={wp(25)}
+                    fill={mode === "dark" ? "#FFFFFF" : "#000000"} 
+                  />
                 </TouchableOpacity>
             </View>
 

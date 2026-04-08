@@ -16,6 +16,17 @@ import { useDispatch } from "react-redux";
 import { wp, hp } from "../../utils/responcive/responcive";
 import { useAppTheme } from "../../hooks/useTheme";
 import { toggleTheme } from "../../redux/slices/themeSlice";
+import User from "../../images/setting/user.svg";
+import Onboarding from '../../images/setting/onboarding.svg';
+import News from '../../images/setting/whatsnews.svg';
+import Sip from '../../images/setting/Sip.svg';
+import Wallet from '../../images/setting/Wallet.svg';
+import Reports from '../../images/setting/Reports.svg';
+import News1 from '../../images/setting/News1.svg';
+import Support from '../../images/setting/Support.svg';
+import Login from '../../images/setting/Login.svg';
+import Logout from '../../images/setting/Logout.svg'; 
+import Arrow from '../../images/setting/arrow.svg';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface RowItem {
@@ -26,14 +37,14 @@ interface RowItem {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-/** Chevron arrow on the right side of every row */
+
 const ArrowIcon = () => {
   const { mode } = useAppTheme();
+  
   return (
-    <Image
-      source={require("../../images/setting/arrow.png")}
-      style={[styles.arrow, { tintColor: mode === "dark" ? "#FFFFFF80" : "#0000009f" }]}
-      resizeMode="contain"
+    <Arrow
+      style = {styles.arrow}  
+      fill={mode === "dark" ? "#FFFFFF80" : "#0000009f"} 
     />
   );
 };
@@ -91,9 +102,6 @@ const handleLogout = async () => {
           await AsyncStorage.removeItem("cid");
           await AsyncStorage.removeItem("user");
 
-          // ✅ OR clear everything (optional)
-          // await AsyncStorage.clear();
-
           // 🚀 reset navigation (important)
           navigation.reset({
             index: 0,
@@ -114,38 +122,38 @@ const handleLogout = async () => {
   const navRows: RowItem[] = [
     {
       label: "Onboarding",
-      icon: require("../../images/setting/onboard.png"),
+      icon: Onboarding,
       onPress: () => navigation.navigate("Onboarding 1"),
     },
     {
       label: "What's New",
-      icon: require("../../images/setting/news.png"),
+      icon: News,
     },
     {
       label: "SIP/STP Details",
-      icon: require("../../images/setting/sip.png"),
+      icon: Sip,
     onPress: () => navigation.navigate("SipDetailsScreen"),
     },
     {
       label: "Wallet",
-      icon: require("../../images/setting/wallet.png"),
+      icon: Wallet,
     },
     {
       label: "Reports",
-      icon: require("../../images/setting/reports.png"),
-       onPress: () => navigation.navigate("reports"),
+      icon: Reports,
+      onPress: () => navigation.navigate("reports"),
     },
     {
       label: "News",
-      icon: require("../../images/setting/news1.png"),
+      icon: News1,
     },
     {
       label: "Customer Support",
-      icon: require("../../images/setting/support.png"),
+      icon: Support,
     },
     {
       label: "Login Details",
-      icon: require("../../images/setting/login.png"),
+      icon: Login,
     },
   ];
 
@@ -182,11 +190,16 @@ const handleLogout = async () => {
           <TouchableOpacity activeOpacity={0.7} style={styles.profileRow}>
             {/* Left icon */}
             <View style={styles.iconCircle}>
-              <Image
+              {/* <Image
                 source={require("../../images/headerImage/user.png")}
                 style={styles.rowIcon}
                 resizeMode="contain"
+              /> */}
+              <User
+                 style={styles.rowIcon}
+            
               />
+
             </View>
 
             {/* Label */}
@@ -254,11 +267,10 @@ const handleLogout = async () => {
            onPress={handleLogout}>
             {/* Icon */}
             <View style={styles.iconCircle}>
-              <Image
-                source={require("../../images/setting/logout.png")}
-                style={styles.rowIcon}
-                resizeMode="contain"
-              />
+           
+              <Logout
+                 style={styles.rowIcon} 
+                 />
             </View>
 
             {/* Label */}

@@ -20,6 +20,7 @@ import RNFS from "react-native-fs";
 import FileViewer from "react-native-file-viewer";
 import { Buffer } from "buffer";
 import axios from "axios";
+import Reports from '../../../images/setting/Reports.svg';
 
 import DatePickerModal from "../../../components/customDatePicker";
 import DropdownModal from "../../../components/searchableDropdown";
@@ -193,7 +194,10 @@ const ReportsScreen = () => {
         >
           <View style={styles.headerLeft}>
             <View style={[styles.iconWrapper, { backgroundColor: tab.iconBg }]}>
-              <Image source={require("../../../images/setting/reportimage.png")} style={[styles.reportIcon, { tintColor: tab.iconTint }]} />
+              <Reports
+                style={styles.reportIcon}
+                 fill={tab.iconTint} 
+              />
             </View>
             <Text style={[styles.headerTitle, { color: colors.text }]}>{tab.label}</Text>
           </View>
