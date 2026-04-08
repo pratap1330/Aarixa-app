@@ -44,12 +44,12 @@ const Dashboard = () => {
           const parsedUser = JSON.parse(userData);
 
           // 👇 yaha check kar structure kya hai
-          console.log("USER DATA:", parsedUser);
+          // console.log("USER DATA:", parsedUser);
 
           setUserName(parsedUser?.username || "");
         }
       } catch (error) {
-        console.log("Error fetching user:", error);
+        // console.log("Error fetching user:", error);
       }
     };
 

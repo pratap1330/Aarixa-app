@@ -127,7 +127,7 @@ const handleLogout = async () => {
       },
     ]);
   } catch (error) {
-    console.log("Logout Error:", error);
+    // console.log("Logout Error:", error);
   }
 };
 

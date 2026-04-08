@@ -52,7 +52,7 @@ const FilterCard = () => {
                 const storedCid = await AsyncStorage.getItem("cid");
                 if (storedCid) setCid(storedCid);
             } catch (err) {
-                console.log("Error reading cid from AsyncStorage", err);
+                // console.log("Error reading cid from AsyncStorage", err);
             }
         };
         getCid();
@@ -128,9 +128,10 @@ const FilterCard = () => {
     const renderFundItem = ({ item: fund }: { item: any }) => (
         <View
             style={[
-                styles.fundCard,
-                { backgroundColor: mode === "dark" ? "#111111" : "#FFFFFF" },
-            ]}
+            styles.fundCard,
+            { backgroundColor: mode === "dark" ? "#111111" : "#FFFFFF" },
+            activeMenu === fund.folioNo && { zIndex: 999, overflow: 'visible' }, // ← ADD THIS
+        ]}
         >
             {/* Header */}
             <View style={styles.cardHeader}>
@@ -159,7 +160,7 @@ const FilterCard = () => {
                             key={index}
                             style={styles.dropdownItem}
                             onPress={() => {
-                                console.log(item);
+                                // console.log(item);
                                 setActiveMenu(null);
                             }}
                         >
@@ -186,36 +187,39 @@ const FilterCard = () => {
 
             {/* Values */}
             <View style={styles.valuesRow}>
-                <View style={styles.valueCol}>
-                    <Text style={styles.valueLabel}>Current Value</Text>
-                    <Text style={[styles.valueAmount, { color: colors.text }]}>
-                        ₹{parseFloat(fund.currentValue || 0).toLocaleString("en-IN")}
-                    </Text>
-                </View>
-                <View style={[styles.valueCol, { marginRight: wp(18) }]}>
-                    <Text style={styles.valueLabel}>Invested Value</Text>
-                    <Text style={[styles.valueAmount, { color: colors.text }]}>
-                        ₹{parseFloat(fund.investedValue || 0).toLocaleString("en-IN")}
-                    </Text>
-                </View>
-            </View>
+    <View style={styles.valueCol}>
+        <Text style={styles.valueLabel}>Current Value</Text>
+        <Text style={[styles.valueAmount, { color: colors.text }]}>
+            ₹{parseFloat(fund.currentValue || 0).toLocaleString("en-IN")}
+        </Text>
+    </View>
+    <View style={[styles.valueCol, { alignItems: "flex-end" }]}>
+        <Text style={styles.valueLabel}>Invested Value</Text>
+        <Text style={[styles.valueAmount, { color: colors.text }]}>
+            ₹{parseFloat(fund.investedValue || 0).toLocaleString("en-IN")}
+        </Text>
+    </View>
+</View>
 
-            <View style={styles.valuesRow}>
-                <View style={styles.valueCol}>
-                    <Text style={styles.valueLabel}>Unrealised Gain</Text>
-                    <Text style={styles.gainText}>
-                        ₹{parseFloat(fund.gain || 0).toLocaleString("en-IN")}
-                    </Text>
-                </View>
-                <View style={styles.valueCol}>
-                    <Text style={styles.valueLabel}>Today's Gain/Loss</Text>
-                    <Text style={styles.lossText}>
-                        ₹{(parseFloat(fund.currentValue || 0) - parseFloat(fund.investedValue || 0)).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                    </Text>
-                </View>
-            </View>
-
-            <View style={[styles.valuesRow, { marginBottom: 0 }]}>
+<View style={styles.valuesRow}>
+    <View style={styles.valueCol}>
+        <Text style={styles.valueLabel}>Unrealised Gain</Text>
+        <Text style={[styles.gainText, {
+            color: parseFloat(fund.gain || 0) >= 0 ? "#1AAD00" : "#CC0000"
+        }]}>
+            ₹{parseFloat(fund.gain || 0).toLocaleString("en-IN")}
+        </Text>
+    </View>
+    <View style={[styles.valueCol, { alignItems: "flex-end" }]}>
+        <Text style={styles.valueLabel}>Xirr</Text>
+        <Text style={[styles.lossText, {
+            color: fund.xirr && parseFloat(fund.xirr) >= 0 ? "#1AAD00" : "#CC0000"
+        }]}>
+            {fund.xirr ? `${parseFloat(fund.xirr)}%` : "N/A"}
+        </Text>
+    </View>
+</View>
+ <View style={[styles.valuesRow, { marginBottom: 0 }]}>
                 <View style={styles.valueCol}>
                     <Text style={styles.valueLabel}>Units</Text>
                     <Text style={[styles.valueAmount, { color: colors.text }]}>
@@ -229,6 +233,7 @@ const FilterCard = () => {
                     <Text style={styles.viewTxnText}>View Transactions</Text>
                 </TouchableOpacity>
             </View>
+
         </View>
     );
 
@@ -317,6 +322,7 @@ const styles = StyleSheet.create({
     outerContainer: {
         flex: 1,
         paddingHorizontal: wp(16),
+        overflow: 'visible',
     },
     filterRow: {
         flexDirection: "row",
@@ -381,7 +387,9 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.08,
         shadowRadius: 10,
-        elevation: 2,
+        elevation: 1,
+        overflow: 'visible', 
+        zIndex: 1,  
     },
     cardHeader: {
         flexDirection: "row",
@@ -484,12 +492,12 @@ const styles = StyleSheet.create({
     gainText: {
         fontFamily: "Urbanist-Bold",
         fontSize: scaleFont(14),
-        color: "#1AAD00",
+        // color: "#1AAD00",
     },
     lossText: {
         fontFamily: "Urbanist-Bold",
         fontSize: scaleFont(14),
-        color: "#CC0000",
+        // color: "#CC0000",
     },
     viewTxnBtn: {
         alignSelf: "flex-end",
