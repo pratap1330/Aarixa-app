@@ -63,7 +63,6 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
         const finalPin = pin.join('');
          
         if (finalPin.length !== 4) return;
-
         try {
             const payload = {
                 username: username,
@@ -87,6 +86,50 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
             Alert.alert(err?.message);
         }
     };
+
+//     const handleSetPin = async () => {
+//     const finalPin = pin.join('');
+     
+//     if (finalPin.length !== 4) {
+//         Alert.alert("Invalid PIN", "Please enter a 4-digit PIN");
+//         return;
+//     }
+
+//     try {
+//         const payload = {
+//             username: username,
+//             Password: password,  
+//             Passcode: finalPin,
+//             otp: otp,
+//         };
+
+//         const res = await postData("api/auth/client-login", payload);
+
+//         // ✅ 1. Success Case
+//         debugger
+//         if (res?.status === 1) {
+//             const cid = res?.result?.user?.cid;
+//             await AsyncStorage.setItem("cid", cid);
+//             await AsyncStorage.setItem("user", JSON.stringify(res?.result?.user));
+//             navigation.navigate("AllSet");
+//         } 
+//         // ❌ 2. Account Locked Case (Status -1)
+//         else if (res?.status === -1) {
+//             Alert.alert(
+//                 res.message, // This will show "Account locked. Try again in 5 minute(s)."
+                
+//             );
+//         }
+//         // ❌ 3. General Error Case (Wrong PIN, etc.)
+//         else {
+//             Alert.alert("Login Failed", res?.message || "Something went wrong");
+//         }
+
+//     } catch (err: any) {
+//         // ❌ 4. Network/System Error
+//         Alert.alert("Error", err?.message || "Connection failed");
+//     }
+// };
 
 
     return (

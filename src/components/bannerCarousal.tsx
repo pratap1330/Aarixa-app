@@ -26,7 +26,7 @@ const DEFAULT_BANNERS: BannerItem[] = [
   { id: "1", source: require("../images/headerImage/banner.png") },
 ];
 
-// ✅ Replace scale with wp/hp
+
 const CARD_WIDTH = wp(358);
 const CARD_HEIGHT = hp(150);
 

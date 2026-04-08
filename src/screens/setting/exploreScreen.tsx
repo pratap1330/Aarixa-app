@@ -31,11 +31,23 @@ import Arrow from '../../images/setting/arrow.svg';
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface RowItem {
   label: string;
-  icon: any;
+  icon: React.FC<any>
   onPress?: () => void;
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
+
+/** Chevron arrow on the right side of every row */
+// const ArrowIcon = () => {
+//   const { mode } = useAppTheme();
+//   return (
+//     <Image
+//       source={require("../../images/setting/arrow.png")}
+//       style={[styles.arrow, { tintColor: mode === "dark" ? "#FFFFFF80" : "#0000009f" }]}
+//       resizeMode="contain"
+//     />
+//   );
+// };
 
 
 const ArrowIcon = () => {
@@ -44,32 +56,36 @@ const ArrowIcon = () => {
   return (
     <Arrow
       style = {styles.arrow}  
-      fill={mode === "dark" ? "#FFFFFF80" : "#0000009f"} 
+      fill={mode === "dark" ? "#ede0e0" : "#0000009f"} 
     />
   );
 };
 
-
 /** Generic tappable row with left icon + label + right arrow */
-const SettingsRow = ({ label, icon, onPress }: RowItem) => {
+const SettingsRow = ({ label, icon: Icon, onPress }: RowItem) => {
   const { colors } = useAppTheme();
+
   return (
     <TouchableOpacity
       activeOpacity={0.7}
       style={styles.row}
       onPress={onPress}
     >
-      {/* Left icon */}
+      {/* Left icon - Using the exact same View style */}
       <View style={styles.iconCircle}>
-        <Image source={icon} style={styles.rowIcon} resizeMode="contain" />
+        {/* 
+          Instead of <Image source={icon} />, we use <Icon /> 
+          We apply your exact 'styles.rowIcon' here.
+        */}
+        <Icon style={styles.rowIcon} />
       </View>
 
-      {/* Label */}
+      {/* Label - Same style */}
       <Text style={[styles.rowLabel, { color: colors.text }]} numberOfLines={1}>
         {label}
       </Text>
 
-      {/* Right arrow */}
+      {/* Right arrow - Same style */}
       <View style={styles.arrowWrap}>
         <ArrowIcon />
       </View>
