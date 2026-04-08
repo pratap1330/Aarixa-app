@@ -125,7 +125,7 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
             <View style={styles.box}>
 
                 <Text style={styles.subtitle}>
-                    Set a 4-digit PIN for quick and safe access.
+                    Set a 4-digit PIN for quick and safe access
                 </Text>
 
 
@@ -259,24 +259,24 @@ const styles = StyleSheet.create({
         width: wp(357),
         height: hp(35),
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        // justifyContent: 'space-between',
+        justifyContent :'center',
+        gap:30
     },
 
 
     pinInput: {
-        width: wp(60),
-        height: hp(40),
-        // borderBottomWidth: 2,
-         borderWidth: 1.5,
-    // borderColor: '#E8ECF4',
-     borderRadius: 12,
-     borderColor: '#2288FD',
-    textAlign: 'center',
-        // borderColor: '#2288FD',
-        // textAlign: 'center',
-        fontSize: scaleFont(18),
-        color: '#000',
-        fontFamily: 'Urbanist-SemiBold',
+       width: 50,
+        height: 44,
+        marginTop :4,
+        borderWidth: 1.5,
+        borderColor: '#2288FD',
+        borderRadius: 10,
+        textAlign: 'center',
+        fontSize: scaleFont(16),
+        fontFamily: 'Urbanist-Medium',
+        color: '#1E232C',
+        backgroundColor: '#fff',
     },
 
 

@@ -91,7 +91,7 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
 
             {/* Subtitle */}
             <Text style={styles.subtitle}>
-                Enter the verification code you received 
+                Enter the verification code you received on
             </Text>
 
             {/* Phone */}
@@ -101,7 +101,7 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
                     style={styles.flag}
                     resizeMode="contain"
                 />
-                <Text style={styles.phoneText}>{phone}</Text>
+                <Text style={styles.phoneText}>+91{phone}</Text>
             </View>
 
             {/* OTP Inputs */}
@@ -226,17 +226,16 @@ const styles = StyleSheet.create({
         // marginBottom: SCREEN_HEIGHT * 0.00005,
     },
 
-    phoneContainer: {
+  phoneContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        gap: SCREEN_WIDTH * 0.02,
-        marginBottom: SCREEN_HEIGHT * 0.015,
+        gap: 10,
+        marginBottom: SCREEN_HEIGHT * 0.02,
     },
 
     flag: {
-        width: SCREEN_WIDTH * (25 / 375),
-        height: SCREEN_WIDTH * (25 / 375),
+        width: 25,
+        height: 25,
     },
 
     phoneText: {
@@ -247,62 +246,48 @@ const styles = StyleSheet.create({
 
     otpContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        fontFamily: 'Urbanist-Medium',
+        // justifyContent: 'space-between',
+         justifyContent: 'center', 
         width: SCREEN_WIDTH * 0.9,
+        gap: 15,
         marginBottom: SCREEN_HEIGHT * 0.05,
     },
 
-    // otpInput: {
-    //     width: SCREEN_WIDTH * 0.18,
-    //     height: SCREEN_WIDTH * 0.12,
-    //     borderColor: '#2288FD',
-    //     fontFamily: 'Urbanist-SemiBold',
-    //     borderBottomWidth: 2,
-    //     textAlign: 'center',
-    //     fontSize: scaleFont(16),
-    //     color: '#1E232C',
-    // },
-
     otpInput: {
-    width: SCREEN_WIDTH * 0.18,
-    height: SCREEN_WIDTH * 0.14,
-
-    borderWidth: 1.5,
-    // borderColor: '#E8ECF4',
-    borderRadius: 12,
- borderColor: '#2288FD',
-    textAlign: 'center',
-    fontSize: scaleFont(18),
-    color: '#1E232C',
-    fontFamily: 'Urbanist-SemiBold',
-
-    backgroundColor: '#ffffff',
-},
+        width: 50,
+        height: 44,
+        marginTop :4,
+        borderWidth: 1.5,
+        borderColor: '#2288FD',
+        borderRadius: 10,
+        textAlign: 'center',
+        fontSize: scaleFont(16),
+        fontFamily: 'Urbanist-Medium',
+        color: '#1E232C',
+        backgroundColor: '#fff',
+    },
 
     button: {
-        width: SCREEN_WIDTH * 0.9,
-        height: SCREEN_HEIGHT * 0.065,
+        width: 357,
+        height: 48,
         backgroundColor: '#2288FD',
-        borderRadius: SCREEN_WIDTH * 0.03,
+        borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
+        marginBottom :-10
     },
 
     buttonText: {
         fontFamily: 'Urbanist-Medium',
-        // fontWeight: '700',
         fontSize: scaleFont(16),
-        color: '#FFFFFF',
+        color: '#fff',
     },
 
     resendButton: {
-        marginTop: SCREEN_HEIGHT * 0.015,
+        marginTop: SCREEN_HEIGHT * 0.032,
     },
-
     resendText: {
         fontFamily: 'Urbanist-Medium',
-        // fontWeight: '600',
         fontSize: scaleFont(15),
         color: '#1E232C',
         textAlign: 'center',

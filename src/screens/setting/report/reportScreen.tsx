@@ -49,7 +49,7 @@ const ReportsScreen = () => {
   const navigation = useNavigation<any>();
   const { colors, mode } = useAppTheme();
 
-  const [expandedTab, setExpandedTab] = useState<string | null>("Portfolio Valuation");
+  const [expandedTab, setExpandedTab] = useState<string | null>("");
   const [reportLoading, setReportLoading] = useState(false);
   
   const [selectName, setSelectName] = useState("Select name");
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   header: { 
     flexDirection: "row", 
-    marginTop: hp(40), 
+    marginTop: hp(70), 
     alignItems: "center", 
     justifyContent: "space-between", 
     paddingHorizontal: wp(16), 
