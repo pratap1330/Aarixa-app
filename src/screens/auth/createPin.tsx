@@ -106,7 +106,7 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
 //         const res = await postData("api/auth/client-login", payload);
 
 //         // ✅ 1. Success Case
-//         debugger
+//         
 //         if (res?.status === 1) {
 //             const cid = res?.result?.user?.cid;
 //             await AsyncStorage.setItem("cid", cid);
