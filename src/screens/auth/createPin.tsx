@@ -30,8 +30,6 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
     const [pin, setPin] = useState(Array(4).fill(''));
     const inputRefs = useRef<TextInput[]>([]);
 
-
-    // ✅ OTP jaisi functionality
     const handleChange = (text: string, index: number) => {
 
         if (text && !/^\d$/.test(text)) return;

@@ -25,6 +25,7 @@ import DatePickerModal from "../../../components/customDatePicker";
 import DropdownModal from "../../../components/searchableDropdown";
 
 // --- Helpers ---
+// --- Helpers ---
 const formatToUI = (date: Date): string => {
   const d = String(date.getDate()).padStart(2, "0");
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -34,13 +35,16 @@ const formatToUI = (date: Date): string => {
 
 const isoToUI = (iso: string): string => {
   if (!iso) return "DD/MM/YYYY";
-  const date = new Date(iso);
-  return formatToUI(date);
+  // Directly split the string to avoid timezone conversion shifting the day
+  // "2017-03-15T18:30:00.000Z" -> "2017-03-15"
+  const datePart = iso.split("T")[0];
+  const [y, m, d] = datePart.split("-");
+  return `${d}/${m}/${y}`;
 };
 
 const getDayBeforeYesterdayUI = (): string => {
   const d = new Date();
-  d.setDate(d.getDate() - 2);
+  d.setDate(d.getDate() - 1);
   return formatToUI(d);
 };
 
@@ -115,10 +119,10 @@ const ReportsScreen = () => {
     limitDate.setDate(limitDate.getDate() - 2);
     limitDate.setHours(23, 59, 59, 999);
 
-    if (selectedToDate > limitDate) {
-      Alert.alert("Validation Error", "To date cannot be greater than day before yesterday");
-      return;
-    }
+    // if (selectedToDate > limitDate) {
+    //   Alert.alert("Validation Error", "To date cannot be greater than day before yesterday");
+    //   return;
+    // }
 
     setReportLoading(true);
     const { fhid, cid: investorCid } = selectedInvestor;
@@ -175,7 +179,6 @@ const ReportsScreen = () => {
     const isExpanded = expandedTab === tab.label;
     const isValuation = tab.label === "Portfolio Valuation";
 
-    // Valuation: dropdown only (no date pickers) → less height
     const expandedHeight = isValuation ? hp(200) : hp(315);
     const collapsedHeight = hp(50);
 
@@ -222,7 +225,6 @@ const ReportsScreen = () => {
           <View style={styles.expandedContent}>
             <View style={styles.separator} />
 
-            {/* Dropdown - sabke liye including Portfolio Valuation */}
             <TouchableOpacity
               style={styles.selectNameRow}
               onPress={() => setShowDropdown(true)}
@@ -236,7 +238,6 @@ const ReportsScreen = () => {
               />
             </TouchableOpacity>
 
-            {/* Date pickers - sirf non-valuation tabs ke liye */}
             {!isValuation && (
               <>
                 <View style={styles.dateLabelRow}>

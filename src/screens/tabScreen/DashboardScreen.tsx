@@ -34,8 +34,7 @@ const Dashboard = () => {
   const { colors, mode } = useAppTheme();
   const [userName, setUserName] = useState("");
 
-  useEffect(() => {
-    debugger
+  useEffect(() => { 
     const getUser = async () => {
       try {
         const userData = await AsyncStorage.getItem("user");
