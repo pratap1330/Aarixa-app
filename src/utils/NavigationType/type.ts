@@ -2,9 +2,9 @@ export type RootStackParamList = {
   // Login: undefined;
   SplashScreen: undefined;
   LoginPhone :undefined;
-Login: {
-  phone: string;
-};
+  Login: {
+    phone :string}
+    ;
   OTPVerification: {
     username: string;
     password: string;
@@ -15,6 +15,7 @@ Login: {
     username: string;
     password: string;
     otp: string;
+    phone :string;
   };
 
   AllSet: undefined;

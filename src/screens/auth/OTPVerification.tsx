@@ -61,6 +61,7 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
             username,
             password,
             otp: finalOtp,
+            phone:phone
         });
     };
 
