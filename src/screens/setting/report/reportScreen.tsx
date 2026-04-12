@@ -54,7 +54,7 @@ const ReportsScreen = () => {
   const { colors, mode } = useAppTheme();
 
   const [expandedTab, setExpandedTab] = useState<string | null>("");
-  const [reportLoading, setReportLoading] = useState(false);
+  const [reportLoading, setReportLoading] = useState<Record<string, boolean>>({});
 
   const [selectName, setSelectName] = useState("Select name");
   const [selectedInvestor, setSelectedInvestor] = useState<any>(null);
@@ -96,9 +96,10 @@ const ReportsScreen = () => {
     { label: "Transaction Report", iconBg: "#FFFBEB", iconTint: "#F59E0B" },
     { label: "Capital Gain", iconBg: "#F0FDFA", iconTint: "#14B8A6" },
     { label: "Dividend Report", iconBg: "#FFF1F2", iconTint: "#F43F5E" },
+  
   ];
 
-  const handleDownload = async () => {
+  const handleDownload = async (tabLabel:any) => {
     const base_url = "http://43.224.137.63:9085";
     if (!selectedInvestor) {
       Alert.alert("Error", "Please select investor");
@@ -124,7 +125,7 @@ const ReportsScreen = () => {
     //   return;
     // }
 
-    setReportLoading(true);
+    setReportLoading((prev: Record<string, boolean>) => ({ ...prev, [tabLabel]: true }));
     const { fhid, cid: investorCid } = selectedInvestor;
     const dateFilterType = expandedTab === "Portfolio Valuation" ? "SINCE_INCEPTION" : "CUSTOM";
     const dateParams = `&fromDate=${formatForBackend(fromDate)}&toDate=${apiToDate}`;
@@ -136,8 +137,7 @@ const ReportsScreen = () => {
       url = `/api/reports/valuation-pdf?isSummary=1&fhid=${fhid}&cid=${investorCid}&dateFilterType=${dateFilterType}${dateParams}`;
     else if (expandedTab === "Transaction Report")
       url = `/api/reports/getTransactionReport-pdf?fhid=${fhid}&cid=${investorCid}&dateFilterType=${dateFilterType}${dateParams}`;
-    else {
-      setReportLoading(false);
+    else {    setReportLoading(prev => ({ ...prev, [tabLabel]: false }));
       Alert.alert("Error", "API not implemented");
       return;
     }
@@ -151,7 +151,7 @@ const ReportsScreen = () => {
       const contentType = response.headers['content-type'];
       if (contentType && contentType.includes('application/json')) {
         const responseData = JSON.parse(Buffer.from(response.data).toString());
-        setReportLoading(false);
+        setReportLoading((prev: Record<string, boolean>) => ({ ...prev, [tabLabel]: false }));
         Alert.alert("Error", responseData.message || "Request failed");
         return;
       }
@@ -163,14 +163,14 @@ const ReportsScreen = () => {
       const base64Data = Buffer.from(response.data).toString("base64");
       await RNFS.writeFile(filePath, base64Data, "base64");
       if (Platform.OS === "android") await RNFS.scanFile(filePath);
-      setReportLoading(false);
+    setReportLoading((prev: Record<string, boolean>) => ({ ...prev, [tabLabel]: false }));
       Alert.alert(
         "Download Complete",
         "Your report has been saved successfully in the Downloads folder.",
         [{ text: "OK" }]
       );
     } catch (err: any) {
-      setReportLoading(false);
+       setReportLoading((prev: Record<string, boolean>) => ({ ...prev, [tabLabel]: false }));
       Alert.alert("Error", "Check server or internet connection.");
     }
   };
@@ -282,10 +282,10 @@ const ReportsScreen = () => {
             >
               <TouchableOpacity
                 style={styles.downloadBtnInner}
-                onPress={handleDownload}
-                disabled={reportLoading}
+                onPress={() => handleDownload(tab.label)}
+               disabled={reportLoading[tab.label]}
               >
-                {reportLoading ? (
+                {reportLoading[tab.label] ? (
                   <ActivityIndicator color="#fff" size="small" />
                 ) : (
                   <>
@@ -319,7 +319,7 @@ const ReportsScreen = () => {
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
       >
         {tabs.map(renderTab)}
       </ScrollView>
