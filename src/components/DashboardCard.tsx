@@ -12,8 +12,8 @@ const formatNumber = (num: number = 0) => {
 };
 
 const DashboardCard: React.FC = () => {
-  const { mode } = useAppTheme();
-const [cid, setCid] = useState<string | null>(null);
+  const { colors } = useAppTheme();
+  const [cid, setCid] = useState<string | null>(null);
 
  useEffect(() => {
   const getData = async () => {
@@ -38,7 +38,7 @@ const [cid, setCid] = useState<string | null>(null);
   );
 
   if (cid === null || loading) {
-    return <ActivityIndicator size="large" color="#000" />;
+    return <ActivityIndicator size="large" color={colors.primary} />;
   }
 
   if (error) {
@@ -58,9 +58,9 @@ const [cid, setCid] = useState<string | null>(null);
   const xirr = `${investor?.investorXirr?.toFixed(2) || "0.00"}%`;
 
   return (
-    <View style={styles.outerCard}>
+    <View style={[styles.outerCard, { backgroundColor: colors.primaryDark }]}>
 
-      <View style={styles.topCard}>
+      <View style={[styles.topCard, { backgroundColor: colors.primary }]}>
         <View style={styles.valueBlock}>
           <Text style={styles.label}>Current Value</Text>
           <Text style={styles.amount}>{currentValue}</Text>

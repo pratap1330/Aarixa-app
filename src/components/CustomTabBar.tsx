@@ -1,4 +1,3 @@
-// src/components/CustomTabBar.tsx
 
 import React from "react";
 import {
@@ -18,10 +17,10 @@ import { useAppTheme } from "../hooks/useTheme";
 
 
 const CustomTabBar: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
-  const { mode } = useAppTheme();
+  const { mode, colors } = useAppTheme();
 
   const pillBg      = mode === "dark" ? "#1E1E1E" : "#FFFFFF";
-  const iconTint    = mode === "dark" ? "#CCCCCC" : undefined;
+  const iconTint    = mode === "dark" ? "#000000ff" : undefined;
   const labelColor  = mode === "dark" ? "#CCCCCC" : "#A2A2A2";
   const borderColor = mode === "dark" ? "#000000" : "#FFFFFF";
 
@@ -42,7 +41,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
                   onPress={() => navigation.navigate("center")}
                 >
                   <LinearGradient
-                    colors={["#527EFF", "#3366FF"]}
+                    colors={[colors.primary, colors.primaryDark]}
                     start={{ x: 0.5, y: 0 }}
                     end={{ x: 0.5, y: 1 }}
                     style={[styles.centerButton, { borderColor }]}
@@ -59,8 +58,6 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
           }
 
           const isFocused = state.index === index;
-
-          // ✅ NORMAL TAB
           return (
             <TouchableOpacity
               key={tab.key}
@@ -70,10 +67,10 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
             >
               <Image
                 source={tab.icon}
-                style={[styles.icon, iconTint ? { tintColor: isFocused ? "#527EFF" : iconTint } : undefined]}
+                style={[styles.icon, iconTint ? { tintColor: isFocused ? colors.primary : iconTint } : isFocused ? { tintColor: colors.primary } : undefined]}
                 resizeMode="contain"
               />
-              <Text style={[styles.label, { color: isFocused ? "#527EFF" : labelColor }]}>
+              <Text style={[styles.label, { color: isFocused ? colors.primary : labelColor }]}>
                 {tab.label}
               </Text>
             </TouchableOpacity>

@@ -28,8 +28,6 @@ const PAGE_SIZE = 10;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type TransactionStatus = "success" | "failed" | "processing";
-
 interface ApiTransaction {
   buyid: string | null;
   sellid: string | null;
@@ -224,7 +222,7 @@ const TransactionModal: React.FC<Props> = ({
   visible,
   onClose,
   folid,
-  cid,
+  cid: _cid,
   schemeName,
 }) => {
   const { colors, mode } = useAppTheme();
@@ -334,7 +332,7 @@ const TransactionModal: React.FC<Props> = ({
             >
               <Image
                 source={require("../../images/dashboard/close.png")}
-                style={[styles.closeIcon, mode === "dark" && { tintColor: "#FFFFFF" }]}
+                style={[styles.closeIcon, { tintColor: colors.text }]}
                 resizeMode="contain"
               />
             </TouchableOpacity>
@@ -345,7 +343,7 @@ const TransactionModal: React.FC<Props> = ({
 
           {isFirstLoad ? (
             <View style={styles.centeredLoader}>
-              <ActivityIndicator size="large" color="#3A6FF8" />
+              <ActivityIndicator size="large" color={colors.primary} />
             </View>
           ) : (
             <ScrollView
@@ -371,12 +369,12 @@ const TransactionModal: React.FC<Props> = ({
                 <ActivityIndicator
                   style={{ marginVertical: scaleH(16) }}
                   size="small"
-                  color="#3A6FF8"
+                  color={colors.primary}
                 />
               )}
 
               {!hasMore && allTransactions.length > 0 && (
-                <Text style={styles.endText}>All transactions loaded</Text>
+                <Text style={[styles.endText, { color: colors.primary }]}>All transactions loaded</Text>
               )}
             </ScrollView>
           )}

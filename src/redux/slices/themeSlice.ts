@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { BrandThemeKey } from "../../theme/color";
 
 const initialState = {
-  mode: "light", 
+  mode: "light" as "light" | "dark",
+  brandKey: "blue" as BrandThemeKey,
 };
 
 const themeSlice = createSlice({
@@ -14,8 +16,15 @@ const themeSlice = createSlice({
     setTheme: (state, action) => {
       state.mode = action.payload;
     },
+    setBrandTheme: (state, action) => {
+      state.brandKey = action.payload;
+    },
+    setThemePreferences: (state, action) => {
+      state.mode = action.payload.mode ?? state.mode;
+      state.brandKey = action.payload.brandKey ?? state.brandKey;
+    },
   },
 });
 
-export const { toggleTheme, setTheme } = themeSlice.actions;
+export const { toggleTheme, setTheme, setBrandTheme, setThemePreferences } = themeSlice.actions;
 export default themeSlice.reducer;

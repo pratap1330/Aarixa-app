@@ -21,7 +21,7 @@ const DatePickerModal = ({ visible, onClose, onConfirm, colors, mode }: DatePick
 
   const cardBg = mode === "dark" ? "#1E1E1E" : "#FFFFFF";
   const textColor = colors.text;
-  const accent = "#3366FF";
+  const accent = colors.primary;
 
   const Column = ({ data, selected, onSelect, label }: any) => (
     <View style={pickerStyles.col}>

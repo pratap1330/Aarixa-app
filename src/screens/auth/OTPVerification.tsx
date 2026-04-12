@@ -3,7 +3,6 @@ import {
     View,
     Text,
     StyleSheet,
-    Image,
     TextInput,
     TouchableOpacity,
     Dimensions,
@@ -290,4 +289,3 @@ const styles = StyleSheet.create({
         color: '#2288FD',
     },
 });
-

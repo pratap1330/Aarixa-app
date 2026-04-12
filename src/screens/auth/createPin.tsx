@@ -3,7 +3,6 @@ import {
     View,
     Text,
     StyleSheet,
-    Image,
     TextInput,
     TouchableOpacity,
     Dimensions,
@@ -25,7 +24,7 @@ const scaleFont = (size: number) => (SCREEN_WIDTH / 375) * size;
 type Props = NativeStackScreenProps<RootStackParamList, 'CreatePin'>;
 
 const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
-    const { postData, loading, error } = usePost();
+    const { postData, loading } = usePost();
     const { username, password, otp } = route.params;
     const [pin, setPin] = useState(Array(4).fill(''));
     const inputRefs = useRef<TextInput[]>([]);

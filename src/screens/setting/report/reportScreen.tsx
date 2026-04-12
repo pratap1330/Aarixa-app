@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -17,7 +17,6 @@ import { useAppTheme } from "../../../hooks/useTheme";
 import { useGet } from "../../../hooks/useGet";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RNFS from "react-native-fs";
-import FileViewer from "react-native-file-viewer";
 import { Buffer } from "buffer";
 import axios from "axios";
 
@@ -75,7 +74,7 @@ const ReportsScreen = () => {
   }, []);
 
   const { data, loading } = useGet<any>(`api/reports/family-heads?cid=${cid}`);
-  const dropdownOptions: any[] = data?.result || [];
+  const dropdownOptions: any[] = useMemo(() => data?.result || [], [data]);
 
   useEffect(() => {
     if (dropdownOptions.length > 0) {
@@ -87,7 +86,7 @@ const ReportsScreen = () => {
       }
       setToDate(getDayBeforeYesterdayUI());
     }
-  }, [data]);
+  }, [data, dropdownOptions]);
 
   const tabs = [
     { label: "Portfolio Valuation", iconBg: "#FFF1EB", iconTint: "#F97316" },
@@ -115,11 +114,6 @@ const ReportsScreen = () => {
     };
 
     const apiToDate = formatForBackend(toDate);
-    const selectedToDate = new Date(apiToDate);
-    const limitDate = new Date();
-    limitDate.setDate(limitDate.getDate() - 2);
-    limitDate.setHours(23, 59, 59, 999);
-
     // if (selectedToDate > limitDate) {
     //   Alert.alert("Validation Error", "To date cannot be greater than day before yesterday");
     //   return;
@@ -169,7 +163,7 @@ const ReportsScreen = () => {
         "Your report has been saved successfully in the Downloads folder.",
         [{ text: "OK" }]
       );
-    } catch (err: any) {
+    } catch {
        setReportLoading((prev: Record<string, boolean>) => ({ ...prev, [tabLabel]: false }));
       Alert.alert("Error", "Check server or internet connection.");
     }
@@ -226,7 +220,7 @@ const ReportsScreen = () => {
             <View style={styles.separator} />
 
             <TouchableOpacity
-              style={styles.selectNameRow}
+              style={[styles.selectNameRow, { borderBottomColor: colors.primary }]}
               onPress={() => setShowDropdown(true)}
             >
               <Text style={[styles.selectNameText, { color: colors.text }]}>
@@ -246,24 +240,24 @@ const ReportsScreen = () => {
                 </View>
                 <View style={styles.dateInputRow}>
                   <TouchableOpacity
-                    style={styles.dateBox}
+                    style={[styles.dateBox, { borderColor: colors.primarySoft }]}
                     onPress={() => setShowFromPicker(true)}
                   >
                     <Image
                       source={require("../../../images/setting/calendar.png")}
-                      style={styles.calIcon}
+                      style={[styles.calIcon, { tintColor: colors.primary }]}
                     />
                     <Text style={[styles.dateVal, { color: colors.text }]}>
                       {fromDate}
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={styles.dateBox}
+                    style={[styles.dateBox, { borderColor: colors.primarySoft }]}
                     onPress={() => setShowToPicker(true)}
                   >
                     <Image
                       source={require("../../../images/setting/calendar.png")}
-                      style={styles.calIcon}
+                      style={[styles.calIcon, { tintColor: colors.primary }]}
                     />
                     <Text style={[styles.dateVal, { color: colors.text }]}>
                       {toDate}
@@ -274,7 +268,7 @@ const ReportsScreen = () => {
             )}
 
             <LinearGradient
-              colors={["#527EFF", "#3366FF"]}
+              colors={[colors.primary, colors.primaryDark]}
               style={[
                 styles.downloadBtn,
                 isValuation && { marginTop: hp(20) },

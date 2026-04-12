@@ -30,7 +30,7 @@
   const { width: SCREEN_WIDTH } = Dimensions.get('window');
   const scaleFont = (size: number) => (SCREEN_WIDTH / 375) * size;
 
-  const LoginScreen: React.FC<Props> = ({ navigation }) => {
+  const LoginScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     const [phone, setPhone] = useState('');
     const [selectedCountry, setSelectedCountry] = useState<Country>(countries[0]);
     const [modalVisible, setModalVisible] = useState(false);

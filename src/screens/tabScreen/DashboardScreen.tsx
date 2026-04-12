@@ -47,7 +47,7 @@ const Dashboard = () => {
 
           setUserName(parsedUser?.username || "");
         }
-      } catch (error) {
+      } catch {
         // console.log("Error fetching user:", error);
       }
     };
@@ -83,17 +83,14 @@ const Dashboard = () => {
               }
             >
               <LinearGradient
-                colors={
-                  mode === "dark"
-                    ? ["#6A8DFF", "#3B5BDB"]
-                    : ["#527EFF", "#3366FF"]
-                }
+                colors={[colors.primary, colors.primaryDark]}
                 start={{ x: 0.5, y: 0 }}
                 end={{ x: 0.5, y: 1 }}
                 style={styles.nameGradient}
               />
             </MaskedView>
           </View>
+
 
         </View>
 
@@ -141,32 +138,28 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
 
-  // ── Outer header container ──
-  // Fixed Figma specs: top=10, left=15, height=73, gap=5
-  // Width is NOT fixed — stretches to fit name up to safe right margin
   headerBlock: {
     marginTop: scale(10),
     marginLeft: scale(15),
-    // width is intentionally left out — children define it
-    maxWidth: SCREEN_WIDTH - scale(30), // 15px padding on each side
+
+    maxWidth: SCREEN_WIDTH - scale(30), 
     height: scale(73),
     gap: scale(5),
   },
 
-  // ── Welcome Back row (always 211 wide per Figma) ──
+  
   welcomeRow: {
     width: scale(211),
     height: scale(34),
     justifyContent: "center",
   },
 
-  // Change these three style objects:
 
   welcomeText: {
     fontFamily: "Urbanist-Bold",
     fontWeight: "700",
     fontSize: scale(28),
-    lineHeight: scale(34),            // ✅ was scale(28) — increased to match row height
+    lineHeight: scale(34),        
     letterSpacing: scale(28) * -0.02,
     includeFontPadding: false,
   },
@@ -175,7 +168,7 @@ const styles = StyleSheet.create({
     fontFamily: "Urbanist-Bold",
     fontWeight: "700",
     fontSize: scale(28),
-    lineHeight: scale(34),            // ✅ was scale(28) — increased to match row height
+    lineHeight: scale(34),     
     letterSpacing: scale(28) * -0.02,
     includeFontPadding: false,
     color: "#000",

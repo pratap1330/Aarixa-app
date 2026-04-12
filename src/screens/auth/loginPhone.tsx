@@ -15,52 +15,12 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../utils/NavigationType/type';
 import India from '../../images/loginImage/india.svg';
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 // Base design width from Figma = 390px
 const BASE_WIDTH = 390;
 const scale = (size: number) => (SCREEN_WIDTH / BASE_WIDTH) * size;
 
-// India flag component (inline, no image dependency)
-const IndiaFlag = () => (
-  <View style={flagStyles.container}>
-    <View style={flagStyles.saffron} />
-    <View style={flagStyles.white}>
-      <View style={flagStyles.chakra} />
-    </View>
-    <View style={flagStyles.green} />
-  </View>
-);
-
-const flagStyles = StyleSheet.create({
-  container: {
-    width: scale(28),
-    height: scale(20),
-    borderRadius: scale(2),
-    overflow: "hidden",
-  },
-  saffron: {
-    flex: 1,
-    backgroundColor: "#FF9933",
-  },
-  white: {
-    flex: 1,
-    backgroundColor: "#E6E7E8",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  green: {
-    flex: 1,
-    backgroundColor: "#128807",
-  },
-  chakra: {
-    width: scale(8),
-    height: scale(8),
-    borderRadius: scale(4),
-    borderWidth: 1.5,
-    borderColor: "#000080",
-  },
-});
 type Props = NativeStackScreenProps<RootStackParamList, "LoginPhone">;
 
 const LoginPhone: React.FC<Props> = ({ navigation }) => {
@@ -83,7 +43,7 @@ const LoginPhone: React.FC<Props> = ({ navigation }) => {
 
         {/* ── App Logo ── */}
         {/* Swap the Text below with your <Image> once splash is ready */}
-        <Image
+<Image
   source={require("../../images/splash/splash.png")}
   style={styles.appLogo}
 />

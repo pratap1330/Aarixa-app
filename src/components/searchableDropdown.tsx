@@ -44,7 +44,7 @@ const DropdownModal = ({ visible, onClose, data, onSelect, colors, mode, loading
             style={[dropStyles.searchInput, { color: colors.text, borderBottomColor: mode === "dark" ? "#333" : "#EEE" }]}
           />
           {loading ? (
-            <ActivityIndicator style={{ marginTop: 20 }} />
+            <ActivityIndicator style={{ marginTop: 20 }} color={colors.primary} />
           ) : (
             <FlatList
               data={visibleData}
@@ -65,7 +65,7 @@ const DropdownModal = ({ visible, onClose, data, onSelect, colors, mode, loading
                 </TouchableOpacity>
               )}
               ListFooterComponent={
-                visibleCount < filteredData.length ? <ActivityIndicator style={{ margin: 10 }} /> : null
+                visibleCount < filteredData.length ? <ActivityIndicator style={{ margin: 10 }} color={colors.primary} /> : null
               }
             />
           )}

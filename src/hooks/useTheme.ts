@@ -1,9 +1,10 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store/store";
-import { LightColors, DarkColors } from "../theme/color";
+import { getThemeColors } from "../theme/color";
 
 export const useAppTheme = () => {
   const mode = useSelector((state: RootState) => state.theme.mode);
-  const colors = mode === "light" ? LightColors : DarkColors;
-  return { mode, colors };
+  const brandKey = useSelector((state: RootState) => state.theme.brandKey);
+  const colors = getThemeColors(mode, brandKey);
+  return { mode, brandKey, colors };
 };

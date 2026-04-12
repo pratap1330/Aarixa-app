@@ -1,5 +1,3 @@
-
-
 import React from "react";
 import {
   View,
@@ -15,7 +13,7 @@ import { Alert } from "react-native";
 import { useDispatch } from "react-redux";
 import { wp, hp } from "../../utils/responcive/responcive";
 import { useAppTheme } from "../../hooks/useTheme";
-import { toggleTheme } from "../../redux/slices/themeSlice";
+import { setBrandTheme } from "../../redux/slices/themeSlice";
 import User from "../../images/setting/user.svg";
 import Onboarding from '../../images/setting/onboarding.svg';
 import News from '../../images/setting/whatsnews.svg';
@@ -27,6 +25,17 @@ import Support from '../../images/setting/Support.svg';
 import Login from '../../images/setting/Login.svg';
 import Logout from '../../images/setting/Logout.svg'; 
 import Arrow from '../../images/setting/arrow.svg';
+import { BRAND_THEMES, BrandThemeKey } from "../../theme/color";
+
+const THEME_STORAGE_KEY = "appThemePreferences";
+
+const THEME_OPTIONS: { key: BrandThemeKey; label: string }[] = [
+  { key: "blue", label: "Blue" },
+  { key: "green", label: "Green" },
+  { key: "red", label: "Red" },
+  { key: "yellow", label: "Yellow" },
+  { key: "purple", label: "Purple" },
+];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface RowItem {
@@ -96,16 +105,11 @@ const SettingsRow = ({ label, icon: Icon, onPress }: RowItem) => {
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 const SettingsScreen = () => {
   const navigation = useNavigation<any>();
-  const { colors, mode } = useAppTheme();
+  const { colors, mode, brandKey } = useAppTheme();
   const dispatch = useDispatch();
-  const nightMode = mode === "dark";
-
-
-//   const navigation = useNavigation<any>();
 
 const handleLogout = async () => {
   try {
-    // 🔥 confirmation (optional but best UX)
     Alert.alert("Logout", "Are you sure you want to logout?", [
       {
         text: "Cancel",
@@ -114,11 +118,11 @@ const handleLogout = async () => {
       {
         text: "Yes",
         onPress: async () => {
-          // ✅ remove specific keys
+      
           await AsyncStorage.removeItem("cid");
           await AsyncStorage.removeItem("user");
 
-          // 🚀 reset navigation (important)
+        
           navigation.reset({
             index: 0,
             routes: [{ name: "Login" }],
@@ -126,13 +130,27 @@ const handleLogout = async () => {
         },
       },
     ]);
-  } catch (error) {
+  } catch {
     // console.log("Logout Error:", error);
   }
 };
 
   const cardBg    = mode === "dark" ? "#1E1E1E" : "#FFFFFF";
   const sepColor  = mode === "dark" ? "#FFFFFF18" : "#3C3C4329";
+  const sectionTitleColor = mode === "dark" ? "#BDBDBD" : "#6B7280";
+
+  const handleThemeSelect = async (selectedTheme: BrandThemeKey) => {
+    dispatch(setBrandTheme(selectedTheme));
+
+    try {
+      await AsyncStorage.setItem(
+        THEME_STORAGE_KEY,
+        JSON.stringify({ mode, brandKey: selectedTheme })
+      );
+    } catch {
+      // ignore theme save issues
+    }
+  };
 
   // Rows for the second card (all simple nav rows)
   const navRows: RowItem[] = [
@@ -232,39 +250,46 @@ const handleLogout = async () => {
 
        
         <View style={[styles.card, styles.cardTall, { backgroundColor: cardBg }]}>
-          <View style={styles.row}>
-            <View style={styles.iconCircle}>
-              {/* <Image
-                source={require("../../images/setting/darkmode.png")}
-                style={styles.rowIcon}
-                resizeMode="contain"
-              /> */}
+          <View style={styles.themeSection}>
+            <Text style={[styles.themeTitle, { color: sectionTitleColor }]}>
+              Theme Color
+            </Text>
+            <View style={styles.themeOptionsRow}>
+              {THEME_OPTIONS.map((theme) => {
+                const isActive = brandKey === theme.key;
+
+                return (
+                  <TouchableOpacity
+                    key={theme.key}
+                    activeOpacity={0.8}
+                    style={styles.themeOption}
+                    onPress={() => handleThemeSelect(theme.key)}
+                  >
+                    <View
+                      style={[
+                        styles.themeSwatch,
+                        { backgroundColor: BRAND_THEMES[theme.key].primary },
+                        isActive && {
+                          borderColor: colors.text,
+                          transform: [{ scale: 1.05 }],
+                        },
+                      ]}
+                    />
+                    <Text
+                      style={[
+                        styles.themeLabel,
+                        {
+                          color: isActive ? colors.primary : colors.text,
+                          fontFamily: isActive ? "Urbanist-SemiBold" : "Urbanist-Medium",
+                        },
+                      ]}
+                    >
+                      {theme.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
-
-            {/* <Text style={[styles.rowLabel, { color: colors.text }]} numberOfLines={1}>
-              Night Mode
-            </Text> */}
-
-            {/* <View style={styles.toggleWrap}>
-              <Image
-                source={require("../../images/setting/Background.png")}
-                style={styles.toggleBg}
-                resizeMode="contain"
-              />
-              <Image
-                source={require("../../images/setting/Knob.png")}
-                style={[
-                  styles.toggleKnob,
-                  nightMode ? styles.knobOn : styles.knobOff,
-                ]}
-                resizeMode="contain"
-              />
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={StyleSheet.absoluteFillObject}
-                onPress={() => dispatch(toggleTheme())}
-              />
-            </View> */}
           </View>
 
           <View style={[styles.separator, { backgroundColor: sepColor }]} />
@@ -356,6 +381,35 @@ const styles = StyleSheet.create({
   cardTall: {
     borderRadius: 20,
     // marginTop: hp(),
+  },
+  themeSection: {
+    paddingRight: wp(16),
+    paddingVertical: hp(16),
+    gap: hp(12),
+  },
+  themeTitle: {
+    fontFamily: "Urbanist-SemiBold",
+    fontSize: wp(15),
+  },
+  themeOptionsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: wp(12),
+  },
+  themeOption: {
+    alignItems: "center",
+    gap: hp(6),
+    width: wp(48),
+  },
+  themeSwatch: {
+    width: wp(32),
+    height: wp(32),
+    borderRadius: wp(16),
+    borderWidth: 2,
+    borderColor: "transparent",
+  },
+  themeLabel: {
+    fontSize: wp(12),
   },
 
   // ── Profile row (card 1)
@@ -475,7 +529,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     paddingLeft: wp(16),
     overflow: "hidden",
-    marginTop: hp(84),
+    marginTop: hp(40),
     justifyContent: "center",
   },
   logoutRow: {

@@ -51,7 +51,7 @@ const FilterCard = () => {
             try {
                 const storedCid = await AsyncStorage.getItem("cid");
                 if (storedCid) setCid(storedCid);
-            } catch (err) {
+            } catch {
                 // console.log("Error reading cid from AsyncStorage", err);
             }
         };
@@ -62,7 +62,7 @@ const FilterCard = () => {
     
 
     // API Call
-    const { data, loading, error } = useGet(
+    const { data, loading } = useGet(
         cid ? `api/investor/getInvestedFunds?cid=${cid}&levelNo=1&currentPage=${currentPage}&pageSize=10` : "",
         {},
         !!cid
@@ -176,8 +176,8 @@ const FilterCard = () => {
                     ({fund.folioNo})
                 </Text>
                 {/* Category badge */}
-                <View style={[styles.categoryBadge, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#EEF2FF" }]}>
-                    <Text style={styles.categoryBadgeText}>
+                <View style={[styles.categoryBadge, { backgroundColor: mode === "dark" ? "#2A2A2A" : colors.primarySoft }]}>
+                    <Text style={[styles.categoryBadgeText, { color: colors.primary }]}>
                         {getCategoryLabel(fund.category)}
                     </Text>
                 </View>
@@ -230,7 +230,7 @@ const FilterCard = () => {
                     style={styles.viewTxnBtn}
                     onPress={() => handleViewTransactions(fund)}
                 >
-                    <Text style={styles.viewTxnText}>View Transactions</Text>
+                    <Text style={[styles.viewTxnText, { color: colors.primary }]}>View Transactions</Text>
                 </TouchableOpacity>
             </View>
 
@@ -265,11 +265,11 @@ const FilterCard = () => {
                             style={[
                                 styles.chip,
                                 isActive
-                                    ? styles.activeChip
+                                    ? [styles.activeChip, { backgroundColor: colors.primarySoft }]
                                     : [styles.inactiveChip, mode === "dark" && { backgroundColor: "#2A2A2A" }],
                             ]}
                         >
-                            <Text style={[styles.chipText, { color: isActive ? "#000000" : (mode === "dark" ? "#CCCCCC" : "#434343") }]}>
+                            <Text style={[styles.chipText, { color: isActive ? colors.primaryDark : (mode === "dark" ? "#CCCCCC" : "#434343") }]}>
                                 {item}
                             </Text>
                         </TouchableOpacity>
@@ -282,7 +282,7 @@ const FilterCard = () => {
     const renderFooter = () => {
         if (!isFetchingMore) return <View style={{ height: hp(20) }} />;
         return (
-            <ActivityIndicator style={{ marginVertical: 20 }} size="small" color="#3A6FF8" />
+            <ActivityIndicator style={{ marginVertical: 20 }} size="small" color={colors.primary} />
         );
     };
 

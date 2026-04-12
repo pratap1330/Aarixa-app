@@ -16,7 +16,8 @@ const CustomHeader = () => {
     const insets = useSafeAreaInsets();
 
     // Dynamic avatar background (optional if you want border/shadow)
-    const avatarBg = mode === "light" ? "#0a7cff" : "#0a7cff";
+    // const avatarBg = mode === "light" ? "#0a7cff" : "#0a7cff";
+     const avatarBg = colors.primary;
 
     return (
         <View
@@ -29,11 +30,12 @@ const CustomHeader = () => {
                 },
             ]}
         >
-            {/* Logo instead of User Initials */}
+
             <View style={[styles.userImage, { backgroundColor: avatarBg }]}>
                 <Image
                     source={require("../images/splash/splash.png")}
-                    style={styles.logo}
+                    // style={styles.logo}
+                    style={[styles.logo, { tintColor: colors.primaryContrast }]}
                     resizeMode="contain"
                 />
             </View>
