@@ -66,8 +66,8 @@ interface Props {
 
 const formatINR = (value: number) =>
   `₹${value.toLocaleString("en-IN", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    // minimumFractionDigits: 2,
+    // maximumFractionDigits: 2,
   })}`;
 
 // ─── Avatar helpers ───────────────────────────────────────────────────────────
@@ -185,33 +185,34 @@ const TransactionCard: React.FC<{ item: ApiTransaction }> = ({ item }) => {
     <View style={[card.container, { backgroundColor: cardBg, borderColor: cardBorder }]}>
 
       {/* Row 1: Trans. Date | Tran. Type */}
-      <View style={card.dataRow}>
-        <LabelValue label="Trans. Date" value={item.navDate} valueStyle={valueColor} />
-        <LabelValue label="Tran. Type" value={item.txnType} valueStyle={valueColor} />
-      </View>
 
-      <View style={[card.divider, { backgroundColor: dividerBg }]} />
+<View style={card.dataRow}>
+  <View style={card.col}>
+    <LabelValue label="Trans. Date" value={item.navDate} valueStyle={valueColor} />
+  </View>
+  <View style={card.col}>
+    <LabelValue label="Tran. Type" value={item.txnType} valueStyle={valueColor} />
+  </View>
+</View>
 
-      {/* Row 2: Amount | NAV */}
-      <View style={card.dataRow}>
-        <LabelValue
-          label="Amount"
-          value={formatINR(item.amount)}
-          valueStyle={[valueColor, { marginRight: 14 }]}
-        />
+<View style={[card.divider, { backgroundColor: dividerBg }]} />
 
-        <LabelValue
-          label="NAV"
-          value={formatINR(item.nav)}
-          valueStyle={[valueColor, { marginRight: 14 }]}
-        />
-      </View>
+{/* Row 2: Amount | NAV */}
+<View style={card.dataRow}>
+  <View style={card.col}>
+    <LabelValue label="Amount" value={formatINR(item.amount)} valueStyle={valueColor} />
+  </View>
+  <View style={card.col}>
+    <LabelValue label="NAV" value={formatINR(item.nav)} valueStyle={valueColor} />
+  </View>
+</View>
 
-      {/* Row 3: Units | Status badge */}
-      <View style={[card.dataRow, { alignItems: "flex-end" }]}>
-        <LabelValue label="Units" value={String(item.units)} valueStyle={valueColor} />
-        {/* <StatusBadge status={status} /> */}
-      </View>
+{/* Row 3: Units */}
+<View style={card.dataRow}>
+  <View style={card.col}>
+    <LabelValue label="Units" value={String(item.units)} valueStyle={valueColor} />
+  </View>
+</View>
     </View>
   );
 };
@@ -332,7 +333,7 @@ const TransactionModal: React.FC<Props> = ({
             >
               <Image
                 source={require("../../images/dashboard/close.png")}
-                style={[styles.closeIcon, { tintColor: colors.text }]}
+                // style={[styles.closeIcon, { tintColor: colors.text }]}
                 resizeMode="contain"
               />
             </TouchableOpacity>
@@ -479,9 +480,10 @@ const card = StyleSheet.create({
     borderRadius: scaleW(25),
     borderWidth: 1,
     paddingTop: scaleH(15),
-    paddingRight: scaleW(14),
+    // paddingRight: scaleW(24),
     paddingBottom: scaleH(15),
-    paddingLeft: scaleW(14),
+    paddingLeft: scaleW(24 ),
+    // paddingLeft: scaleW(14),
     shadowColor: "#EEEEEE",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
@@ -489,13 +491,17 @@ const card = StyleSheet.create({
     elevation: 6,
     gap: scaleH(10),
   },
-  divider: {
-    height: 1,
-  },
-  dataRow: {
+   dataRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
+    gap: scaleW(100)   // ← flex-start so columns align at top when text wraps
+  },
+  col: {
+    //  paddingHorizontal: scaleW(16),
+    flex: 1,                    // ← each column takes equal width and stays left-aligned
+  },
+    divider: {
+    height: 1,
   },
   labelValueContainer: { gap: scaleH(5) },
   label: {
