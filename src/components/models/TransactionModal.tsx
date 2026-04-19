@@ -45,6 +45,7 @@ interface Props {
   visible: boolean;
   onClose: () => void;
   folid: string;
+  folioNo: Number;
   cid: string;
   schemeName: string;
 }
@@ -89,8 +90,13 @@ const getColorFromText = (text: string) => {
 
 // ─── SchemeHeader (shown once above the list) ─────────────────────────────────
 
-const SchemeHeader: React.FC<{ schemeName: string; mode: string }> = ({
+const SchemeHeader: React.FC<{ 
+  schemeName: string; 
+  folioNo: number; 
+  mode: string 
+}> = ({
   schemeName,
+  folioNo, 
   mode,
 }) => {
   const initials = getInitials(schemeName);
@@ -107,7 +113,7 @@ const SchemeHeader: React.FC<{ schemeName: string; mode: string }> = ({
         numberOfLines={2}
         ellipsizeMode="tail"
       >
-        {schemeName}
+        {schemeName} ({folioNo})
       </Text>
     </View>
   );
@@ -223,6 +229,7 @@ const TransactionModal: React.FC<Props> = ({
   visible,
   onClose,
   folid,
+  folioNo,
   cid: _cid,
   schemeName,
 }) => {
@@ -340,7 +347,8 @@ const TransactionModal: React.FC<Props> = ({
           </View>
 
           {/* ── Scheme header — shown once, above the scroll list ── */}
-          <SchemeHeader schemeName={schemeName} mode={mode} />
+          <SchemeHeader schemeName={schemeName} mode={mode}
+            folioNo={folioNo}  />
 
           {isFirstLoad ? (
             <View style={styles.centeredLoader}>

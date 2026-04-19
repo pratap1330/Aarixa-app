@@ -37,7 +37,7 @@ const FilterCard = () => {
     const [selectedSchemeName, setSelectedSchemeName] = useState<string | null>(null);
     const [active, setActive] = useState("All");
     const [selectedFolid, setSelectedFolid] = useState<string | null>(null);
-
+    const [selectedFolNo, setSelectedFolNo] = useState<string | null>(null);
     // Pagination States
     const [allFunds, setAllFunds] = useState<any[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -114,7 +114,9 @@ const FilterCard = () => {
 
     const handleViewTransactions = (fund: any) => {
         const folid = fund?.folid ?? "765";
+        const folioNo = fund?.folioNo ?? "765";
         setSelectedFolid(String(folid));
+        setSelectedFolNo(String(folioNo));
         setSelectedSchemeName(fund?.schemeName || "");
         setShowModal(true);
     };
@@ -307,8 +309,12 @@ const FilterCard = () => {
                 onClose={() => {
                     setShowModal(false);
                     setSelectedFolid(null);
+                    setSelectedSchemeName(null);
+                    setSelectedFolNo(null);
+
                 }}
                 folid={selectedFolid ?? "765"}
+                folioNo={selectedFolNo ?? "N/A"}
                 cid={cid ?? ""}
                 schemeName={selectedSchemeName ?? ""}
             />
