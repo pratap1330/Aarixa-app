@@ -5,9 +5,15 @@ import {
   Easing,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../utils/NavigationType/type';
+import { STORAGE_KEYS } from '../../constants/storageKeys';
+import {
+  isBiometricLoginEnabled,
+  promptBiometricVerification,
+} from '../../services/biometric/biometricService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SplashScreen'>;
 
@@ -16,42 +22,76 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
   const scale = useRef(new Animated.Value(1)).current; // start normal size
 
   useEffect(() => {
-  // 👇 STEP 0 → Show only blue screen for few ms
-  const initialDelay = setTimeout(() => {
+    let isMounted = true;
 
-    // STEP 1 → Fade in
-    Animated.timing(opacity, {
-      toValue: 1,
-      duration: 200,
-      easing: Easing.ease,
-      useNativeDriver: true,
-    }).start(() => {
+    const continueToNextScreen = async () => {
+      try {
+        const [storedUser, biometricEnabled] = await Promise.all([
+          AsyncStorage.getItem(STORAGE_KEYS.user),
+          isBiometricLoginEnabled(),
+        ]);
 
-      // STEP 2 → Hold
-      setTimeout(() => {
-
-        // STEP 3 → Expand
-        Animated.timing(scale, {
-          toValue: 1.8,
-          duration: 800,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }).start(() => {
-
-          setTimeout(() => {
+        if (!storedUser || !biometricEnabled) {
+          if (isMounted) {
             navigation.replace('LoginPhone');
-          }, 1000);
+          }
+          return;
+        }
 
-        });
+        const isVerified = await promptBiometricVerification(
+          'Authenticate to continue to Aarixa',
+        );
 
-      }, 400);
+        if (isMounted) {
+          navigation.replace(isVerified ? 'Tabs' : 'LoginPhone');
+        }
+      } catch {
+        if (isMounted) {
+          navigation.replace('LoginPhone');
+        }
+      }
+    };
 
-    });
+    // 👇 STEP 0 → Show only blue screen for few ms
+    const initialDelay = setTimeout(() => {
 
-  }, 1200); // 👈 change this (200–500ms)
+      // STEP 1 → Fade in
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 200,
+        easing: Easing.ease,
+        useNativeDriver: true,
+      }).start(() => {
 
-  return () => clearTimeout(initialDelay);
-}, []);
+        // STEP 2 → Hold
+        setTimeout(() => {
+
+          // STEP 3 → Expand
+          Animated.timing(scale, {
+            toValue: 1.8,
+            duration: 800,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }).start(() => {
+
+            setTimeout(() => {
+              continueToNextScreen();
+            }, 1000);
+
+          });
+
+        }, 400);
+
+      });
+
+    }, 1200); // 👈 change this (200–500ms)
+
+    return () => {
+      isMounted = false;
+      clearTimeout(initialDelay);
+    };
+  }, [navigation, opacity, scale]);
+
   return (
     <LinearGradient
       colors={['#165CCE', '#1E3696']}

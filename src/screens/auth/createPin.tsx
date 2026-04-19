@@ -17,6 +17,11 @@ import Back from '../../images/loginImage/back.svg';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Lock from '../../images/loginImage/lock.svg';
+import { STORAGE_KEYS } from '../../constants/storageKeys';
+import {
+    enableBiometricLoginWithVerification,
+    getBiometricStatus,
+} from '../../services/biometric/biometricService';
 const wp = (size: number) => (SCREEN_WIDTH / 375) * size;
 const hp = (size: number) => (SCREEN_HEIGHT / 812) * size;
 const scaleFont = (size: number) => (SCREEN_WIDTH / 375) * size;
@@ -61,7 +66,6 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
          
         if (finalPin.length !== 4) return;
         try {
-            debugger
             const payload = {
                 username: username,
                 Password: password,  
@@ -73,9 +77,51 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
             const res = await postData("api/auth/client-login", payload);
             if (res?.status === 1) {
             const cid = res?.result?.user?.cid;
-            await AsyncStorage.setItem("cid", cid);
-           await AsyncStorage.setItem("user", JSON.stringify(res?.result?.user));
+            await AsyncStorage.setItem(STORAGE_KEYS.cid, String(cid));
+           await AsyncStorage.setItem(STORAGE_KEYS.user, JSON.stringify(res?.result?.user));
+
+            const biometricStatus = await getBiometricStatus();
+
+            if (!biometricStatus.available) {
                 navigation.navigate("AllSet");
+                return;
+            }
+
+            Alert.alert(
+                `${biometricStatus.label} login`,
+                `Do you want to enable ${biometricStatus.label} for faster and secure login next time?`,
+                [
+                    {
+                        text: "Maybe Later",
+                        style: "cancel",
+                        onPress: () => navigation.navigate("AllSet"),
+                    },
+                    {
+                        text: "Enable",
+                        onPress: async () => {
+                            try {
+                                const isEnabled = await enableBiometricLoginWithVerification(
+                                    `Confirm ${biometricStatus.label} to enable quick login`,
+                                );
+
+                                if (!isEnabled) {
+                                    Alert.alert(
+                                        "Setup cancelled",
+                                        `${biometricStatus.label} login was not enabled.`,
+                                    );
+                                }
+                            } catch {
+                                Alert.alert(
+                                    "Biometric setup failed",
+                                    `We could not enable ${biometricStatus.label} right now.`,
+                                );
+                            } finally {
+                                navigation.navigate("AllSet");
+                            }
+                        },
+                    },
+                ],
+            );
             }
             else {
                 Alert.alert(res?.message);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Alert } from "react-native";
 import { useDispatch } from "react-redux";
 import { wp, hp } from "../../utils/responcive/responcive";
@@ -26,6 +26,13 @@ import Login from '../../images/setting/Login.svg';
 import Logout from '../../images/setting/Logout.svg'; 
 import Arrow from '../../images/setting/arrow.svg';
 import { BRAND_THEMES, BrandThemeKey } from "../../theme/color";
+import { STORAGE_KEYS } from "../../constants/storageKeys";
+import {
+  disableBiometricLogin,
+  enableBiometricLoginWithVerification,
+  getBiometricStatus,
+  isBiometricLoginEnabled,
+} from "../../services/biometric/biometricService";
 
 const THEME_STORAGE_KEY = "appThemePreferences";
 
@@ -107,6 +114,32 @@ const SettingsScreen = () => {
   const navigation = useNavigation<any>();
   const { colors, mode, brandKey } = useAppTheme();
   const dispatch = useDispatch();
+  const [biometricLabel, setBiometricLabel] = useState("Biometric");
+  const [biometricEnabled, setBiometricEnabled] = useState(false);
+  const [biometricSupported, setBiometricSupported] = useState(false);
+
+  const hydrateBiometricState = useCallback(async () => {
+    try {
+      const [isEnabled, biometricStatus] = await Promise.all([
+        isBiometricLoginEnabled(),
+        getBiometricStatus(),
+      ]);
+
+      setBiometricEnabled(isEnabled);
+      setBiometricSupported(biometricStatus.available);
+      setBiometricLabel(biometricStatus.label);
+    } catch {
+      setBiometricEnabled(false);
+      setBiometricSupported(false);
+      setBiometricLabel("Biometric");
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      hydrateBiometricState();
+    }, [hydrateBiometricState]),
+  );
 
 const handleLogout = async () => {
   try {
@@ -119,8 +152,9 @@ const handleLogout = async () => {
         text: "Yes",
         onPress: async () => {
       
-          await AsyncStorage.removeItem("cid");
-          await AsyncStorage.removeItem("user");
+          await AsyncStorage.removeItem(STORAGE_KEYS.cid);
+          await AsyncStorage.removeItem(STORAGE_KEYS.user);
+          await disableBiometricLogin();
 
         
           navigation.reset({
@@ -149,6 +183,42 @@ const handleLogout = async () => {
       );
     } catch {
       // ignore theme save issues
+    }
+  };
+
+  const handleBiometricToggle = async () => {
+    if (!biometricSupported) {
+      Alert.alert(
+        "Biometric unavailable",
+        `${biometricLabel} is not set up on this device yet.`,
+      );
+      return;
+    }
+
+    try {
+      if (biometricEnabled) {
+        await disableBiometricLogin();
+        setBiometricEnabled(false);
+        Alert.alert("Biometric disabled", `${biometricLabel} login has been turned off.`);
+        return;
+      }
+
+      const isEnabled = await enableBiometricLoginWithVerification(
+        `Confirm ${biometricLabel} to enable secure login`,
+      );
+
+      if (!isEnabled) {
+        Alert.alert("Setup cancelled", `${biometricLabel} login was not enabled.`);
+        return;
+      }
+
+      setBiometricEnabled(true);
+      Alert.alert("Biometric enabled", `${biometricLabel} login is ready to use.`);
+    } catch {
+      Alert.alert(
+        "Setup failed",
+        `We could not update ${biometricLabel} login right now.`,
+      );
     }
   };
 
@@ -294,6 +364,50 @@ const handleLogout = async () => {
 
           <View style={[styles.separator, { backgroundColor: sepColor }]} />
 
+          <View style={styles.themeSection}>
+            <Text style={[styles.themeTitle, { color: sectionTitleColor }]}>
+              Secure Login
+            </Text>
+            <TouchableOpacity
+              activeOpacity={0.85}
+              style={[
+                styles.biometricPanel,
+                { borderColor: mode === "dark" ? "#FFFFFF12" : "#DDE7F6" },
+              ]}
+              onPress={handleBiometricToggle}
+            >
+              <View style={styles.biometricTextWrap}>
+                <Text style={[styles.biometricTitle, { color: colors.text }]}>
+                  {biometricLabel} Login
+                </Text>
+                <Text style={[styles.biometricSubtitle, { color: sectionTitleColor }]}>
+                  {biometricSupported
+                    ? biometricEnabled
+                      ? "Enabled for returning-user quick unlock"
+                      : "Tap to enable secure quick unlock"
+                    : "Set up biometrics on this device to use it"}
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.biometricBadge,
+                  { backgroundColor: biometricEnabled ? colors.primary : "#E5E7EB" },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.biometricBadgeText,
+                    { color: biometricEnabled ? "#FFFFFF" : "#374151" },
+                  ]}
+                >
+                  {biometricEnabled ? "On" : "Off"}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          <View style={[styles.separator, { backgroundColor: sepColor }]} />
+
           {navRows.map((item, idx) => (
             <React.Fragment key={item.label}>
               <SettingsRow {...item} />
@@ -409,6 +523,42 @@ const styles = StyleSheet.create({
     borderColor: "transparent",
   },
   themeLabel: {
+    fontSize: wp(12),
+  },
+  biometricPanel: {
+    minHeight: hp(68),
+    borderWidth: 1,
+    borderRadius: 18,
+    paddingHorizontal: wp(14),
+    paddingVertical: hp(14),
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: wp(12),
+  },
+  biometricTextWrap: {
+    flex: 1,
+    gap: hp(4),
+  },
+  biometricTitle: {
+    fontFamily: "Urbanist-SemiBold",
+    fontSize: wp(16),
+  },
+  biometricSubtitle: {
+    fontFamily: "Urbanist-Medium",
+    fontSize: wp(12),
+    lineHeight: hp(18),
+  },
+  biometricBadge: {
+    minWidth: wp(48),
+    height: hp(30),
+    borderRadius: 999,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: wp(12),
+  },
+  biometricBadgeText: {
+    fontFamily: "Urbanist-SemiBold",
     fontSize: wp(12),
   },
 
