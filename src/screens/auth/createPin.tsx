@@ -79,6 +79,7 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
             const cid = res?.result?.user?.cid;
             await AsyncStorage.setItem(STORAGE_KEYS.cid, String(cid));
            await AsyncStorage.setItem(STORAGE_KEYS.user, JSON.stringify(res?.result?.user));
+           await AsyncStorage.setItem(STORAGE_KEYS.userPin, finalPin);
 
             const biometricStatus = await getBiometricStatus();
 

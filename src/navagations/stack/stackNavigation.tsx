@@ -13,6 +13,7 @@ import LoginScreen from "../../screens/auth/loginFlow";
 import LoginPhone from '../../screens/auth/loginPhone'
 import OtpVerificationScreen from "../../screens/auth/OTPVerification";
 import CreatePinScreen from "../../screens/auth/createPin";
+import UnlockPinScreen from "../../screens/auth/unlockPin";
 import AllSetScreen from "../../screens/auth/allSet";
 import ExploreScreen from "../../screens/setting/exploreScreen";
 import TabNavigator from "../tab/TabNavigator";
@@ -48,6 +49,10 @@ const StackNavigator = () => {
         <Stack.Screen
           name="CreatePin"
           component={CreatePinScreen}
+        />
+        <Stack.Screen
+          name="UnlockPin"
+          component={UnlockPinScreen}
         />
 
         <Stack.Screen

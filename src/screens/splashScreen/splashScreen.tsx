@@ -10,10 +10,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../utils/NavigationType/type';
 import { STORAGE_KEYS } from '../../constants/storageKeys';
-import {
-  isBiometricLoginEnabled,
-  promptBiometricVerification,
-} from '../../services/biometric/biometricService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SplashScreen'>;
 
@@ -26,24 +22,20 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
 
     const continueToNextScreen = async () => {
       try {
-        const [storedUser, biometricEnabled] = await Promise.all([
+        const [storedUser, storedPin] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEYS.user),
-          isBiometricLoginEnabled(),
+          AsyncStorage.getItem(STORAGE_KEYS.userPin),
         ]);
 
-        if (!storedUser || !biometricEnabled) {
+        if (!storedUser) {
           if (isMounted) {
             navigation.replace('LoginPhone');
           }
           return;
         }
 
-        const isVerified = await promptBiometricVerification(
-          'Authenticate to continue to Aarixa',
-        );
-
         if (isMounted) {
-          navigation.replace(isVerified ? 'Tabs' : 'LoginPhone');
+          navigation.replace(storedPin ? 'UnlockPin' : 'Tabs');
         }
       } catch {
         if (isMounted) {
