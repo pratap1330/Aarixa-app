@@ -17,6 +17,7 @@ export type RootStackParamList = {
     otp: string;
     phone :string;
   };
+  UnlockPin: undefined;
 
   AllSet: undefined;
   Tabs: undefined; 

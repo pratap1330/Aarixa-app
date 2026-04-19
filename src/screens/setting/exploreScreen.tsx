@@ -154,6 +154,7 @@ const handleLogout = async () => {
       
           await AsyncStorage.removeItem(STORAGE_KEYS.cid);
           await AsyncStorage.removeItem(STORAGE_KEYS.user);
+          await AsyncStorage.removeItem(STORAGE_KEYS.userPin);
           await disableBiometricLogin();
 
         
