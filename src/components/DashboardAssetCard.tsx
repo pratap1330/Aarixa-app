@@ -125,11 +125,11 @@ const AssetsCard = () => {
       <View style={styles.headerRow}>
         <Text style={[styles.headerText, { color: colors.text }]}>Asset Class</Text>
 
-<Dot
+{/* <Dot
   width={wp(16)}
   height={wp(16)}
   fill={mode === "dark" ? "#FFFFFF" : "#000000"} 
-/>
+/> */}
 
       </View>
 

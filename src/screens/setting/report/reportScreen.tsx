@@ -24,7 +24,6 @@ import DatePickerModal from "../../../components/customDatePicker";
 import DropdownModal from "../../../components/searchableDropdown";
 
 // --- Helpers ---
-// --- Helpers ---
 const formatToUI = (date: Date): string => {
   const d = String(date.getDate()).padStart(2, "0");
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -34,8 +33,6 @@ const formatToUI = (date: Date): string => {
 
 const isoToUI = (iso: string): string => {
   if (!iso) return "DD/MM/YYYY";
-  // Directly split the string to avoid timezone conversion shifting the day
-  // "2017-03-15T18:30:00.000Z" -> "2017-03-15"
   const datePart = iso.split("T")[0];
   const [y, m, d] = datePart.split("-");
   return `${d}/${m}/${y}`;
@@ -76,8 +73,10 @@ const ReportsScreen = () => {
   const { data, loading } = useGet<any>(`api/reports/family-heads?cid=${cid}`);
   const dropdownOptions: any[] = useMemo(() => data?.result || [], [data]);
 
+  // Automatic binding logic
   useEffect(() => {
     if (dropdownOptions.length > 0) {
+      // Always default to the first one available
       const investor = dropdownOptions[0];
       setSelectedInvestor(investor);
       setSelectName(investor.investorName);
@@ -86,7 +85,7 @@ const ReportsScreen = () => {
       }
       setToDate(getDayBeforeYesterdayUI());
     }
-  }, [data, dropdownOptions]);
+  }, [dropdownOptions]);
 
   const tabs = [
     { label: "Portfolio Valuation", iconBg: "#FFF1EB", iconTint: "#F97316" },
@@ -95,10 +94,9 @@ const ReportsScreen = () => {
     { label: "Transaction Report", iconBg: "#FFFBEB", iconTint: "#F59E0B" },
     { label: "Capital Gain", iconBg: "#F0FDFA", iconTint: "#14B8A6" },
     { label: "Dividend Report", iconBg: "#FFF1F2", iconTint: "#F43F5E" },
-  
   ];
 
-  const handleDownload = async (tabLabel:any) => {
+  const handleDownload = async (tabLabel: string) => {
     const base_url = "http://43.224.137.63:9085";
     if (!selectedInvestor) {
       Alert.alert("Error", "Please select investor");
@@ -114,25 +112,22 @@ const ReportsScreen = () => {
     };
 
     const apiToDate = formatForBackend(toDate);
-    // if (selectedToDate > limitDate) {
-    //   Alert.alert("Validation Error", "To date cannot be greater than day before yesterday");
-    //   return;
-    // }
-
-    setReportLoading((prev: Record<string, boolean>) => ({ ...prev, [tabLabel]: true }));
+    setReportLoading((prev) => ({ ...prev, [tabLabel]: true }));
+    
     const { fhid, cid: investorCid } = selectedInvestor;
-    const dateFilterType = expandedTab === "Portfolio Valuation" ? "SINCE_INCEPTION" : "CUSTOM";
+    const dateFilterType = tabLabel === "Portfolio Valuation" ? "SINCE_INCEPTION" : "CUSTOM";
     const dateParams = `&fromDate=${formatForBackend(fromDate)}&toDate=${apiToDate}`;
 
     let url = "";
-    if (expandedTab === "Portfolio Valuation")
+    if (tabLabel === "Portfolio Valuation")
       url = `/api/reports/valuation-pdf?isSummary=0&fhid=${fhid}&cid=${investorCid}&dateFilterType=${dateFilterType}${dateParams}`;
-    else if (expandedTab === "Portfolio Summary")
+    else if (tabLabel === "Portfolio Summary")
       url = `/api/reports/valuation-pdf?isSummary=1&fhid=${fhid}&cid=${investorCid}&dateFilterType=${dateFilterType}${dateParams}`;
-    else if (expandedTab === "Transaction Report")
+    else if (tabLabel === "Transaction Report")
       url = `/api/reports/getTransactionReport-pdf?fhid=${fhid}&cid=${investorCid}&dateFilterType=${dateFilterType}${dateParams}`;
-    else {    setReportLoading(prev => ({ ...prev, [tabLabel]: false }));
-      Alert.alert("Error", "API not implemented");
+    else {
+      setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
+      Alert.alert("Info", "Report API logic not yet configured for this tab.");
       return;
     }
 
@@ -145,36 +140,36 @@ const ReportsScreen = () => {
       const contentType = response.headers['content-type'];
       if (contentType && contentType.includes('application/json')) {
         const responseData = JSON.parse(Buffer.from(response.data).toString());
-        setReportLoading((prev: Record<string, boolean>) => ({ ...prev, [tabLabel]: false }));
+        setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
         Alert.alert("Error", responseData.message || "Request failed");
         return;
       }
 
-      const fileName = `${expandedTab?.replace(/\s+/g, "_")}_${Date.now()}.pdf`;
+      const fileName = `${tabLabel.replace(/\s+/g, "_")}_${Date.now()}.pdf`;
       const filePath = Platform.OS === "android"
         ? `${RNFS.DownloadDirectoryPath}/${fileName}`
         : `${RNFS.DocumentDirectoryPath}/${fileName}`;
+      
       const base64Data = Buffer.from(response.data).toString("base64");
       await RNFS.writeFile(filePath, base64Data, "base64");
       if (Platform.OS === "android") await RNFS.scanFile(filePath);
-    setReportLoading((prev: Record<string, boolean>) => ({ ...prev, [tabLabel]: false }));
-      Alert.alert(
-        "Download Complete",
-        "Your report has been saved successfully in the Downloads folder.",
-        [{ text: "OK" }]
-      );
+
+      setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
+      Alert.alert("Success", "Report downloaded successfully.");
     } catch {
-       setReportLoading((prev: Record<string, boolean>) => ({ ...prev, [tabLabel]: false }));
-      Alert.alert("Error", "Check server or internet connection.");
+      setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
+      Alert.alert("Error", "Check your connection and try again.");
     }
   };
 
   const renderTab = (tab: typeof tabs[0]) => {
     const isExpanded = expandedTab === tab.label;
     const isValuation = tab.label === "Portfolio Valuation";
-
     const expandedHeight = isValuation ? hp(200) : hp(315);
     const collapsedHeight = hp(50);
+
+    // Disable selection if only one option exists
+    const isSingleInvestor = dropdownOptions.length <= 1;
 
     return (
       <View
@@ -207,10 +202,7 @@ const ReportsScreen = () => {
             source={require("../../../images/setting/formkit_down.png")}
             style={[
               styles.chevron,
-              {
-                transform: [{ rotate: isExpanded ? "180deg" : "0deg" }],
-                tintColor: colors.text,
-              },
+              { transform: [{ rotate: isExpanded ? "180deg" : "0deg" }], tintColor: colors.text },
             ]}
           />
         </TouchableOpacity>
@@ -221,15 +213,18 @@ const ReportsScreen = () => {
 
             <TouchableOpacity
               style={[styles.selectNameRow, { borderBottomColor: colors.primary }]}
-              onPress={() => setShowDropdown(true)}
+              onPress={() => !isSingleInvestor && setShowDropdown(true)}
+              disabled={isSingleInvestor}
             >
               <Text style={[styles.selectNameText, { color: colors.text }]}>
                 {selectName}
               </Text>
-              <Image
-                source={require("../../../images/setting/formkit_down.png")}
-                style={[ { tintColor: colors.text }]}
-              />
+              {!isSingleInvestor && (
+                <Image
+                  source={require("../../../images/setting/formkit_down.png")}
+                  style={[{ tintColor: colors.text, width: wp(16), height: wp(16) }]}
+                />
+              )}
             </TouchableOpacity>
 
             {!isValuation && (
@@ -247,9 +242,7 @@ const ReportsScreen = () => {
                       source={require("../../../images/setting/calendar.png")}
                       style={[styles.calIcon, { tintColor: colors.primary }]}
                     />
-                    <Text style={[styles.dateVal, { color: colors.text }]}>
-                      {fromDate}
-                    </Text>
+                    <Text style={[styles.dateVal, { color: colors.text }]}>{fromDate}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.dateBox, { borderColor: colors.primarySoft }]}
@@ -259,9 +252,7 @@ const ReportsScreen = () => {
                       source={require("../../../images/setting/calendar.png")}
                       style={[styles.calIcon, { tintColor: colors.primary }]}
                     />
-                    <Text style={[styles.dateVal, { color: colors.text }]}>
-                      {toDate}
-                    </Text>
+                    <Text style={[styles.dateVal, { color: colors.text }]}>{toDate}</Text>
                   </TouchableOpacity>
                 </View>
               </>
@@ -269,15 +260,12 @@ const ReportsScreen = () => {
 
             <LinearGradient
               colors={[colors.primary, colors.primaryDark]}
-              style={[
-                styles.downloadBtn,
-                isValuation && { marginTop: hp(20) },
-              ]}
+              style={[styles.downloadBtn, isValuation && { marginTop: hp(20) }]}
             >
               <TouchableOpacity
                 style={styles.downloadBtnInner}
                 onPress={() => handleDownload(tab.label)}
-               disabled={reportLoading[tab.label]}
+                disabled={reportLoading[tab.label]}
               >
                 {reportLoading[tab.label] ? (
                   <ActivityIndicator color="#fff" size="small" />
@@ -311,26 +299,26 @@ const ReportsScreen = () => {
         <View style={{ width: wp(40) }} />
       </View>
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={true}
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         {tabs.map(renderTab)}
       </ScrollView>
 
-      <DropdownModal
-        visible={showDropdown}
-        onClose={() => setShowDropdown(false)}
-        data={dropdownOptions}
-        loading={loading}
-        colors={colors}
-        mode={mode}
-        onSelect={(item) => {
-          setSelectName(item.investorName);
-          setSelectedInvestor(item);
-          if (item.firstInvestmentDate) setFromDate(isoToUI(item.firstInvestmentDate));
-        }}
-      />
+      {dropdownOptions.length > 1 && (
+        <DropdownModal
+          visible={showDropdown}
+          onClose={() => setShowDropdown(false)}
+          data={dropdownOptions}
+          loading={loading}
+          colors={colors}
+          mode={mode}
+          onSelect={(item: any) => {
+            setSelectName(item.investorName);
+            setSelectedInvestor(item);
+            if (item.firstInvestmentDate) setFromDate(isoToUI(item.firstInvestmentDate));
+          }}
+        />
+      )}
+
       <DatePickerModal
         visible={showFromPicker}
         onClose={() => setShowFromPicker(false)}
@@ -370,7 +358,6 @@ const styles = StyleSheet.create({
     gap: hp(12),
     marginTop: hp(20),
   },
-
   accordionCard: {
     width: wp(358),
     alignSelf: "center",
@@ -400,7 +387,6 @@ const styles = StyleSheet.create({
   reportIcon: { width: wp(19), height: wp(19), resizeMode: "contain" },
   headerTitle: { fontFamily: "Urbanist-SemiBold", fontSize: wp(16) },
   chevron: { width: wp(24), height: wp(24), resizeMode: "contain" },
-
   expandedContent: { paddingHorizontal: wp(11), flex: 1 },
   separator: {
     height: 1,
@@ -408,20 +394,16 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: hp(15),
   },
-
   selectNameRow: {
     width: wp(338),
     height: hp(35),
     borderBottomWidth: 1,
-    borderBottomColor: "#3366FF",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: hp(15),
   },
   selectNameText: { fontFamily: "Urbanist-Medium", fontSize: wp(16) },
-  dropIcon: { width: wp(16), height: wp(16) },
-
   dateLabelRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -443,15 +425,13 @@ const styles = StyleSheet.create({
     height: hp(44),
     borderRadius: wp(10),
     borderWidth: 1,
-    borderColor: "#D1D5DB",
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: wp(10),
     gap: wp(8),
   },
-  calIcon: { width: wp(20), height: wp(20), tintColor: "#3366FF" },
+  calIcon: { width: wp(20), height: wp(20) },
   dateVal: { fontFamily: "Urbanist-Medium", fontSize: wp(14) },
-
   downloadBtn: {
     width: wp(195),
     height: hp(35),
