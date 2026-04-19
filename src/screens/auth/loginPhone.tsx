@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -12,9 +12,18 @@ import {
   StatusBar,
   SafeAreaView,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useFocusEffect } from "@react-navigation/native";
 import { RootStackParamList } from '../../utils/NavigationType/type';
 import India from '../../images/loginImage/india.svg';
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { STORAGE_KEYS } from "../../constants/storageKeys";
+import {
+  getBiometricStatus,
+  isBiometricLoginEnabled,
+  promptBiometricVerification,
+} from "../../services/biometric/biometricService";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 // Base design width from Figma = 390px
@@ -24,9 +33,10 @@ const scale = (size: number) => (SCREEN_WIDTH / BASE_WIDTH) * size;
 type Props = NativeStackScreenProps<RootStackParamList, "LoginPhone">;
 
 const LoginPhone: React.FC<Props> = ({ navigation }) => {
-  // const navigation = useNavigation();
   const [phone, setPhone] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [biometricLabel, setBiometricLabel] = useState("Biometric");
+  const [canUseBiometricLogin, setCanUseBiometricLogin] = useState(false);
 
   const handleProceed = () => {
     if (!phone || phone.length < 10) {
@@ -34,6 +44,48 @@ const LoginPhone: React.FC<Props> = ({ navigation }) => {
       return;
     }
     navigation.navigate("Login", { phone });
+  };
+
+  const hydrateBiometricAccess = useCallback(async () => {
+    try {
+      const [storedUser, biometricEnabled, biometricStatus] = await Promise.all([
+        AsyncStorage.getItem(STORAGE_KEYS.user),
+        isBiometricLoginEnabled(),
+        getBiometricStatus(),
+      ]);
+
+      setBiometricLabel(biometricStatus.label);
+      setCanUseBiometricLogin(
+        Boolean(storedUser) && biometricEnabled && biometricStatus.available,
+      );
+    } catch {
+      setCanUseBiometricLogin(false);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      hydrateBiometricAccess();
+    }, [hydrateBiometricAccess]),
+  );
+
+  const handleBiometricLogin = async () => {
+    const isVerified = await promptBiometricVerification(
+      `Login securely with ${biometricLabel}`,
+    );
+
+    if (!isVerified) {
+      Alert.alert(
+        "Verification cancelled",
+        `Use your ${biometricLabel.toLowerCase()} or continue with manual login.`,
+      );
+      return;
+    }
+
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Tabs" }],
+    });
   };
 
   return (
@@ -87,6 +139,17 @@ const LoginPhone: React.FC<Props> = ({ navigation }) => {
         >
           <Text style={styles.proceedText}>Proceed</Text>
         </TouchableOpacity>
+
+        {canUseBiometricLogin ? (
+          <TouchableOpacity
+            style={styles.biometricBtn}
+            onPress={handleBiometricLogin}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="finger-print-outline" size={scale(20)} color="#2288FD" />
+            <Text style={styles.biometricBtnText}>Continue with {biometricLabel}</Text>
+          </TouchableOpacity>
+        ) : null}
 
         {/* ── Forgot Password ── */}
         <TouchableOpacity
@@ -219,6 +282,26 @@ const styles = StyleSheet.create({
     lineHeight: scale(15),
     color: "#FFFFFF",
     textAlign: "center",
+  },
+
+  biometricBtn: {
+    width: scale(356),
+    height: scale(48),
+    borderRadius: scale(12),
+    borderWidth: 1.2,
+    borderColor: "#2288FD",
+    marginTop: scale(14),
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: scale(10),
+    backgroundColor: "#F7FAFF",
+  },
+
+  biometricBtnText: {
+    fontFamily: "Urbanist-SemiBold",
+    fontSize: scale(15),
+    color: "#2288FD",
   },
 
   // ── Forgot password ───────────────────────────────
