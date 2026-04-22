@@ -8,6 +8,7 @@ import { useAppTheme } from "../../hooks/useTheme";
 import { RootStackParamList } from "../../utils/NavigationType/type";
 
 import SplashScreen from "../../screens/splashScreen/splashScreen";
+import SplashScreenOne from "../../screens/splashScreen/splashScreenOne";
 // import LoginScreen from "../../screens/auth/login";
 import LoginScreen from "../../screens/auth/loginFlow";
 import LoginPhone from '../../screens/auth/loginPhone'
@@ -28,10 +29,11 @@ const StackNavigator = () => {
   return (
     <NavigationContainer theme={mode === "dark" ? DarkTheme : DefaultTheme}>
       <Stack.Navigator
-        initialRouteName="SplashScreen"
+        initialRouteName="SplashScreenOne"
         screenOptions={{ headerShown: false }}
       >
-        <Stack.Screen name="SplashScreen" component={SplashScreen} />
+        {/* <Stack.Screen name="SplashScreen" component={SplashScreen} /> */}
+        <Stack.Screen name="SplashScreenOne" component={SplashScreenOne} />
 
         <Stack.Screen name="Login" component={LoginScreen} />
 

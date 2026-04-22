@@ -1,6 +1,7 @@
 export type RootStackParamList = {
   // Login: undefined;
   SplashScreen: undefined;
+  SplashScreenOne: undefined;
   LoginPhone :undefined;
   Login: {
     phone :string}
