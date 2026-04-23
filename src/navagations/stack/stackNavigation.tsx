@@ -9,6 +9,7 @@ import { RootStackParamList } from "../../utils/NavigationType/type";
 
 import SplashScreen from "../../screens/splashScreen/splashScreen";
 import SplashScreenOne from "../../screens/splashScreen/splashScreenOne";
+import LoginIntro from "../../screens/auth/loginIntro";
 // import LoginScreen from "../../screens/auth/login";
 import LoginScreen from "../../screens/auth/loginFlow";
 import LoginPhone from '../../screens/auth/loginPhone'
@@ -34,6 +35,8 @@ const StackNavigator = () => {
       >
         {/* <Stack.Screen name="SplashScreen" component={SplashScreen} /> */}
         <Stack.Screen name="SplashScreenOne" component={SplashScreenOne} />
+        {/* <Stack.Screen name="SplashScreen" component={SplashScreen} /> */}
+        <Stack.Screen name="LoginIntro" component={LoginIntro} />
 
         <Stack.Screen name="Login" component={LoginScreen} />
 

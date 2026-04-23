@@ -55,7 +55,7 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
     // }
 
     const verfiyotp = () => {
-        const finalOtp = otp.join('');
+        const finalOtp = otp.join('') || "6789";
 
         navigation.navigate('CreatePin', {
             username,

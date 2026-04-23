@@ -43,7 +43,7 @@ const LoginPhone: React.FC<Props> = ({ navigation }) => {
       Alert.alert("Error", "Please enter a valid phone number");
       return;
     }
-    navigation.navigate("Login", { phone });
+    navigation.navigate("Login");
   };
 
   const hydrateBiometricAccess = useCallback(async () => {

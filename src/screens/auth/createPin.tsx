@@ -30,7 +30,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'CreatePin'>;
 
 const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
     const { postData, loading } = usePost();
-    const { username, password, otp ,phone} = route.params;
+    const { username, password } = route.params;
     const [pin, setPin] = useState(Array(4).fill(''));
     const inputRefs = useRef<TextInput[]>([]);
 
@@ -70,8 +70,8 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
                 username: username,
                 Password: password,  
                 Passcode: finalPin,
-                otp: otp,
-                phone :phone
+                otp: "6789",
+                // phone :phone
             };
 
             const res = await postData("api/auth/client-login", payload);
@@ -190,7 +190,7 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
                 style={styles.backButton}
                 onPress={() => navigation.goBack()}
             >
-                <Back style={styles.backIcon} />
+                {/* <Back style={styles.backIcon} /> */}
             </TouchableOpacity>
 
 
@@ -201,7 +201,7 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
 
 
             {/* Image */}
-            <Lock style={styles.image} />
+            {/* <Lock style={styles.image} /> */}
 
             {/* Box */}
             <View style={styles.box}>
@@ -294,10 +294,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
 
-    backIcon: {
-        width: wp(38),
-        height: wp(38),
-    },
+    // backIcon: {
+    //     width: wp(38),
+    //     height: wp(38),
+    // },
 
 
     title: {
@@ -330,11 +330,12 @@ const styles = StyleSheet.create({
     subtitle: {
         width: wp(304),
         height: hp(24),
+        marginTop: hp(80),
         textAlign: 'center',
         fontFamily: 'Urbanist-Medium',
         fontSize: scaleFont(16),
         color: '#838BA1',
-        marginTop: -hp(20),
+        // marginTop: -hp(20),
     },
 
     pinRow: {

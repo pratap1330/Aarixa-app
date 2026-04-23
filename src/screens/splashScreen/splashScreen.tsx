@@ -29,7 +29,7 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
 
         if (!storedUser) {
           if (isMounted) {
-            navigation.replace('LoginPhone');
+            navigation.replace('LoginIntro');
           }
           return;
         }
@@ -39,7 +39,7 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
         }
       } catch {
         if (isMounted) {
-          navigation.replace('LoginPhone');
+          navigation.replace('LoginIntro');
         }
       }
     };

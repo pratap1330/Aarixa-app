@@ -75,7 +75,7 @@ const SplashScreenOne: React.FC<Props> = ({ navigation }) => {
           }
 
           navigateTimeout = setTimeout(() => {
-            navigation.replace('SplashScreen');
+            navigation.replace('LoginIntro');
           }, 350);
         };
 

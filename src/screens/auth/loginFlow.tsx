@@ -18,7 +18,7 @@ import { validateUsername, validatePassword } from '../../utils/validation/valid
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginFlow: React.FC<Props> = ({ navigation, route }) => {
-  const { phone } = route.params;
+  // const { phone } = route.params;
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -41,10 +41,10 @@ const LoginFlow: React.FC<Props> = ({ navigation, route }) => {
 
     if (!usernameCheck.isValid || !passwordCheck.isValid) return;
 
-    navigation.navigate('OTPVerification', {
+    navigation.navigate('CreatePin', {
       username,
       password,
-      phone,
+      // phone,
     });
   };
 
@@ -57,13 +57,13 @@ const LoginFlow: React.FC<Props> = ({ navigation, route }) => {
       showsVerticalScrollIndicator={false}
     >
       {/* ===== APP LOGO ===== */}
-      <Image
+      {/* <Image
         source={require("../../images/splash/splash.png")}
         style={styles.logo}
-      />
+      /> */}
 
       {/* ===== TITLE ===== */}
-      <Text style={styles.title}>Login</Text>
+      {/* <Text style={styles.title}>Login</Text> */}
 
       <View style={styles.formGroup}>
 
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
 
   // Form group: top 223px, left/right 17px → paddingHorizontal wp(17)
   formGroup: {
-    marginTop: hp(23),
+    marginTop: hp(175),
     paddingHorizontal: wp(17),
     gap: hp(16),
   },

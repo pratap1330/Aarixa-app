@@ -160,7 +160,7 @@ const handleLogout = async () => {
         
           navigation.reset({
             index: 0,
-            routes: [{ name: "LoginPhone" }],
+            routes: [{ name: "LoginIntro" }],
           });
         },
       },
