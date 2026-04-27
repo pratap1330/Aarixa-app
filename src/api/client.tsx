@@ -1,7 +1,8 @@
 import axios from "axios";
+import { API_CONFIG } from "../config/apiConfig";
 
 const API = axios.create({
-  baseURL: "http://43.224.137.63:9085/",
+  baseURL: API_CONFIG.BASE_URL,
   timeout: 60000,
   headers: {
     "Content-Type": "application/json",

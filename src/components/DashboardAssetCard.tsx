@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import Svg, { Path, Circle, Text as SvgText } from "react-native-svg";
 import { wp, hp, scaleFont } from "../utils/responcive/responcive";
 import { useAppTheme } from "../hooks/useTheme";
+import { getService } from "../api/services/genericService/genericService";
 
 
 interface ChartSlice {
@@ -135,8 +136,7 @@ const AssetsCard = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://43.224.137.63:9085/api/partner/getExposure?cid=398");
-      const json = await response.json();
+      const json = await getService("api/partner/getExposure", { cid: 398 });
 
       if (json.status === 0 && json.result.asset) {
         const assets = json.result.asset;

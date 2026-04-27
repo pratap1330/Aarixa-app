@@ -19,6 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import RNFS from "react-native-fs";
 import { Buffer } from "buffer";
 import axios from "axios";
+import { API_CONFIG } from "../../../config/apiConfig";
 
 import DatePickerModal from "../../../components/customDatePicker";
 import DropdownModal from "../../../components/searchableDropdown";
@@ -97,7 +98,7 @@ const ReportsScreen = () => {
   ];
 
   const handleDownload = async (tabLabel: string) => {
-    const base_url = "http://43.224.137.63:9085";
+    const base_url = API_CONFIG.BASE_URL;
     if (!selectedInvestor) {
       Alert.alert("Error", "Please select investor");
       return;

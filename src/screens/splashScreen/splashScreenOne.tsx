@@ -5,11 +5,19 @@ import {
   StyleSheet,
   Text,
   View,
+  Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import WealthLogo from '../../images/splash/wealthlogo.svg';
 import { RootStackParamList } from '../../utils/NavigationType/type';
+import { STORAGE_KEYS } from '../../constants/storageKeys';
+import {
+  getBiometricStatus,
+  isBiometricLoginEnabled,
+  promptBiometricVerification,
+} from '../../services/biometric/biometricService';
 import { hp, scaleFont, wp } from '../../utils/responcive/responcive';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SplashScreenOne'>;
@@ -27,6 +35,39 @@ const SplashScreenOne: React.FC<Props> = ({ navigation }) => {
     let typingTimeout: ReturnType<typeof setTimeout> | undefined;
     let startTypingTimeout: ReturnType<typeof setTimeout> | undefined;
     let navigateTimeout: ReturnType<typeof setTimeout> | undefined;
+
+    const continueToNextScreen = async () => {
+      try {
+        const [storedUser, storedPin, biometricEnabled, biometricStatus] = await Promise.all([
+          AsyncStorage.getItem(STORAGE_KEYS.user),
+          AsyncStorage.getItem(STORAGE_KEYS.userPin),
+          isBiometricLoginEnabled(),
+          getBiometricStatus(),
+        ]);
+
+        if (!storedUser) {
+          navigation.replace('LoginIntro');
+          return;
+        }
+
+        // If fingerprint is enabled and available, show biometric verification
+        if (storedPin && biometricEnabled && biometricStatus.available) {
+          const isVerified = await promptBiometricVerification(
+            `Login with ${biometricStatus.label}`,
+          );
+
+          if (isVerified) {
+            navigation.replace('Tabs');
+            return;
+          }
+          // If fingerprint verification failed, fall back to PIN unlock
+        }
+
+        navigation.replace(storedPin ? 'UnlockPin' : 'Tabs');
+      } catch (error) {
+        navigation.replace('LoginIntro');
+      }
+    };
 
     const delayTimer = setTimeout(() => {
       Animated.parallel([
@@ -75,7 +116,7 @@ const SplashScreenOne: React.FC<Props> = ({ navigation }) => {
           }
 
           navigateTimeout = setTimeout(() => {
-            navigation.replace('LoginIntro');
+            continueToNextScreen();
           }, 350);
         };
 
