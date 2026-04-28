@@ -13,6 +13,7 @@ import { Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../utils/NavigationType/type';
 import { usePost } from '../../hooks/usePost';
+import * as Keychain from 'react-native-keychain';
 import Back from '../../images/loginImage/back.svg';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -53,17 +54,8 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
         }
     };
 
-
-    // const handleSetPin = () => {
-    //     if (pin.join('').length === 4) {
-    //         navigation.navigate("AllSet");
-    //     }
-    // };
-
    
     const handleSetPin = async () => {
-        
-debugger
         const finalPin = pin.join('');
          
         if (finalPin.length !== 4) return;
@@ -75,6 +67,7 @@ debugger
 
             const res = await postData("api/auth/client-login", payload);
             if (res?.status === 1) {
+            await Keychain.setGenericPassword(username, password);
             const cid = res?.result?.user?.cid;
             await AsyncStorage.setItem(STORAGE_KEYS.cid, String(cid));
            await AsyncStorage.setItem(STORAGE_KEYS.user, JSON.stringify(res?.result?.user));
@@ -131,51 +124,6 @@ debugger
             Alert.alert(err?.message);
         }
     };
-
-//     const handleSetPin = async () => {
-//     const finalPin = pin.join('');
-     
-//     if (finalPin.length !== 4) {
-//         Alert.alert("Invalid PIN", "Please enter a 4-digit PIN");
-//         return;
-//     }
-
-//     try {
-//         const payload = {
-//             username: username,
-//             Password: password,  
-//             Passcode: finalPin,
-//             otp: otp,
-//         };
-
-//         const res = await postData("api/auth/client-login", payload);
-
-//         // ✅ 1. Success Case
-//         
-//         if (res?.status === 1) {
-//             const cid = res?.result?.user?.cid;
-//             await AsyncStorage.setItem("cid", cid);
-//             await AsyncStorage.setItem("user", JSON.stringify(res?.result?.user));
-//             navigation.navigate("AllSet");
-//         } 
-//         // ❌ 2. Account Locked Case (Status -1)
-//         else if (res?.status === -1) {
-//             Alert.alert(
-//                 res.message, // This will show "Account locked. Try again in 5 minute(s)."
-                
-//             );
-//         }
-//         // ❌ 3. General Error Case (Wrong PIN, etc.)
-//         else {
-//             Alert.alert("Login Failed", res?.message || "Something went wrong");
-//         }
-
-//     } catch (err: any) {
-//         // ❌ 4. Network/System Error
-//         Alert.alert("Error", err?.message || "Connection failed");
-//     }
-// };
-
 
     return (
 
