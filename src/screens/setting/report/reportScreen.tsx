@@ -146,6 +146,18 @@ const ReportsScreen = () => {
         return;
       }
 
+      // Check if response data is JSON (even if content-type is not set correctly)
+      try {
+        const jsonCheck = JSON.parse(Buffer.from(response.data).toString());
+        if (jsonCheck && typeof jsonCheck === 'object' && jsonCheck.success === false) {
+          setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
+          Alert.alert("Error", jsonCheck.message || "Request failed");
+          return;
+        }
+      } catch (e) {
+        // Not JSON, continue with PDF processing
+      }
+
       const fileName = `${tabLabel.replace(/\s+/g, "_")}_${Date.now()}.pdf`;
       const filePath = Platform.OS === "android"
         ? `${RNFS.DownloadDirectoryPath}/${fileName}`
@@ -157,9 +169,37 @@ const ReportsScreen = () => {
 
       setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
       Alert.alert("Success", "Report downloaded successfully.");
-    } catch {
+    } catch (error: any) {
       setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
-      Alert.alert("Error", "Check your connection and try again.");
+      
+      let errorMessage = "Check your connection and try again.";
+
+      // Try to extract error message from response data (which might be arraybuffer)
+      if (error?.response?.data) {
+        try {
+          let responseData = error.response.data;
+          
+          // If it's a Buffer/Uint8Array, convert to string
+          if (typeof responseData === 'object' && responseData.toString) {
+            responseData = Buffer.from(responseData).toString('utf-8');
+          }
+          
+          // Parse as JSON if it's a string
+          if (typeof responseData === 'string') {
+            const parsed = JSON.parse(responseData);
+            errorMessage = parsed?.message || errorMessage;
+          } else if (typeof responseData === 'object') {
+            errorMessage = responseData?.message || errorMessage;
+          }
+        } catch (e) {
+          // If parsing fails, try the error message
+          errorMessage = error?.message || errorMessage;
+        }
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      Alert.alert("Error", errorMessage);
     }
   };
 

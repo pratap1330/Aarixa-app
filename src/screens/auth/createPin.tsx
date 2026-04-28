@@ -60,18 +60,17 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
     //     }
     // };
 
-
+   
     const handleSetPin = async () => {
+        
+debugger
         const finalPin = pin.join('');
          
         if (finalPin.length !== 4) return;
         try {
             const payload = {
                 username: username,
-                Password: password,  
-                Passcode: finalPin,
-                otp: "6789",
-                // phone :phone
+                password: password,  
             };
 
             const res = await postData("api/auth/client-login", payload);
