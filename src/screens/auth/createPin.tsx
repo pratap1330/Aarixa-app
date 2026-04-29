@@ -63,7 +63,6 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
    
     const handleSetPin = async () => {
         
-debugger
         const finalPin = pin.join('');
          
         if (finalPin.length !== 4) return;

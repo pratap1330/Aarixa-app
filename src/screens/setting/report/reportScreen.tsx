@@ -23,6 +23,8 @@ import { API_CONFIG } from "../../../config/apiConfig";
 
 import DatePickerModal from "../../../components/customDatePicker";
 import DropdownModal from "../../../components/searchableDropdown";
+import ReactNativeBlobUtil from 'react-native-blob-util';
+
 
 // --- Helpers ---
 const formatToUI = (date: Date): string => {
@@ -97,111 +99,166 @@ const ReportsScreen = () => {
     { label: "Dividend Report", iconBg: "#FFF1F2", iconTint: "#F43F5E" },
   ];
 
-  const handleDownload = async (tabLabel: string) => {
-    const base_url = API_CONFIG.BASE_URL;
+  // const handleDownload = async (tabLabel: string) => {
+  //   const base_url = API_CONFIG.BASE_URL;
+  //   if (!selectedInvestor) {
+  //     Alert.alert("Error", "Please select investor");
+  //     return;
+  //   }
+
+  //   const formatForBackend = (dateStr: string) => {
+  //     if (dateStr.includes("/")) {
+  //       const [d, m, y] = dateStr.split("/");
+  //       return `${y}-${m}-${d}`;
+  //     }
+  //     return dateStr;
+  //   };
+
+  //   const apiToDate = formatForBackend(toDate);
+  //   setReportLoading((prev) => ({ ...prev, [tabLabel]: true }));
+    
+  //   const { fhid, cid: investorCid } = selectedInvestor;
+  //   const dateFilterType = tabLabel === "Portfolio Valuation" ? "SINCE_INCEPTION" : "CUSTOM";
+  //   const dateParams = `&fromDate=${formatForBackend(fromDate)}&toDate=${apiToDate}`;
+
+  //   let url = "";
+  //   if (tabLabel === "Portfolio Valuation")
+  //     url = `/api/reports/valuation-pdf?isSummary=0&fhid=${fhid}&cid=${investorCid}&dateFilterType=${dateFilterType}${dateParams}`;
+  //   else if (tabLabel === "Portfolio Summary")
+  //     url = `/api/reports/valuation-pdf?isSummary=1&fhid=${fhid}&cid=${investorCid}&dateFilterType=${dateFilterType}${dateParams}`;
+  //   else if (tabLabel === "Transaction Report")
+  //     url = `/api/reports/getTransactionReport-pdf?fhid=${fhid}&cid=${investorCid}&dateFilterType=${dateFilterType}${dateParams}`;
+  //   else {
+  //     setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
+  //     Alert.alert("Info", "Report API logic not yet configured for this tab.");
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await axios.post(base_url + url, {}, {
+  //       responseType: "arraybuffer",
+  //       headers: { 'Accept': 'application/pdf' }
+  //     });
+
+  //     const contentType = response.headers['content-type'];
+  //     if (contentType && contentType.includes('application/json')) {
+  //       const responseData = JSON.parse(Buffer.from(response.data).toString());
+  //       setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
+  //       Alert.alert("Error", responseData.message || "Request failed");
+  //       return;
+  //     }
+
+  //     // Check if response data is JSON (even if content-type is not set correctly)
+  //     try {
+  //       const jsonCheck = JSON.parse(Buffer.from(response.data).toString());
+  //       if (jsonCheck && typeof jsonCheck === 'object' && jsonCheck.success === false) {
+  //         setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
+  //         Alert.alert("Error", jsonCheck.message || "Request failed");
+  //         return;
+  //       }
+  //     } catch (e) {
+  //       // Not JSON, continue with PDF processing
+  //     }
+
+  //     const fileName = `${tabLabel.replace(/\s+/g, "_")}_${Date.now()}.pdf`;
+  //     const filePath = Platform.OS === "android"
+  //       ? `${RNFS.DownloadDirectoryPath}/${fileName}`
+  //       : `${RNFS.DocumentDirectoryPath}/${fileName}`;
+      
+  //     const base64Data = Buffer.from(response.data).toString("base64");
+  //     await RNFS.writeFile(filePath, base64Data, "base64");
+  //     if (Platform.OS === "android") await RNFS.scanFile(filePath);
+
+  //     setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
+  //     Alert.alert("Success", "Report downloaded successfully.");
+  //   } catch (error: any) {
+  //     setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
+      
+  //     let errorMessage = "Check your connection and try again.";
+
+  //     // Try to extract error message from response data (which might be arraybuffer)
+  //     if (error?.response?.data) {
+  //       try {
+  //         let responseData = error.response.data;
+          
+  //         // If it's a Buffer/Uint8Array, convert to string
+  //         if (typeof responseData === 'object' && responseData.toString) {
+  //           responseData = Buffer.from(responseData).toString('utf-8');
+  //         }
+          
+  //         // Parse as JSON if it's a string
+  //         if (typeof responseData === 'string') {
+  //           const parsed = JSON.parse(responseData);
+  //           errorMessage = parsed?.message || errorMessage;
+  //         } else if (typeof responseData === 'object') {
+  //           errorMessage = responseData?.message || errorMessage;
+  //         }
+  //       } catch (e) {
+  //         // If parsing fails, try the error message
+  //         errorMessage = error?.message || errorMessage;
+  //       }
+  //     } else if (error?.message) {
+  //       errorMessage = error.message;
+  //     }
+
+  //     Alert.alert("Error", errorMessage);
+  //   }
+  // };
+
+ const handleDownload = async (tabLabel: string) => {
+  try {
     if (!selectedInvestor) {
       Alert.alert("Error", "Please select investor");
       return;
     }
 
-    const formatForBackend = (dateStr: string) => {
-      if (dateStr.includes("/")) {
-        const [d, m, y] = dateStr.split("/");
-        return `${y}-${m}-${d}`;
-      }
-      return dateStr;
-    };
-
-    const apiToDate = formatForBackend(toDate);
-    setReportLoading((prev) => ({ ...prev, [tabLabel]: true }));
-    
     const { fhid, cid: investorCid } = selectedInvestor;
-    const dateFilterType = tabLabel === "Portfolio Valuation" ? "SINCE_INCEPTION" : "CUSTOM";
-    const dateParams = `&fromDate=${formatForBackend(fromDate)}&toDate=${apiToDate}`;
+    const fileName = `${tabLabel.replace(/\s+/g, "_")}_${Date.now()}.pdf`;
 
-    let url = "";
-    if (tabLabel === "Portfolio Valuation")
-      url = `/api/reports/valuation-pdf?isSummary=0&fhid=${fhid}&cid=${investorCid}&dateFilterType=${dateFilterType}${dateParams}`;
-    else if (tabLabel === "Portfolio Summary")
-      url = `/api/reports/valuation-pdf?isSummary=1&fhid=${fhid}&cid=${investorCid}&dateFilterType=${dateFilterType}${dateParams}`;
-    else if (tabLabel === "Transaction Report")
-      url = `/api/reports/getTransactionReport-pdf?fhid=${fhid}&cid=${investorCid}&dateFilterType=${dateFilterType}${dateParams}`;
-    else {
-      setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
-      Alert.alert("Info", "Report API logic not yet configured for this tab.");
-      return;
-    }
+    // 1. URL Parameters ko Encode karein (ZAROORI)
+    const encodedFhid = encodeURIComponent(fhid);
+    const encodedCid = encodeURIComponent(investorCid);
+    
+    const apiFromDate = fromDate.split('/').reverse().join('-');
+    const apiToDate = toDate.split('/').reverse().join('-');
 
-    try {
-      const response = await axios.post(base_url + url, {}, {
-        responseType: "arraybuffer",
-        headers: { 'Accept': 'application/pdf' }
+    const url = `${API_CONFIG.BASE_URL}/api/reports/getTransactionReport-pdf?fhid=${encodedFhid}&cid=${encodedCid}&fromDate=${apiFromDate}&toDate=${apiToDate}&dateFilterType=CUSTOM`;
+
+    console.log("Encoded URL:", url);
+
+    const { config, fs } = ReactNativeBlobUtil;
+    const downloads = fs.dirs.DownloadDir;
+    const path = `${downloads}/${fileName}`;
+
+    // 2. Download process
+    config({
+      fileCache: true,
+      addAndroidDownloads: {
+        useDownloadManager: true, // System manager
+        notification: true,
+        title: fileName,
+        description: 'Downloading report...',
+        mime: 'application/pdf',
+        mediaScannable: true,
+        path: path,
+      },
+    })
+      .fetch('GET', url)
+      .then((res) => {
+        // Status check karne ke liye
+        console.log('File saved at:', res.path());
+        Alert.alert("Success", "Report downloaded to Downloads folder");
+      })
+      .catch((err) => {
+        console.log('Download error', err);
+        // Agar Download Manager fail ho jaye (Status 16), toh alternative check karein
+        Alert.alert("Download Error", "Download fail ho gaya. Ek baar check karein ki browser mein ye URL kaam kar raha hai ya nahi.");
       });
 
-      const contentType = response.headers['content-type'];
-      if (contentType && contentType.includes('application/json')) {
-        const responseData = JSON.parse(Buffer.from(response.data).toString());
-        setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
-        Alert.alert("Error", responseData.message || "Request failed");
-        return;
-      }
-
-      // Check if response data is JSON (even if content-type is not set correctly)
-      try {
-        const jsonCheck = JSON.parse(Buffer.from(response.data).toString());
-        if (jsonCheck && typeof jsonCheck === 'object' && jsonCheck.success === false) {
-          setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
-          Alert.alert("Error", jsonCheck.message || "Request failed");
-          return;
-        }
-      } catch (e) {
-        // Not JSON, continue with PDF processing
-      }
-
-      const fileName = `${tabLabel.replace(/\s+/g, "_")}_${Date.now()}.pdf`;
-      const filePath = Platform.OS === "android"
-        ? `${RNFS.DownloadDirectoryPath}/${fileName}`
-        : `${RNFS.DocumentDirectoryPath}/${fileName}`;
-      
-      const base64Data = Buffer.from(response.data).toString("base64");
-      await RNFS.writeFile(filePath, base64Data, "base64");
-      if (Platform.OS === "android") await RNFS.scanFile(filePath);
-
-      setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
-      Alert.alert("Success", "Report downloaded successfully.");
-    } catch (error: any) {
-      setReportLoading((prev) => ({ ...prev, [tabLabel]: false }));
-      
-      let errorMessage = "Check your connection and try again.";
-
-      // Try to extract error message from response data (which might be arraybuffer)
-      if (error?.response?.data) {
-        try {
-          let responseData = error.response.data;
-          
-          // If it's a Buffer/Uint8Array, convert to string
-          if (typeof responseData === 'object' && responseData.toString) {
-            responseData = Buffer.from(responseData).toString('utf-8');
-          }
-          
-          // Parse as JSON if it's a string
-          if (typeof responseData === 'string') {
-            const parsed = JSON.parse(responseData);
-            errorMessage = parsed?.message || errorMessage;
-          } else if (typeof responseData === 'object') {
-            errorMessage = responseData?.message || errorMessage;
-          }
-        } catch (e) {
-          // If parsing fails, try the error message
-          errorMessage = error?.message || errorMessage;
-        }
-      } else if (error?.message) {
-        errorMessage = error.message;
-      }
-
-      Alert.alert("Error", errorMessage);
-    }
-  };
+  } catch (error) {
+    console.log("Error in handleDownload:", error);
+  }
+};
 
   const renderTab = (tab: typeof tabs[0]) => {
     const isExpanded = expandedTab === tab.label;
