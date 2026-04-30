@@ -59,8 +59,6 @@ const FilterCard = () => {
     }, []);
 
 
-    
-
     // API Call
     const { data, loading } = useGet(
         cid ? `api/investor/getInvestedFunds?cid=${cid}&levelNo=1&currentPage=${currentPage}&pageSize=10` : "",
@@ -71,13 +69,6 @@ const FilterCard = () => {
     // Append data and rebuild dynamic filters
     useEffect(() => {
         if (data?.result?.data) {
-            // ─── TESTING: inject extra dummy categories ───────────────────────
-            // const testExtras = [
-            //     { ...data.result.data[0], folioNo: "TEST-ELSS-1", category: "ELSS" },
-            //     { ...data.result.data[0], folioNo: "TEST-INDEX-1", category: "Index" },
-            //     { ...data.result.data[0], folioNo: "TEST-HYBRID-1", category: "Hybrid" },
-            //     { ...data.result.data[0], folioNo: "TEST-LIQUID-1", category: "Liquid" },
-            // ];
             const incoming = [...data.result.data];
             // ─────────────────────────────────────────────────────────────────
 

@@ -47,7 +47,6 @@ const UnlockPinScreen: React.FC<Props> = ({ navigation }) => {
   const inputRefs = useRef<TextInput[]>([]);
   const enteredPin = useMemo(() => pin.join(''), [pin]);
 
-  // UI loading check (hook loading + local state)
   const isLoading = apiLoading || isLocallyProcessing;
 
   const hydrateUnlockState = useCallback(async () => {
@@ -88,7 +87,14 @@ const UnlockPinScreen: React.FC<Props> = ({ navigation }) => {
   const performSilentLogin = async () => {
     try {
       const credentials = await Keychain.getGenericPassword();
-      if (!credentials) return false;
+      console.log("Credentials:", credentials); // 🔍 DEBUG
+
+if (!credentials || !credentials.username || !credentials.password) {
+  Alert.alert("Error", "Credentials not found. Please login again.");
+  return false;
+}
+
+      // if (!credentials) return false;
 
       const payload = {
         username: credentials.username,
@@ -140,11 +146,13 @@ const UnlockPinScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleBiometricUnlock = async () => {
     const isVerified = await promptBiometricVerification(
-        `Unlock Aarixa with ${biometricLabel}`,
+        `Unlock WealthSys with ${biometricLabel}`,
     );
-    if (isVerified) {
-        unlockApp();
-    }
+   if (isVerified) {
+    setTimeout(() => {
+      unlockApp();   
+    }, 2000);
+  }
   };
 
   const handleChange = (text: string, index: number) => {
