@@ -5,6 +5,7 @@ import { wp, hp, scaleFont } from "../utils/responcive/responcive";
 import { useAppTheme } from "../hooks/useTheme";
 import { getService } from "../api/services/genericService/genericService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { STORAGE_KEYS } from "../constants/storageKeys";
 
 interface ChartSlice {
   id: string;
@@ -134,15 +135,18 @@ const AssetsCard = () => {
 
 
   const fetchData = async () => {
+  
     try {
-      const storedCid = await AsyncStorage.getItem("cid");
-      const storedFid = await AsyncStorage.getItem("fid");
-      const fhid = storedFid && storedFid !== "" ? storedFid : storedCid;
+      const storedCid = await AsyncStorage.getItem(STORAGE_KEYS.cid);
+      const storedFid = await AsyncStorage.getItem(STORAGE_KEYS.fhid);
+      const storedLevelNo = await AsyncStorage.getItem(STORAGE_KEYS.levelNo);
+      const fhid = storedFid && storedFid.trim() !== "" ? storedFid : storedCid;
+      const levelNo = storedLevelNo && !isNaN(Number(storedLevelNo)) ? Number(storedLevelNo) : 98;
 
       const json = await getService("api/investor/getExposure", {
         cid: storedCid,
-        levelNo: 98,
-        fhid: fhid,
+        levelNo,
+        fhid,
       });
 
       if (json.status === 0 && json.result.asset) {
@@ -181,9 +185,9 @@ const AssetsCard = () => {
             const rawPercentage =
               totalAmount === 0 ? 0 : (amount / totalAmount) * 100;
 
-            // 👉 avoid invisible slices in chart
+            // 👉 avoid invisible slices in chart for small but visible values
             const displayPercentage =
-              rawPercentage > 0 && rawPercentage < 1 ? 1 : rawPercentage;
+              rawPercentage >= 0.1 && rawPercentage < 1 ? 1 : rawPercentage;
 
             return {
               id: index.toString(),
@@ -195,9 +199,9 @@ const AssetsCard = () => {
           }
         );
 
-        // ✅ 4. REMOVE 0% categories (important)
+        // ✅ 4. REMOVE categories smaller than 0.1% entirely
         transformedData = transformedData.filter(
-          (item) => item.actualPercentage > 0
+          (item) => item.actualPercentage >= 0.1
         );
 
 

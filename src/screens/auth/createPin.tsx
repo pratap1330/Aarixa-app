@@ -31,7 +31,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'CreatePin'>;
 
 const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
     const { postData, loading } = usePost();
-    const { username, password } = route.params;
+    const { username, password, otp, phone, apiLoginDone } = route.params;
     const [pin, setPin] = useState(Array(4).fill(''));
     const inputRefs = useRef<TextInput[]>([]);
 
@@ -60,18 +60,27 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
          
         if (finalPin.length !== 4) return;
         try {
-            const payload = {
-                username: username,
-                password: password,  
-            };
+            if (!apiLoginDone) {
+                const payload: any = {
+                    username,
+                    password,
+                    Passcode: finalPin,
+                };
 
-            const res = await postData("api/auth/client-login", payload);
-            if (res?.status === 1) {
+                if (otp) payload.otp = otp;
+                if (phone) payload.phone = phone;
+                const res = await postData("api/auth/client-login", payload);
+                if (res?.status === 1) {
+                    await AsyncStorage.setItem(STORAGE_KEYS.cid, String(res?.result?.user?.cid));
+                    await AsyncStorage.setItem(STORAGE_KEYS.user, JSON.stringify(res?.result?.user));
+                } else {
+                    Alert.alert(res?.message || 'Login failed');
+                    return;
+                }
+            }
+
             await Keychain.setGenericPassword(username, password);
-            const cid = res?.result?.user?.cid;
-            await AsyncStorage.setItem(STORAGE_KEYS.cid, String(cid));
-           await AsyncStorage.setItem(STORAGE_KEYS.user, JSON.stringify(res?.result?.user));
-           await AsyncStorage.setItem(STORAGE_KEYS.userPin, finalPin);
+            await AsyncStorage.setItem(STORAGE_KEYS.userPin, finalPin);
 
             const biometricStatus = await getBiometricStatus();
 
@@ -115,10 +124,6 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
                     },
                 ],
             );
-            }
-            else {
-                Alert.alert(res?.message);
-            }
 
         } catch (err: any) {
             Alert.alert(err?.message);

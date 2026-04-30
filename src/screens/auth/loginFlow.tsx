@@ -7,17 +7,22 @@ import {
   TouchableOpacity,
   Platform,
   Image,
+  Alert,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../utils/NavigationType/type';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { wp, hp, scaleFont } from '../../utils/responcive/responcive';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { validateUsername, validatePassword } from '../../utils/validation/validation';
+import { usePost } from '../../hooks/usePost';
+import { STORAGE_KEYS } from '../../constants/storageKeys';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginFlow: React.FC<Props> = ({ navigation, route }) => {
+  const { postData, loading } = usePost();
   // const { phone } = route.params;
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -32,7 +37,8 @@ const LoginFlow: React.FC<Props> = ({ navigation, route }) => {
     return username.length > 0 && password.length > 0 && !usernameError && !passwordError;
   }, [username, password, usernameError, passwordError]);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    debugger
     const usernameCheck = validateUsername(username);
     const passwordCheck = validatePassword(password);
 
@@ -41,11 +47,30 @@ const LoginFlow: React.FC<Props> = ({ navigation, route }) => {
 
     if (!usernameCheck.isValid || !passwordCheck.isValid) return;
 
-    navigation.navigate('CreatePin', {
-      username,
-      password,
-      // phone,
-    });
+    try {
+      const payload = {
+        username,
+        password,
+      };
+      const res = await postData('api/auth/client-login', payload);
+
+      if (res?.status === 1) {
+        await AsyncStorage.setItem(STORAGE_KEYS.cid, String(res?.result?.user?.cid));
+        await AsyncStorage.setItem(STORAGE_KEYS.fhid, String(res?.result?.user?.fhid));
+        await AsyncStorage.setItem(STORAGE_KEYS.levelNo, String(res?.result?.user?.levelNo));
+        await AsyncStorage.setItem(STORAGE_KEYS.user, JSON.stringify(res?.result?.user));
+
+        navigation.navigate('CreatePin', {
+          username,
+          password,
+          apiLoginDone: true,
+        });
+      } else {
+        Alert.alert('Login failed', res?.message || 'Unable to login.');
+      }
+    } catch (error: any) {
+      Alert.alert('Login failed', error?.message || 'Unable to login.');
+    }
   };
 
   return (

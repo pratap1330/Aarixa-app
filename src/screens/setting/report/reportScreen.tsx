@@ -714,12 +714,12 @@ const handleDownload = async (tabLabel: string) => {
     // Yahan state save kar rahe hain taaki baad mein kaam aaye
     setDownloadedFilePath(filePath);
 
-    // Alert with Open File option
+    // Alert with Open File option and saved file path
     Alert.alert(
       "Success",
-      "Report downloaded successfully.",
+      `Report downloaded successfully.\n\nPath:\n${filePath}`,
       [
-        { text: "Later", style: "cancel" },
+        { text: "View Later", style: "cancel" },
         { 
           text: "Open File", 
           onPress: async () => {

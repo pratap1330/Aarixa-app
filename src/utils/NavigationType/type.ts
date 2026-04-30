@@ -18,8 +18,9 @@ export type RootStackParamList = {
   CreatePin: {
     username: string;
     password: string;
-    // otp: string;
-    // phone :string;
+    otp?: string;
+    phone?: string;
+    apiLoginDone?: boolean;
   };
   UnlockPin: undefined;
 
