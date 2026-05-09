@@ -8,8 +8,8 @@ import SplashScreenOne from "../../screens/splashScreen/splashScreenOne";
 import LoginIntro from "../../screens/auth/loginIntro";
 // import LoginScreen from "../../screens/auth/login";
 import LoginScreen from "../../screens/auth/loginFlow";
-import LoginPhone from '../../screens/auth/loginPhone'
-import OtpVerificationScreen from "../../screens/auth/OTPVerification";
+// import LoginPhone from '../../screens/auth/loginPhone'
+// import OtpVerificationScreen from "../../screens/auth/OTPVerification";
 import CreatePinScreen from "../../screens/auth/createPin";
 import UnlockPinScreen from "../../screens/auth/unlockPin";
 import AllSetScreen from "../../screens/auth/allSet";
@@ -34,17 +34,6 @@ const StackNavigator = () => {
         <Stack.Screen name="LoginIntro" component={LoginIntro} />
 
         <Stack.Screen name="Login" component={LoginScreen} />
-
-        <Stack.Screen
-          name="OTPVerification"
-          component={OtpVerificationScreen}
-        />
-
-
-        <Stack.Screen
-          name="LoginPhone"
-          component={LoginPhone}
-        />
 
         <Stack.Screen
           name="CreatePin"
