@@ -8,21 +8,25 @@ import {
     Dimensions,
     KeyboardAvoidingView,
     Platform,
+    Image,
+    ScrollView,
+    Alert,
 } from 'react-native';
-import { Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../utils/NavigationType/type';
 import { usePost } from '../../hooks/usePost';
 import * as Keychain from 'react-native-keychain';
-import Back from '../../images/loginImage/back.svg';
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Lock from '../../images/loginImage/lock.svg';
 import { STORAGE_KEYS } from '../../constants/storageKeys';
 import {
     enableBiometricLoginWithVerification,
     getBiometricStatus,
 } from '../../services/biometric/biometricService';
+import GoogleIcon from '../../images/loginImage/google.svg';
+import AppleIcon from '../../images/loginImage/apple.svg';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const wp = (size: number) => (SCREEN_WIDTH / 375) * size;
 const hp = (size: number) => (SCREEN_HEIGHT / 812) * size;
 const scaleFont = (size: number) => (SCREEN_WIDTH / 375) * size;
@@ -36,7 +40,6 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
     const inputRefs = useRef<TextInput[]>([]);
 
     const handleChange = (text: string, index: number) => {
-
         if (text && !/^\d$/.test(text)) return;
 
         const newPin = [...pin];
@@ -54,10 +57,9 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
         }
     };
 
-   
     const handleSetPin = async () => {
         const finalPin = pin.join('');
-         
+
         if (finalPin.length !== 4) return;
         try {
             if (!apiLoginDone) {
@@ -131,206 +133,232 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
     };
 
     return (
-
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             style={styles.container}
         >
-
-            {/* Back */}
-            <TouchableOpacity
-                style={styles.backButton}
-                onPress={() => navigation.goBack()}
+            <ScrollView
+                contentContainerStyle={styles.scrollContainer}
+                showsVerticalScrollIndicator={false}
             >
-                {/* <Back style={styles.backIcon} /> */}
-            </TouchableOpacity>
-
-
-            {/* Title */}
-            <Text style={styles.title}>
-                Create new pin
-            </Text>
-
-
-            {/* Image */}
-            {/* <Lock style={styles.image} /> */}
-
-            {/* Box */}
-            <View style={styles.box}>
-
-                <Text style={styles.subtitle}>
-                    Set a 4-digit PIN for quick and safe access
-                </Text>
-
-
-                {/* PIN INPUTS */}
-                <View style={styles.pinRow}>
-
-                    {pin.map((value, index) => (
-
-                        <TextInput
-                            key={index}
-                            ref={(ref) => {
-                                if (ref) inputRefs.current[index] = ref;
-                            }}
-                            style={styles.pinInput}
-                            keyboardType="number-pad"
-                            maxLength={1}
-                            secureTextEntry
-                            value={value}
-
-                            onChangeText={(text) =>
-                                handleChange(text, index)
-                            }
-
-                            // ✅ backspace focus (OTP jaisa)
-                            onKeyPress={({ nativeEvent }) => {
-                                if (
-                                    nativeEvent.key === 'Backspace' &&
-                                    !pin[index] &&
-                                    index > 0
-                                ) {
-                                    inputRefs.current[index - 1]?.focus();
-                                }
-                            }}
-
-                            // ✅ only first auto focus (OTP jaisa)
-                            autoFocus={index === 0}
-                        />
-
-                    ))}
-
-                </View>
-
-
-                {/* Button */}
-                <TouchableOpacity
-                    style={[
-                        styles.button,
-                        { opacity: pin.join('').length === 4 ? 1 : 0.5 }
-                    ]}
-                    disabled={pin.join('').length < 4}
-                    onPress={handleSetPin}
+                <LinearGradient
+                    colors={['#165CCE', '#1E3696']}
+                    start={{ x: 0.5, y: 0 }}
+                    end={{ x: 0.5, y: 1 }}
+                    style={styles.gradient}
                 >
-                    <Text style={styles.buttonText}>
-                        {loading ? "Please wait..." : "Set PIN"}
-                    </Text>
-                </TouchableOpacity>
+                    <Image
+                        source={require('../../images/loginImage/ruppe1.png')}
+                        style={styles.rupeeIcon}
+                    />
 
-            </View>
+                    <View style={styles.topShape} />
 
+                    <View style={styles.card}>
+                        <Text style={styles.title}>Create New PIN</Text>
+
+                        <Text style={styles.subtitle}>
+                            Set a 4-digit PIN for quick and safe access.
+                        </Text>
+
+                        <View style={styles.pinRow}>
+                            {pin.map((value, index) => (
+                                <TextInput
+                                    key={index}
+                                    ref={(ref) => {
+                                        if (ref) inputRefs.current[index] = ref;
+                                    }}
+                                    style={styles.pinInput}
+                                    keyboardType="number-pad"
+                                    maxLength={1}
+                                    secureTextEntry
+                                    value={value}
+                                    onChangeText={(text) =>
+                                        handleChange(text, index)
+                                    }
+                                    onKeyPress={({ nativeEvent }) => {
+                                        if (
+                                            nativeEvent.key === 'Backspace' &&
+                                            !pin[index] &&
+                                            index > 0
+                                        ) {
+                                            inputRefs.current[index - 1]?.focus();
+                                        }
+                                    }}
+                                    autoFocus={index === 0}
+                                />
+                            ))}
+                        </View>
+
+                        <TouchableOpacity
+                            style={[
+                                styles.button,
+                                { opacity: pin.join('').length === 4 ? 1 : 0.5 }
+                            ]}
+                            disabled={pin.join('').length < 4}
+                            onPress={handleSetPin}
+                        >
+                            <Text style={styles.buttonText}>
+                                {loading ? "Please wait..." : "Set PIN"}
+                            </Text>
+                        </TouchableOpacity>
+
+                        <View style={styles.socialDivider}>
+                            <LinearGradient
+                                colors={['#165CCE', '#1E3696']}
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 1, y: 0 }}
+                                style={styles.dividerLineGradient}
+                            />
+                            <Text style={styles.dividerText}>or continue with</Text>
+                            <LinearGradient
+                                colors={['#165CCE', '#1E3696']}
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 1, y: 0 }}
+                                style={styles.dividerLineGradient}
+                            />
+                        </View>
+
+                        <View style={styles.socialRow}>
+                            <TouchableOpacity style={styles.socialButton}>
+                                <GoogleIcon width={24} height={24} />
+                                <Text style={styles.socialButtonText}>Google</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.socialButton}>
+                                <AppleIcon width={19.51} height={19.51} />
+                                <Text style={styles.socialButtonText}>Apple</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </LinearGradient>
+            </ScrollView>
         </KeyboardAvoidingView>
     );
 };
 
 export default CreatePinScreen;
 
-
-
 const styles = StyleSheet.create({
-
     container: {
         flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
+        backgroundColor: '#165CCE',
     },
-
-
-    backButton: {
+    scrollContainer: {
+        flexGrow: 1,
+    },
+    gradient: {
+        flex: 1,
+        width: '100%',
+        minHeight: hp(844),
+    },
+    topShape: {
+        height: hp(173),
+    },
+    rupeeIcon: {
         position: 'absolute',
-        top: hp(59),
-        left: wp(16),
-        width: wp(41),
-        height: wp(41),
-        justifyContent: 'center',
-        alignItems: 'center',
+        right: wp(10),
+        width: wp(162),
+        height: hp(240),
+        resizeMode: 'contain',
+        opacity: 1,
     },
-
-    // backIcon: {
-    //     width: wp(38),
-    //     height: wp(38),
-    // },
-
-
+    card: {
+        flex: 1,
+        backgroundColor: '#FFFFFF',
+        marginTop: hp(30),
+        borderTopLeftRadius: wp(40),
+        borderTopRightRadius: wp(40),
+        paddingHorizontal: wp(18),
+        paddingTop: hp(32),
+        alignItems: 'center',
+        paddingBottom: hp(40),
+    },
     title: {
-        width: wp(331),
-        height: hp(39),
-        marginTop: hp(122),
-        textAlign: 'center',
         fontSize: scaleFont(30),
-        fontFamily: 'Urbanist-SemiBold',
-        color: '#1E232C',
+        fontWeight: '700',
+        color: '#111827',
+        marginBottom: hp(70),
     },
-
-
-    image: {
-        width: wp(245),
-        height: hp(204),
-        marginTop: -hp(19),
-    },
-
-
-    box: {
-        width: wp(357),
-        height: hp(164),
-        marginTop: hp(20),
-        alignItems: 'center',
-        gap: hp(30),
-    },
-
-
     subtitle: {
-        width: wp(304),
-        height: hp(24),
-        marginTop: hp(80),
+        fontSize: scaleFont(13),
+        fontWeight: '400',
+        color: '#6B7280',
         textAlign: 'center',
-        fontFamily: 'Urbanist-Medium',
-        fontSize: scaleFont(16),
-        color: '#838BA1',
-        // marginTop: -hp(20),
+        marginBottom: hp(35),
     },
-
     pinRow: {
-        width: wp(357),
-        height: hp(35),
+        width: '100%',
         flexDirection: 'row',
-        // justifyContent: 'space-between',
-        justifyContent :'center',
-        gap:30
+        justifyContent: 'center',
+        gap: wp(16),
+        marginBottom: hp(70),
     },
-
-
     pinInput: {
-       width: 50,
-        height: 44,
-        marginTop :4,
-        borderWidth: 1.5,
-        borderColor: '#2288FD',
-        borderRadius: 10,
+        width: wp(50),
+        height: hp(50),
+        borderWidth: 2,
+        borderColor: '#3B82F6',
+        borderRadius: wp(12),
         textAlign: 'center',
-        fontSize: scaleFont(16),
-        fontFamily: 'Urbanist-Medium',
-        color: '#1E232C',
-        backgroundColor: '#fff',
+        fontSize: scaleFont(18),
+        fontWeight: '600',
+        color: '#111827',
+        backgroundColor: '#FFFFFF',
     },
-
-
     button: {
-        width: wp(331),
+        width: '100%',
         height: hp(45),
-        borderRadius: wp(10),
-        backgroundColor: '#2288FD',
+        backgroundColor: '#165CCE',
+        borderRadius: wp(28),
         justifyContent: 'center',
         alignItems: 'center',
+        marginBottom: hp(24),
     },
-
-
     buttonText: {
-        color: '#fff',
+        color: '#FFFFFF',
         fontSize: scaleFont(16),
-        fontFamily: 'Urbanist-Medium',
+        fontWeight: '600',
     },
-
+    socialDivider: {
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: hp(90),
+        marginBottom: hp(20),
+    },
+    dividerLineGradient: {
+        width: wp(114),
+        height: 1,
+    },
+    dividerText: {
+        marginHorizontal: wp(12),
+        color: '#6B7280',
+        fontSize: scaleFont(13),
+    },
+    socialRow: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: wp(12),
+    },
+    socialButton: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: hp(44),
+        borderRadius: wp(26),
+        borderWidth: 1,
+        borderColor: '#D1D5DB',
+        backgroundColor: '#FFFFFF',
+        gap: wp(8),
+    },
+    socialButtonText: {
+        fontSize: scaleFont(12),
+        color: '#111827',
+        marginLeft: wp(8),
+    },
 });
 
 
