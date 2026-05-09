@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   View,
@@ -6,15 +5,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  Platform,
 } from "react-native";
-
 import LinearGradient from "react-native-linear-gradient";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-
 import { TAB_CONFIG } from "../utils/tab/tabConfig";
 import { wp, hp } from "../utils/responcive/responcive";
 import { useAppTheme } from "../hooks/useTheme";
-
 
 const CustomTabBar: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
   const { mode, colors } = useAppTheme();
@@ -26,13 +23,9 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
 
   return (
     <View style={styles.container}>
-
-      {/* INNER CONTAINER */}
       <View style={[styles.innerContainer, { backgroundColor: pillBg }]}>
 
         {TAB_CONFIG.map((tab, index) => {
-
-          // ✅ CENTER BUTTON
           if (tab.center) {
             return (
               <View key={tab.key} style={styles.centerWrapper}>
@@ -85,39 +78,17 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
 
 export default CustomTabBar;
 
-
-
-// ================= STYLES =================
-
 const styles = StyleSheet.create({
-
-  // outer container
-//  container: {
-//   width: wp(367),
-//   height: hp(58),
-//   alignSelf: "center",
-//   justifyContent: "center",
-//   alignItems: "center",
-//   backgroundColor: 'transparent',
-//   marginBottom: hp(24)
-// },
-
-container: {
-  position: "absolute",
-  bottom: hp(30), 
-  alignSelf: "center",
-
-  width: wp(367),
-  height: hp(58),
-
-  justifyContent: "center",
-  alignItems: "center",
-
-  backgroundColor: "transparent",
-},
-
-
-  // inner container (358 x 71, radius 50)
+  container: {
+    position: "absolute",
+    bottom: Platform.OS === 'ios' ? hp(20) : hp(30), 
+    alignSelf: "center",
+    width: wp(367),
+    height: hp(100), 
+    justifyContent: "flex-end", 
+    alignItems: "center",
+    backgroundColor: "transparent",
+  },
   innerContainer: {
     width: wp(358),
     height: hp(71),
@@ -125,74 +96,60 @@ container: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
     elevation: 6,
-
     paddingHorizontal: wp(12),
-
     backgroundColor: "#ffffff",
   },
-
-
-  // normal tab
   tab: {
+    flex: 1,
     width: wp(68.6),
     height: hp(45),
     alignItems: "center",
     justifyContent: "center",
     gap: hp(6),
   },
-
-
-  // icon 24x24
   icon: {
     width: wp(24),
     height: hp(24),
   },
-
-
-  // label
   label: {
     width: wp(70),
     height: hp(15),
-
     fontFamily: "Urbanist-SemiBold",
     fontSize: hp(12),
     color : '#A2A2A2',
-    lineHeight: hp(12) * 1.25,
-    letterSpacing: hp(12) * 0.02,
-
+    marginTop: hp(4),
+    // lineHeight: hp(12) * 1.25,
+    // letterSpacing: hp(12) * 0.02,
     textAlign: "center",
   },
-
-
-  // center wrapper
   centerWrapper: {
     width: wp(68.6),
-    height: hp(70),
+    height: hp(71),
 
     alignItems: "center",
     justifyContent: "flex-end",
     paddingBottom: hp(30),
   },
-
-
-  // circle button
   centerButton: {
     width: wp(58),
     height: wp(58),
-
-    borderRadius: 100,
-    borderWidth: wp(4),
+    borderRadius: 60, 
+    // borderWidth: wp(4),
     borderColor: "#fff",
-
-    padding: wp(14),
-
     justifyContent: "center",
     alignItems: "center",
+    marginTop: -hp(55), 
+    // shadowColor: "#000",
+    // shadowOffset: { width: 0, height: 4 },
+    // shadowOpacity: 0.2,
+    // shadowRadius: 4,
+    // elevation: 8,
   },
-
-
-  // center icon
   centerIcon: {
     width: wp(30),
     height: hp(30),

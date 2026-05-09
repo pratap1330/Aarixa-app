@@ -1,12 +1,8 @@
-// StackNavigator.tsx
-
 import React from "react";
 import { NavigationContainer, DarkTheme, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAppTheme } from "../../hooks/useTheme";
-
 import { RootStackParamList } from "../../utils/NavigationType/type";
-
 import SplashScreen from "../../screens/splashScreen/splashScreen";
 import SplashScreenOne from "../../screens/splashScreen/splashScreenOne";
 import LoginIntro from "../../screens/auth/loginIntro";
@@ -35,7 +31,6 @@ const StackNavigator = () => {
       >
         {/* <Stack.Screen name="SplashScreen" component={SplashScreen} /> */}
         <Stack.Screen name="SplashScreenOne" component={SplashScreenOne} />
-        {/* <Stack.Screen name="SplashScreen" component={SplashScreen} /> */}
         <Stack.Screen name="LoginIntro" component={LoginIntro} />
 
         <Stack.Screen name="Login" component={LoginScreen} />
@@ -46,7 +41,7 @@ const StackNavigator = () => {
         />
 
 
-          <Stack.Screen
+        <Stack.Screen
           name="LoginPhone"
           component={LoginPhone}
         />
@@ -69,7 +64,7 @@ const StackNavigator = () => {
           component={ExploreScreen}
           options={{ headerShown: false }}
         />
-          <Stack.Screen
+        <Stack.Screen
           name="SipDetailsScreen"
           component={ShipDetailsScreen}
           options={{ headerShown: false }}

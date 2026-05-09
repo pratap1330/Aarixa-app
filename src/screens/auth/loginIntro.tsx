@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Platform,
-  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
@@ -27,7 +26,7 @@ const LoginIntro: React.FC<Props> = ({ navigation }) => {
       end={{ x: 0.5, y: 1 }}
       style={styles.screen}
     >
-      <SafeAreaView style={styles.safeArea}>
+      <View style={styles.safeArea}>
         <StatusBar barStyle="light-content" backgroundColor="#165CCE" />
 
         <View style={styles.content}>
@@ -98,7 +97,7 @@ const LoginIntro: React.FC<Props> = ({ navigation }) => {
           </View>
           </View>
         </View>
-      </SafeAreaView>
+      </View>
     </LinearGradient>
   );
 };
@@ -197,8 +196,8 @@ const styles = StyleSheet.create({
   },
   bottomSheet: {
     position: 'absolute',
-    left: -wp(18),
-    right: -wp(18),
+    left: 0,
+    right: 0,
     bottom: 0,
     height: hp(344),
     backgroundColor: '#FFFFFF',
