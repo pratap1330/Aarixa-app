@@ -13,13 +13,22 @@ import { TAB_CONFIG } from "../utils/tab/tabConfig";
 import { wp, hp } from "../utils/responcive/responcive";
 import { useAppTheme } from "../hooks/useTheme";
 
+const renderIcon = (icon: any, style: any, tintColor?: string, fill?: string) => {
+  if (typeof icon === 'function') {
+    return React.createElement(icon, { style, fill, color: fill });
+  } else {
+    return <Image source={icon} style={[style, tintColor ? { tintColor } : {}]} resizeMode="contain" />;
+  }
+};
+
 const CustomTabBar: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
   const { mode, colors } = useAppTheme();
 
   const pillBg      = mode === "dark" ? "#1E1E1E" : "#FFFFFF";
-  const iconTint    = mode === "dark" ? "#000000ff" : undefined;
+  const iconTint    = mode === "dark" ? "#CCCCCC" : "#A2A2A2";
   const labelColor  = mode === "dark" ? "#CCCCCC" : "#A2A2A2";
   const borderColor = mode === "dark" ? "#000000" : "#FFFFFF";
+  const currentRoute = state.routes[state.index]?.name;
 
   return (
     <View style={styles.container}>
@@ -39,18 +48,14 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
                     end={{ x: 0.5, y: 1 }}
                     style={[styles.centerButton, { borderColor }]}
                   >
-                    <Image
-                      source={tab.icon}
-                      style={styles.centerIcon}
-                      resizeMode="contain"
-                    />
+                    {renderIcon(tab.icon, styles.centerIcon)}
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
             );
           }
 
-          const isFocused = state.index === index;
+          const isFocused = currentRoute === tab.key;
           return (
             <TouchableOpacity
               key={tab.key}
@@ -58,11 +63,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
               activeOpacity={0.7}
               onPress={() => navigation.navigate(tab.key as never)}
             >
-              <Image
-                source={tab.icon}
-                style={[styles.icon, iconTint ? { tintColor: isFocused ? colors.primary : iconTint } : isFocused ? { tintColor: colors.primary } : undefined]}
-                resizeMode="contain"
-              />
+              {renderIcon(tab.icon, styles.icon, isFocused ? colors.primary : iconTint, isFocused ? colors.primary : iconTint)}
               <Text style={[styles.label, { color: isFocused ? colors.primary : labelColor }]}>
                 {tab.label}
               </Text>

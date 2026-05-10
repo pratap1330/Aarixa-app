@@ -152,14 +152,14 @@ const SipDetailsScreen = () => {
       {/* HEADER */}
       <View style={[styles.header, { backgroundColor: isDark ? "#000" : "#FAFAFA" }]}>
         <View style={styles.headerContent}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+          {/* <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
             <Image
               source={require("../../../images/loginImage/back_arrow.png")}
               style={[styles.backIcon, { tintColor: isDark ? "#FFF" : "#000" }]}
               resizeMode="contain"
             />
-          </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: isDark ? "#FFF" : "#000000" }]}>SIP/STP Details</Text>
+          </TouchableOpacity> */}
+          {/* <Text style={[styles.headerTitle, { color: isDark ? "#FFF" : "#000000" }]}>SIP/STP Details</Text> */}
         </View>
       </View>
 
@@ -230,7 +230,7 @@ export default SipDetailsScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { width: wp(390), height: hp(119), justifyContent: "flex-end" },
+  header: { width: wp(390), height: hp(20), justifyContent: "flex-end" },
   headerContent: { width: wp(390), height: hp(61), flexDirection: "row", alignItems: "center", paddingHorizontal: wp(10), gap: wp(10), marginBottom: hp(10) },
   backBtn: { width: wp(41), height: wp(41), justifyContent: "center", alignItems: "center" },
   backIcon: { width: wp(19), height: hp(19) },

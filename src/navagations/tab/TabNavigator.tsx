@@ -4,6 +4,8 @@ import CustomTabBar from "../../components/CustomTabBar";
 import Dashboard from "../../screens/tabScreen/DashboardScreen";
 import CustomHeader from "../../components/CustomHeader";
 import { TabParamList } from "../../utils/NavigationType/type";
+import ReportsScreen from "../../screens/setting/report/reportScreen";
+import SipDetailsScreen from "../../screens/setting/sipDetails/sipStpDetails";
 
 const Tab = createBottomTabNavigator<TabParamList>();
 
@@ -27,6 +29,14 @@ export default function TabNavigator() {
       <Tab.Screen
         name="dashboard"
         component={Dashboard}
+      />
+      <Tab.Screen
+        name="sip"
+        component={SipDetailsScreen}
+      />
+      <Tab.Screen
+        name="reports"
+        component={ReportsScreen}
       />
 
     </Tab.Navigator>

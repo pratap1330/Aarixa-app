@@ -234,20 +234,20 @@ const handleLogout = async () => {
       label: "What's New",
       icon: News,
     },
-    {
-      label: "SIP/STP Details",
-      icon: Sip,
-    onPress: () => navigation.navigate("SipDetailsScreen"),
-    },
+    // {
+    //   label: "SIP/STP Details",
+    //   icon: Sip,
+    // onPress: () => navigation.navigate("SipDetailsScreen"),
+    // },
     {
       label: "Wallet",
       icon: Wallet,
     },
-    {
-      label: "Reports",
-      icon: Reports,
-      onPress: () => navigation.navigate("reports"),
-    },
+    // {
+    //   label: "Reports",
+    //   icon: Reports,
+    //   onPress: () => navigation.navigate("reports"),
+    // },
     {
       label: "News",
       icon: News1,
