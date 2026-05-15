@@ -229,7 +229,8 @@ const SipDetailsScreen = () => {
 export default SipDetailsScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1,
+    marginBottom: hp(100) }, 
   header: { width: wp(390), height: hp(20), justifyContent: "flex-end" },
   headerContent: { width: wp(390), height: hp(61), flexDirection: "row", alignItems: "center", paddingHorizontal: wp(10), gap: wp(10), marginBottom: hp(10) },
   backBtn: { width: wp(41), height: wp(41), justifyContent: "center", alignItems: "center" },

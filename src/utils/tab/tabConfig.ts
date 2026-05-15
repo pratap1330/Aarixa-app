@@ -8,20 +8,20 @@ export const TAB_CONFIG = [
     label: "Dashboard",
     icon: require("../../images/tabLogos/dashboard.png"),
   },
-    {
-    key: "sip",
-    label: "SIP",
-    icon: Sip,
+  {
+    key: "reports",
+    label: "Reports",
+    icon: Reports,
   },
   {
     key: "center",
     center: true,
     icon: require("../../images/tabLogos/Group.png"),
   },
-    {
-    key: "reports",
-    label: "Reports",
-    icon: Reports,
+   {
+    key: "sip",
+    label: "SIP",
+    icon: Sip,
   },
    {
     key: "invest",
