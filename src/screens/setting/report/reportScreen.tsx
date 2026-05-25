@@ -865,13 +865,13 @@ const handleDownload = async (tabLabel: string) => {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+        {/* <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Image
             source={require("../../../images/loginImage/back_arrow.png")}
             style={[styles.backIcon, mode === "dark" && { tintColor: "#FFF" }]}
           />
-        </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.text }]}>Reports</Text>
+        </TouchableOpacity> */}
+        {/* <Text style={[styles.title, { color: colors.text }]}>Reports</Text> */}
         <View style={{ width: wp(40) }} />
       </View>
 
@@ -919,7 +919,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
     flexDirection: "row",
-    marginTop: hp(70),
+    // marginTop: hp(10),
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: wp(16),

@@ -203,7 +203,7 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
                             </Text>
                         </TouchableOpacity>
 
-                        <View style={styles.socialDivider}>
+                        {/* <View style={styles.socialDivider}>
                             <LinearGradient
                                 colors={['#165CCE', '#1E3696']}
                                 start={{ x: 0, y: 0 }}
@@ -217,9 +217,9 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
                                 end={{ x: 1, y: 0 }}
                                 style={styles.dividerLineGradient}
                             />
-                        </View>
+                        </View> */}
 
-                        <View style={styles.socialRow}>
+                        {/* <View style={styles.socialRow}>
                             <TouchableOpacity style={styles.socialButton}>
                                 <GoogleIcon width={24} height={24} />
                                 <Text style={styles.socialButtonText}>Google</Text>
@@ -228,7 +228,7 @@ const CreatePinScreen: React.FC<Props> = ({ navigation, route }) => {
                                 <AppleIcon width={19.51} height={19.51} />
                                 <Text style={styles.socialButtonText}>Apple</Text>
                             </TouchableOpacity>
-                        </View>
+                        </View> */}
                     </View>
                 </LinearGradient>
             </ScrollView>
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     gradient: {
         flex: 1,
         width: '100%',
-        minHeight: hp(844),
+        minHeight: hp(810),
     },
     topShape: {
         height: hp(173),

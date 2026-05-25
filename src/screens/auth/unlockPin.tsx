@@ -615,7 +615,7 @@ if (!credentials || !credentials.username || !credentials.password) {
               </TouchableOpacity>
             ) : null}
 
-            <View style={styles.socialDivider}>
+            {/* <View style={styles.socialDivider}>
               <LinearGradient
                 colors={['#165CCE', '#1E3696']}
                 start={{ x: 0, y: 0 }}
@@ -640,7 +640,7 @@ if (!credentials || !credentials.username || !credentials.password) {
                 <AppleIcon width={19.51} height={19.51} />
                 <Text style={styles.socialButtonText}>Apple</Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
           </View>
         </LinearGradient>
       </ScrollView>

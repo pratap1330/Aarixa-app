@@ -826,7 +826,7 @@ const LoginFlow: React.FC<Props> = ({ navigation, route }) => {
             <Text style={styles.forgotText}>Forgot your password?</Text>
           </TouchableOpacity>
 
-          <View style={styles.socialDivider}>
+          {/* <View style={styles.socialDivider}>
             <LinearGradient
               colors={['#165CCE', '#1E3696']}
               start={{ x: 0, y: 0 }}
@@ -851,7 +851,7 @@ const LoginFlow: React.FC<Props> = ({ navigation, route }) => {
               <AppleIcon width={19.51} height={19.51} />
               <Text style={styles.socialButtonText}>Apple</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       </LinearGradient>
     </KeyboardAwareScrollView>
@@ -868,7 +868,7 @@ const styles = StyleSheet.create({
   gradient: {
     flex: 1,
     width: '100%',
-    minHeight: hp(844),
+    minHeight: hp(800),
   },
   topShape: {
     height: hp(173),

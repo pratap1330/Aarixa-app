@@ -37,4 +37,6 @@ export type TabParamList = {
   invest: undefined;
   ai: undefined;
   history: undefined;
+  sip: undefined;
+  reports: undefined;
 };

@@ -1,4 +1,6 @@
-// tabConfig.ts
+
+import Sip from "../../images/setting/Sip.svg";
+import Reports from "../../images/setting/Reports.svg";
 
 export const TAB_CONFIG = [
   {
@@ -7,63 +9,24 @@ export const TAB_CONFIG = [
     icon: require("../../images/tabLogos/dashboard.png"),
   },
   {
-    key: "invest",
-    label: "Invest",
-    icon: require("../../images/tabLogos/invest.png"),
+    key: "reports",
+    label: "Reports",
+    icon: Reports,
   },
   {
     key: "center",
     center: true,
     icon: require("../../images/tabLogos/Group.png"),
   },
-  {
-    key: "ai",
-    label: "AI",
-    icon: require("../../images/tabLogos/ai.png"),
+   {
+    key: "sip",
+    label: "SIP",
+    icon: Sip,
   },
-  {
-    key: "history",
-    label: "History",
-    icon: require("../../images/tabLogos/history.png"),
+   {
+    key: "invest",
+    label: "Invest",
+    icon: require("../../images/tabLogos/invest.png"),
   },
 ];
 
-
-
-
-
-// // tabConfig.ts
-// import Calculator  from "../../images/tabLogos/calculator.svg";
-// import DashboardI from '../../images/tabLogos/dashboard.svg';
-// import Ai from '../../images/tabLogos/ai.svg';
-// import Inverst from '../../images/tabLogos/invest.svg'
-// import Group from '../../images/tabLogos/Group.svg';
-
-// export const TAB_CONFIG = [
-//   {
-//     key: "dashboard",
-//     label: "Dashboard",
-//     icon: DashboardI
-//   },
-//   {
-//     key: "invest",
-//     label: "Invest",
-//     icon: Inverst
-//   },
-//   {
-//     key: "center",
-//     center: true,
-//     icon: Group
-//   },
-//   {
-//     key: "ai",
-//     label: "AI",
-//     icon: Ai
-//   },
-//   {
-//     key: " calculator",
-//     label: "Calculator",
-//     icon: Calculator
-
-//   },
-// ];
