@@ -21,7 +21,6 @@ interface DropdownProps {
 }
 
 const DropdownModal = ({ visible, onClose, data, onSelect, colors, mode, loading }: DropdownProps) => {
-  // Pure list logic with lazy loading for performance
   const [visibleCount, setVisibleCount] = useState(20);
   const visibleData = data ? data.slice(0, visibleCount) : [];
 

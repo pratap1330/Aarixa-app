@@ -23,11 +23,9 @@ const LoginIntro: React.FC<Props> = ({ navigation }) => {
       style={styles.screen}
     >
       <View style={styles.safeArea}>
-        {/* Set translucent to true to allow background to flow behind status bar */}
         <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
         <View style={styles.content}>
-          {/* Top Right Decoration - Increased Size */}
           <View style={styles.topDecor}>
             <Image 
               source={require('../../images/loginImage/ruppe1.png')} 
@@ -36,7 +34,6 @@ const LoginIntro: React.FC<Props> = ({ navigation }) => {
             />
           </View>
 
-          {/* Middle Left Decoration - Positioned above the white sheet */}
           <View style={styles.middleDecor}>
             <Image 
               source={require('../../images/loginImage/rupee2.png')} 
@@ -46,7 +43,6 @@ const LoginIntro: React.FC<Props> = ({ navigation }) => {
           </View>
 
           <View style={styles.bottomSheet}>
-            {/* Using a Container to manage spacing instead of 'bottom' property */}
             <View style={styles.textContent}>
               <Text numberOfLines={1} style={styles.title}>
                 Welcome to Wealthsys

@@ -1,4 +1,3 @@
-// screens/Dashboard/Dashboard.tsx
 
 import React from "react";
 import { useState, useEffect } from "react";
@@ -42,13 +41,10 @@ const Dashboard = () => {
         if (userData) {
           const parsedUser = JSON.parse(userData);
 
-          // 👇 yaha check kar structure kya hai
-          // console.log("USER DATA:", parsedUser);
-
+        
           setUserName(parsedUser?.username || "");
         }
       } catch {
-        // console.log("Error fetching user:", error);
       }
     };
 
@@ -62,17 +58,14 @@ const Dashboard = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* ── Header Block ── */}
         <View style={styles.headerBlock}>
 
-          {/* Row 1 — Welcome Back */}
           <View style={styles.welcomeRow}>
             <Text style={[styles.welcomeText, { color: colors.text }]}>
               Welcome Back,
             </Text>
           </View>
 
-          {/* Row 2 — Name (auto-width, capped at screen safe area) */}
           <View style={styles.nameRow}>
             <MaskedView
               style={styles.nameMask}
@@ -94,17 +87,14 @@ const Dashboard = () => {
 
         </View>
 
-        {/* Main Card */}
         <View style={styles.cardContainer}>
           <DashboardCard />
         </View>
 
-        {/* Banner */}
         <View style={styles.bannerContainer}>
           <BannerCarousel banners={LOCAL_BANNERS} autoPlayInterval={3000} />
         </View>
 
-        {/* Assets */}
         <View style={styles.assetContainer}>
           <AssetsCard />
         </View>

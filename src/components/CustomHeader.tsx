@@ -30,13 +30,12 @@ const CustomHeader = () => {
                 },
             ]}
         >
-            {/* Logo Section */}
+            
             <View style={[styles.userImage, { backgroundColor: avatarBg }]}>
-                {/* Replaced Image with LogoSvg */}
                 <LogoSvg 
                     width={wp(30)} 
                     height={wp(30)} 
-                    fill={colors.primaryContrast} // This replaces tintColor for SVGs
+                    fill={colors.primaryContrast} 
                 />
             </View>
 

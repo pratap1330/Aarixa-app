@@ -44,26 +44,13 @@ const THEME_OPTIONS: { key: BrandThemeKey; label: string }[] = [
   { key: "purple", label: "Purple" },
 ];
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 interface RowItem {
   label: string;
   icon: React.FC<any>
   onPress?: () => void;
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
 
-/** Chevron arrow on the right side of every row */
-// const ArrowIcon = () => {
-//   const { mode } = useAppTheme();
-//   return (
-//     <Image
-//       source={require("../../images/setting/arrow.png")}
-//       style={[styles.arrow, { tintColor: mode === "dark" ? "#FFFFFF80" : "#0000009f" }]}
-//       resizeMode="contain"
-//     />
-//   );
-// };
 
 
 const ArrowIcon = () => {
@@ -77,7 +64,6 @@ const ArrowIcon = () => {
   );
 };
 
-/** Generic tappable row with left icon + label + right arrow */
 const SettingsRow = ({ label, icon: Icon, onPress }: RowItem) => {
   const { colors } = useAppTheme();
 
@@ -87,21 +73,15 @@ const SettingsRow = ({ label, icon: Icon, onPress }: RowItem) => {
       style={styles.row}
       onPress={onPress}
     >
-      {/* Left icon - Using the exact same View style */}
       <View style={styles.iconCircle}>
-        {/* 
-          Instead of <Image source={icon} />, we use <Icon /> 
-          We apply your exact 'styles.rowIcon' here.
-        */}
+       
         <Icon style={styles.rowIcon} />
       </View>
 
-      {/* Label - Same style */}
       <Text style={[styles.rowLabel, { color: colors.text }]} numberOfLines={1}>
         {label}
       </Text>
 
-      {/* Right arrow - Same style */}
       <View style={styles.arrowWrap}>
         <ArrowIcon />
       </View>
@@ -109,7 +89,6 @@ const SettingsRow = ({ label, icon: Icon, onPress }: RowItem) => {
   );
 };
 
-// ─── Main Screen ──────────────────────────────────────────────────────────────
 const SettingsScreen = () => {
   const navigation = useNavigation<any>();
   const { colors, mode, brandKey } = useAppTheme();
@@ -223,7 +202,6 @@ const handleLogout = async () => {
     }
   };
 
-  // Rows for the second card (all simple nav rows)
   const navRows: RowItem[] = [
     {
       label: "Onboarding",
@@ -264,7 +242,6 @@ const handleLogout = async () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* ── Header ── */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -280,7 +257,6 @@ const handleLogout = async () => {
 
         <Text style={[styles.title, { color: colors.text }]}>Settings</Text>
 
-        {/* Spacer to keep title centred */}
         <View style={{ width: wp(41) }} />
       </View>
 
@@ -289,11 +265,8 @@ const handleLogout = async () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* ── Card 1 – My Profile ── */}
         <View style={[styles.card, { backgroundColor: cardBg }]}>
-          {/* Single row: My Profile */}
           <TouchableOpacity activeOpacity={0.7} style={styles.profileRow}>
-            {/* Left icon */}
             <View style={styles.iconCircle}>
               {/* <Image
                 source={require("../../images/headerImage/user.png")}
@@ -312,7 +285,6 @@ const handleLogout = async () => {
               My Profile
             </Text>
 
-            {/* Right arrow */}
             <View style={styles.arrowWrap1}>
               <ArrowIcon />
             </View>
@@ -417,11 +389,9 @@ const handleLogout = async () => {
           ))}
         </View>
 
-        {/* ── Logout Card ── */}
         <View style={[styles.logoutCard, { backgroundColor: cardBg }]}>
           <TouchableOpacity activeOpacity={0.7} style={styles.logoutRow}
            onPress={handleLogout}>
-            {/* Icon */}
             <View style={styles.iconCircle}>
            
               <Logout
@@ -429,7 +399,6 @@ const handleLogout = async () => {
                  />
             </View>
 
-            {/* Label */}
             <Text style={[styles.logoutLabel, { color: colors.text }]} numberOfLines={1}>
               Log Out
             </Text>
@@ -442,7 +411,6 @@ const handleLogout = async () => {
 
 export default SettingsScreen;
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -563,13 +531,12 @@ const styles = StyleSheet.create({
     fontSize: wp(12),
   },
 
-  // ── Profile row (card 1)
   profileRow: {
     width: wp(297),
     height: hp(45),
     flexDirection: "row",
     alignItems: "center",
-    borderBottomWidth: 0,        // single row, no separator needed
+    borderBottomWidth: 0,        
   },
   profileLabel: {
     flex: 1,
@@ -581,13 +548,12 @@ const styles = StyleSheet.create({
     color: "#000000",
   },
 
-  // ── Generic row
   row: {
     height: hp(45),
     flexDirection: "row",
     alignItems: "center",
     gap: wp(16),
-    paddingLeft: 0,              // card already has paddingLeft
+    paddingLeft: 0,              
     paddingRight: wp(16),
   },
   iconCircle: {
@@ -631,7 +597,6 @@ const styles = StyleSheet.create({
 
   },
 
-  // ── Toggle (Night Mode)
   toggleWrap: {
     width: wp(51),
     height: hp(23),
@@ -663,7 +628,6 @@ const styles = StyleSheet.create({
     left: wp(27),
   },
 
-  // ── Separator
   separator: {
     height: 0.5,
     width: wp(297),
@@ -672,7 +636,6 @@ const styles = StyleSheet.create({
     marginRight: wp(16),
   },
 
-  // ── Logout card
   logoutCard: {
     width: wp(361),
     height: hp(57),

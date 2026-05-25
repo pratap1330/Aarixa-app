@@ -1,6 +1,6 @@
 import API from "../../client";
 
-// Example: LOGIN API
+//LOGIN API
 export const loginService = async (data: {
   username: string;
   password: string;

@@ -15,7 +15,6 @@ import { useGet } from "../hooks/useGet";
 import { wp, hp, scaleFont } from "../utils/responcive/responcive";
 import Dot from "../images/card/dot.svg";
 
-// Category label mapping
 const CATEGORY_LABEL_MAP: Record<string, string> = {
     Equity: "Equity Funds",
     Debt: "Debt Funds",
@@ -38,7 +37,6 @@ const FilterCard = () => {
     const [active, setActive] = useState("All");
     const [selectedFolid, setSelectedFolid] = useState<string | null>(null);
     const [selectedFolNo, setSelectedFolNo] = useState<string | null>(null);
-    // Pagination States
     const [allFunds, setAllFunds] = useState<any[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [isFetchingMore, setIsFetchingMore] = useState(false);
@@ -66,11 +64,10 @@ const FilterCard = () => {
         !!cid
     );
 
-    // Append data and rebuild dynamic filters
     useEffect(() => {
         if (data?.result?.data) {
             const incoming = [...data.result.data];
-            // ─────────────────────────────────────────────────────────────────
+            
 
             const updatedFunds =
                 currentPage === 1 ? incoming : [...allFunds, ...incoming];
@@ -81,7 +78,6 @@ const FilterCard = () => {
                 setAllFunds((prev) => [...prev, ...incoming]);
             }
 
-            // Build filter tabs from unique categories in accumulated data
             const seen = new Set<string>();
             const categories: string[] = ["All"];
             updatedFunds.forEach((fund: any) => {
@@ -112,7 +108,6 @@ const FilterCard = () => {
         setShowModal(true);
     };
 
-    // Filter funds based on active tab
     const filteredFunds = allFunds.filter((fund) => {
         if (active === "All") return true;
         return getCategoryLabel(fund.category?.trim()) === active;
@@ -163,12 +158,10 @@ const FilterCard = () => {
                 </View>
             )}
 
-            {/* Folio + Tags */}
             <View style={styles.tagsRow}>
                 <Text style={[styles.accountNum, { color: colors.text }]}>
                     ({fund.folioNo})
                 </Text>
-                {/* Category badge */}
                 <View style={[styles.categoryBadge, { backgroundColor: mode === "dark" ? "#2A2A2A" : colors.primarySoft }]}>
                     <Text style={[styles.categoryBadgeText, { color: colors.primary }]}>
                         {getCategoryLabel(fund.category)}
@@ -178,7 +171,6 @@ const FilterCard = () => {
 
             <View style={[styles.divider, { backgroundColor: mode === "dark" ? "#2A2A2A" : "#F0F0F0" }]} />
 
-            {/* Values */}
             <View style={styles.valuesRow}>
     <View style={styles.valueCol}>
         <Text style={styles.valueLabel}>Current Value</Text>

@@ -26,7 +26,6 @@ const scaleFont = (size: number) => Math.round((SCREEN_WIDTH / BASE_WIDTH) * siz
 
 const PAGE_SIZE = 10;
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface ApiTransaction {
   buyid: string | null;
@@ -50,28 +49,12 @@ interface Props {
   schemeName: string;
 }
 
-// ─── Status colours ───────────────────────────────────────────────────────────
-
-// const STATUS_COLORS: Record<TransactionStatus, { bg: string; text: string }> = {
-//   success:    { bg: "#4CFF0026", text: "#1AAD00" },
-//   failed:     { bg: "#FF000026", text: "#CC0000" },
-//   processing: { bg: "#FF840026", text: "#C05E00" },
-// };
-
-// const getStatus = (txnType: string): TransactionStatus => {
-//   const t = txnType?.toLowerCase() ?? "";
-//   if (t === "swo" || t === "red" || t === "sell" || t === "redemption") return "failed";
-//   if (t === "sip" || t === "purchase" || t === "buy") return "success";
-//   return "processing";
-// };
-
 const formatINR = (value: number) =>
   `₹${value.toLocaleString("en-IN", {
     // minimumFractionDigits: 2,
     // maximumFractionDigits: 2,
   })}`;
 
-// ─── Avatar helpers ───────────────────────────────────────────────────────────
 
 const getInitials = (name: string) => {
   if (!name) return "";
@@ -88,7 +71,6 @@ const getColorFromText = (text: string) => {
   return `hsl(${hue}, 70%, 45%)`;
 };
 
-// ─── SchemeHeader (shown once above the list) ─────────────────────────────────
 
 const SchemeHeader: React.FC<{ 
   schemeName: string; 
@@ -223,7 +205,6 @@ const TransactionCard: React.FC<{ item: ApiTransaction }> = ({ item }) => {
   );
 };
 
-// ─── Modal ────────────────────────────────────────────────────────────────────
 
 const TransactionModal: React.FC<Props> = ({
   visible,
@@ -346,7 +327,6 @@ const TransactionModal: React.FC<Props> = ({
             </TouchableOpacity>
           </View>
 
-          {/* ── Scheme header — shown once, above the scroll list ── */}
           <SchemeHeader schemeName={schemeName} mode={mode}
             folioNo={folioNo}  />
 
@@ -395,7 +375,6 @@ const TransactionModal: React.FC<Props> = ({
 
 export default TransactionModal;
 
-// ─── Modal styles ─────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
   overlay: {
@@ -502,11 +481,11 @@ const card = StyleSheet.create({
    dataRow: {
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: scaleW(100)   // ← flex-start so columns align at top when text wraps
+    gap: scaleW(100)   
   },
   col: {
     //  paddingHorizontal: scaleW(16),
-    flex: 1,                    // ← each column takes equal width and stays left-aligned
+    flex: 1,                   
   },
     divider: {
     height: 1,

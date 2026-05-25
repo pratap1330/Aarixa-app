@@ -105,7 +105,6 @@ export const disableBiometricLogin = async (): Promise<void> => {
   try {
     await rnBiometrics.deleteKeys();
   } catch {
-    // Ignore key deletion failures and still disable the local preference.
   }
 
   await AsyncStorage.removeItem(STORAGE_KEYS.biometricEnabled);

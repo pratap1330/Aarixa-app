@@ -1,4 +1,4 @@
-// Example: GENERIC POST
+//  GENERIC POST
 import API from "../../client";
 export const postService = async (url: string, data: any) => {
   const response = await API.post(url, data);
@@ -6,7 +6,7 @@ export const postService = async (url: string, data: any) => {
 };
 
 
-// Example: GENERIC GET
+// GENERIC GET
 export const getService = async (url: string, params?: any) => {
   const response = await API.get(url, { params });
   return response.data;

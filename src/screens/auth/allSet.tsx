@@ -22,7 +22,6 @@ type Props = NativeStackScreenProps<RootStackParamList, "AllSet">;
 
 const AllSetScreen: React.FC<Props> = ({ navigation }) => {
 
-  // ✅ Auto navigate after 1 sec
   useEffect(() => {
     const timer = setTimeout(() => {
       navigation.replace("Tabs"); 

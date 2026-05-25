@@ -16,7 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useGet } from "../../../hooks/useGet";
 
-// SVGs
+
 import SipImage from '../../../images/setting/sipimage.svg';
 import StpImage from '../../../images/setting/stpimage.svg';
 
@@ -27,26 +27,22 @@ const SipDetailsScreen = () => {
   const navigation = useNavigation<any>();
   const isDark = mode === "dark";
 
-  // State
   const [activeTab, setActiveTab] = useState<TabType>("SIP");
   const [cid, setCid] = useState<string | null>(null);
   const [pid, setPid] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [listData, setListData] = useState<any[]>([]);
 
-  // Constants for Theme & Logic
   const sipThemeColor = "#00B327";
   const stpThemeColor = "#1F77B4";
   const isSipActive = activeTab === "SIP";
   const isStpActive = activeTab === "STP";
 
-  // Reset list on tab change
   useEffect(() => {
     setPage(1);
     setListData([]);
   }, [activeTab]);
 
-  // Fetch Data
   const { data: sipResponse, loading } = useGet<any>(
     cid && pid
       ? `api/investor/getinvestorSip?cid=${cid}&txnCol=${activeTab}&currentPage=${page}&pageSize=10&levelNo=1&startDate=2026-02-1&endDate=2026-02-28`
@@ -81,7 +77,6 @@ const SipDetailsScreen = () => {
     }
   }, [sipResponse]);
 
-  // Initial User Data
   useEffect(() => {
     const getUserData = async () => {
       const userStr = await AsyncStorage.getItem("user");
